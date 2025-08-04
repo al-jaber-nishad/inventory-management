@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'sku', 'category', 'description', 'price', 'stock', 'is_active']
+        fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control select2_search'}),
         }
@@ -25,14 +25,6 @@ class ProductForm(forms.ModelForm):
         if price < 0:
             raise ValidationError("Price cannot be negative.")
         return price
-
-    def clean_stock(self):
-        stock = self.cleaned_data.get('stock')
-        if stock is None:
-            return 0
-        if stock < 0:
-            raise ValidationError("Stock cannot be negative.")
-        return stock
 
     def clean_sku(self):
         sku = self.cleaned_data.get('sku', '').strip().upper()

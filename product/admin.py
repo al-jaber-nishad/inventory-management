@@ -13,3 +13,8 @@ class ProductAdmin(admin.ModelAdmin):
 class ProductCategoryAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in ProductCategory._meta.fields]
 
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in Brand._meta.fields]
+
