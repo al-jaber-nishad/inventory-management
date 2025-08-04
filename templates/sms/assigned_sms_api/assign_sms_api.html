@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Assign SMS API</h4>
+                <h6>Assign multiple SMS APIs to users with priority</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary" id="submitButton">Assign SMS APIs</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock base %}

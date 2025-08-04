@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Transaction Report</h4>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get" action="{% url 'transaction_report' %}">
+                    <div class="card">
+                        <div class="card-body pb-0">
+                            <div class="row">
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <input type="text" name="receiver" placeholder="Enter Receiver" value="{% if filter_receiver %}{{ filter_receiver }}{% endif %}">
+                                    </div>
+                                </div> {% endcomment %}
+                                
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <input type="text" name="sender" placeholder="Enter Sender" value="{% if filter_sender %}{{ filter_sender }}{% endif %}">
+                                    </div>
+                                </div> {% endcomment %}
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <select name="operator" class="form-control">
+                                            <option value="">Select Operator</option>
+                                            {% for data in prefix_data %}
+                                                <option value="{{ data.operator }}" {% if filter_operator == data.operator %}selected{% endif %}>{{ data.operator }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div> {% endcomment %}
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Status</small>
+                                        <select name="status" class="form-control">
+                                            <option value="">Select Status</option>
+                                            {% for status, display in SingleSms.Status.choices %}
+                                                <option value="{{ status }}" {% if filter_status == status %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div> {% endcomment %}
+                                {% comment %} <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>SMS Type</small>
+                                        <select name="sms_type" class="form-control">
+                                            <option value="">--------</option>
+                                            {% for sms_type, display in SingleSms.SmsType.choices %}
+                                                <option value="{{ sms_type }}" {% if filter_sms_type == sms_type %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Sender</small>
+                                        <select name="sender" class="form-control" placeholder="Select Sender">
+                                            <option value="">--------</option>
+                                            {% for sender in senders %}
+                                                <option value="{{ sender }}" {% if filter_sender == sender %}selected{% endif %}>{{ sender }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>User Group</small>
+                                        <select name="user_group" class="form-control">
+                                            <option value="">--------</option>
+                                            {% for user_group in user_groups %}
+                                                <option value="{{ user_group }}" {% if filter_user_group == user_group %}selected{% endif %}>{{ user_group }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div> {% endcomment %}
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Transaction ID</small>
+                                        <input type="text" name="transaction_id" placeholder="Enter Transaction ID" value="{% if transaction_id %}{{ transaction_id }}{% endif %}">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Recharged User</small>
+                                        <input type="text" name="recharged_to" placeholder="Enter username" value="{% if recharged_to %}{{ recharged_to }}{% endif %}">
+                                    </div>
+                                </div>
+
+                                {% if request.user.role.name == 'ADMIN' %}
+                                    <div class="col-lg-2 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <small>Recharger User</small>
+                                            <input type="text" name="recharged_by" placeholder="Enter username" value="{% if recharged_by %}{{ recharged_by }}{% endif %}">
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date From</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_from" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_from }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date To</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_to" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_to }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12 mt-3">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="wordset">
+                        <ul>
+                            <li>
+                                <a href="#" id="pdf_export" data-format="pdf">
+                                    <img src="{% static 'img/icons/pdf.svg' %}" alt="img" data-bs-toggle="tooltip" data-bs-placement="top" title="PDF">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="excel_export" data-format="excel">
+                                    <img src="{% static 'img/icons/excel.svg' %}" alt="img" data-bs-toggle="tooltip" data-bs-placement="top" title="Excel">
+                                </a>
+                            </li>
+                            {% comment %} <li>
+                                <a href="#" id="print_export" data-format="pdf">
+                                    <img src="{% static 'img/icons/printer.svg' %}" alt="img" data-bs-toggle="tooltip" data-bs-placement="top" title="Print">
+                                </a>
+                            </li> {% endcomment %}
+                        </ul>
+                        <input type="hidden" name="export_format" id="exportFormat" class="form-control">
+                    </div>
+
+                </form>
+
+                <div id="transaction-list">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>SL No</th>
+                                    <th>Transaction Detail</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Rate per message</th>
+                                    <th>Message Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                    <tr class="sms-row">
+                                        <td>{{ forloop.counter|add:transactions.start_index|add:-1 }}</td>
+                                        <td>
+                                            Transaction ID: {{ transaction.transaction_id }} <br>
+                                            Transaction Date: {{ transaction.created_at }} <br>
+                                            Expiry Date: {{ transaction.balance_valid_till }} <br>
+                                            Remarks: {{ transaction.remarks }}
+                                        </td>
+
+                                        <td>{{ transaction.transaction_type }}</td>
+                                        <td>{{ transaction.balance }}</td>
+                                        <td>{{ transaction.recharged_by.username }}</td>
+                                        <td>{{ transaction.recharged_to.username }}</td>
+                                        <td>{{ transaction.respective_package_price }}</td>
+                                        <td>{{ transaction.message_amount }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Links -->
+                    <div class="pagination-container d-flex justify-content-between">
+                        <div class="pagination table-info">
+                            {% if transactions %}
+                                <p>
+                                    Showing 
+                                    {{ transactions.start_index }} 
+                                    to 
+                                    {{ transactions.end_index }} 
+                                    of 
+                                    {{ transactions.paginator.count }} 
+                                    entries
+                                </p>
+                            {% endif %}
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <!-- Always show the first page -->
+                                {% if 1 != transactions.number and transactions.number > 4 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1" data-page="1">1</a>
+                                    </li>
+                                {% endif %}
+                    
+                                <!-- Show ellipsis if there is a gap between first and current page -->
+                                {% if transactions.number > 4 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Display pages near the current page -->
+                                {% for num in transactions.paginator.page_range %}
+                                
+                                    {% if transactions.number < 5 %}
+                                        {% if num <= 5 %}
+                                            <li class="page-item {% if transactions.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if num >= transactions.number|add:-1 and num <= transactions.number|add:1 %}
+                                            <li class="page-item {% if transactions.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    
+                                {% endfor %}
+                    
+                                <!-- Show ellipsis if there is a gap between current and last page -->
+                                {% if transactions.number < transactions.paginator.num_pages|add:-3 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Always show the last page -->
+                                {% if transactions.number|add:"3" < transactions.paginator.num_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ transactions.paginator.num_pages }}" data-page="{{ transactions.paginator.num_pages }}">{{ transactions.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %} 
+                                {% if transactions.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ transactions.next_page_number }}" data-page="{{ transactions.next_page_number }}">></a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+// Handle pagination link clicks
+$(document).ready(function() {
+    $(document).on('click', '.pagination a', function(event) {
+        event.preventDefault();
+        
+        // Get the page number
+        var page = $(this).attr('data-page');
+        var formData = $('#filterForm').serialize();
+        
+        // Fetch contacts with pagination and form data
+        fetchContacts(page, formData);
+    });
+
+    // Function to fetch contacts via AJAX
+    function fetchContacts(page, formData) {
+        $.ajax({
+            url: "?page=" + page,
+            type: "GET",
+            data: formData,
+            success: function(data) {
+                // Update the table and pagination from the returned HTML
+                $('#transaction-list').replaceWith(data);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    };
+
+    // Export to file
+    document.querySelectorAll('[data-format]').forEach(function(element) {
+        element.addEventListener('click', function(event) {
+            event.preventDefault();
+            const format = event.currentTarget.getAttribute('data-format');
+            if(format!=null){
+                submitForm(format);
+            };
+        });
+    });
+
+    function submitForm(format) {
+        const exportFormat = document.getElementById('exportFormat');
+        exportFormat.value = format;
+        
+        const filterForm = document.getElementById('filterForm');
+        const action = filterForm.getAttribute('action');
+        const formData = new FormData(filterForm);
+
+        const params = new URLSearchParams(formData).toString();
+        window.open(`${action}?${params}`, '_blank');
+        exportFormat.value = null
+    }
+    // Export to file ends.
+});
+
+{% comment %} document.addEventListener('DOMContentLoaded', function() {
+    // Export to file
+    document.querySelectorAll('[data-format]').forEach(function(element) {
+        element.addEventListener('click', function(event) {
+            event.preventDefault();
+            const format = event.currentTarget.getAttribute('data-format');
+            console.log("format", format)
+            if(format!=null){
+                submitForm(format);
+            };
+        });
+    });
+
+    function submitForm(format) {
+        const exportFormat = document.getElementById('exportFormat');
+        exportFormat.value = format;
+        
+        const filterForm = document.getElementById('filterForm');
+        const action = filterForm.getAttribute('action');
+        const formData = new FormData(filterForm);
+
+        const params = new URLSearchParams(formData).toString();
+        window.open(`${action}?${params}`, '_blank');
+        exportFormat.value = null
+    }
+    // Export to file ends.
+}); {% endcomment %}
+</script>
+
+
+{% endblock base %}

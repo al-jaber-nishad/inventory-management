@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Package Management</h4>
+                <h6>{% if form.instance.pk %}Update{% else %}Add{% endif %} Package</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}">Package Name</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.owner_user.id_for_label }}">Owner User</label>
+                                {{ form.owner_user }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.bill_type.id_for_label }}">Bill Type</label>
+                                {{ form.bill_type }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.is_deletable.id_for_label }}">Is Deletable</label>
+                                {{ form.is_deletable }}
+                            </div>
+                        </div>
+                    </div>
+                    <h3>Package Prices</h3>
+                    {{ formset.management_form }}
+                    <div id="package-price-forms">
+                        {% for form in formset %}
+                            <div class="row package-price-form">
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.country.id_for_label }}">Country</label>
+                                        {{ form.country }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.prefix.id_for_label }}">Prefix</label>
+                                        {{ form.prefix }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.price.id_for_label }}">Price</label>
+                                        {{ form.price }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.is_active.id_for_label }}">Is Active</label>
+                                        {{ form.is_active }}
+                                    </div>
+                                </div>
+                                {% if not forloop.first %}
+                                    <div class="col-lg-3 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-danger remove-package-price">×</button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if form.instance.pk %}
+                                    <div class="col-lg-3 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="{{ form.DELETE.id_for_label }}">Delete</label>
+                                            {{ form.DELETE }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-success" id="add-package-price">Add Package Price</button>
+                    <div class="col-lg-12 mt-3">
+                        <button type="submit" class="btn btn-submit me-2">Submit</button>
+                        <a href="{% url 'package_list' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>  
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function addRemoveButtonListener(button) {
+        button.addEventListener('click', function() {
+            button.closest('.package-price-form').remove();
+        });
+    }
+
+    document.getElementById('add-package-price').addEventListener('click', function() {
+        var formIndex = document.querySelectorAll('.package-price-form').length;
+        var newForm = document.querySelector('.package-price-form').cloneNode(true);
+
+        // Reset values in the cloned form
+        Array.from(newForm.querySelectorAll('input, select')).forEach(function(element) {
+            element.name = element.name.replace(/\d+/, formIndex);
+            element.id = element.id.replace(/\d+/, formIndex);
+            if (element.type === 'text' || element.type === 'number') {
+                element.value = '';
+            } else if (element.type === 'checkbox' || element.type === 'radio') {
+                element.checked = false;
+            }
+        });
+
+        // Add remove button to the new form if it doesn't exist
+        if (!newForm.querySelector('.remove-package-price')) {
+            var removeButtonDiv = document.createElement('div');
+            removeButtonDiv.className = 'col-lg-3 col-sm-6 col-12 form-group';
+            removeButtonDiv.innerHTML = '<button type="button" class="btn btn-danger remove-package-price">×</button>';
+            newForm.appendChild(removeButtonDiv);
+            addRemoveButtonListener(removeButtonDiv.querySelector('.remove-package-price'));
+        } else {
+            addRemoveButtonListener(newForm.querySelector('.remove-package-price'));
+        }
+
+        // Append the new form
+        document.getElementById('package-price-forms').appendChild(newForm);
+    });
+
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.remove-package-price').forEach(function(button) {
+        addRemoveButtonListener(button);
+    });
+});
+</script>
+{% endblock base %}

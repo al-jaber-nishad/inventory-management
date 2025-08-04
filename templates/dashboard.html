@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+  <div class="content">
+    {% if not request.user.role.name == "CLIENT" %}
+    <div class='row'>
+      
+      {% if request.user.role.name == "ADMIN" %}
+        <div class="col-lg-4 col-sm-6 col-12 d-flex">
+          <div class="dash-count">
+            <a href="{% url 'user_list' %}" class="text-white">
+              <div class="dash-counts">
+                <h4>{{ total_count }}</h4>
+                <h5>Total User</h5>
+              </div>
+            </a>
+            <div class="dash-imgs">
+              <i data-feather="user"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6 col-12 d-flex">
+          <div class="dash-count das1">
+            <a href="{% url 'reseller_list' %}" class="text-white">
+              <div class="dash-counts">
+                <h4>{{ reseller_count }}</h4>
+                <h5>Reseller</h5>
+              </div>
+            </a>
+            <div class="dash-imgs">
+              <i data-feather="user-check"></i>
+            </div>
+          </div>
+        </div>
+        
+      {% endif %}
+        
+      <div class="col-lg-4 col-sm-6 col-12 d-flex">
+        <div class="dash-count das2">
+          <a href="{% url 'client_list' %}" class="text-white">
+            <div class="dash-counts">
+              <h4>{{ client_count }}</h4>
+              <h5>Client</h5>
+            </div>
+          </a>
+          <div class="dash-imgs">
+            <i data-feather="file-text"></i>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    {% if not request.user.role.name == "ADMIN" %}
+      <div class="row">
+        {% if is_prefix_based %}
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="dash-widget dash2">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'img/icons/dash3.svg' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5>
+                  ৳ <span class="counters" data-count={{ user.local_masking_balance }}>{{ user.local_masking_balance }}</span>
+                </h5>
+                <h6>Masking Balance</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="dash-widget dash3">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'img/icons/dash4.svg' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5>
+                  ৳ <span class="counters" data-count={{ user.local_non_masking_balance }}>{{ user.local_non_masking_balance }}</span>
+                </h5>
+                <h6>Non Masking Balance</h6>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="dash-widget">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'img/icons/dash1.svg' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5>
+                  <span class="counters" data-count={{ user.local_masking_message_amount }}>{{ user.local_masking_message_amount }}</span>
+                </h5>
+                <h6>Total Masking Message</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="dash-widget dash1">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'img/icons/dash2.svg' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5>
+                  <span class="counters" data-count={{ user.local_non_masking_message_amount }}>{{ user.local_non_masking_message_amount }}</span>
+                </h5>
+                <h6>Total Non Masking Message</h6>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        <div class="col-lg-4 col-sm-6 col-12">
+            <div class="dash-widget dash1">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'img/icons/calendars.svg' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5>
+                  <span class="counters">{{ balance_valid_till }}</span>
+                </h5>
+                <h6>Balance Valid Till</h6>
+              </div>
+            </div>
+          </div>
+      </div>
+    {% endif %}
+
+    {% if request.user.role.name == "CLIENT" %}
+      <div id="queue-message-section">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Queued Message Counting</div>
+              </div>
+              <div class="card-body">
+                <div id="queued-message-counting">Loading...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">Message History</h5>
+          </div>
+          <div class="card-body">
+            <div id="s-col" class="chart-set"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if request.user.role.name == 'CLIENT' %}     
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Today's SMS Summary</h5>
+            </div>
+            <div class="card-body">
+              <div id="s-col" class="chart-set"></div>
+              <div class="table-responsive">
+                <table class="table dashboard-sms-summary" border="2">
+                  <thead>
+                    <tr>
+                      <th>Total</th>
+                      <th>SMS(count)</th>
+                      <th>Sent</th>
+                      <th>Failed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="width: 25%;">{{ today_sms_summary_data.number_of_message }}</td>
+                      <td style="width: 25%;">{{ today_sms_summary_data.message_count }}</td>
+                      <td style="width: 25%; color: rgb(0, 0, 0); background-color: rgba(0, 142, 251, 0.35);"><b>{{ today_sms_summary_data.number_of_sent_message }}</b></td>
+                      <td style="width: 25%; color: rgb(0, 0, 0); background-color: rgb(254, 176, 25, 0.35);"><b>{{ today_sms_summary_data.number_of_failed_message }}</b></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    </div>
+  </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script>
+  let intervalId;
+  $(document).ready(function() {
+
+    function updateQueuedMessageCount() {
+      $.ajax({
+        url: "{% url 'get_queued_sms_number' %}", // Use Django URL tag
+        type: 'GET',
+        success: function(response) {
+          if (response.count === 0) {
+            // Hide the section and stop the API calls if count is zero
+            $('#queue-message-section').hide();
+            clearInterval(intervalId); // Stop further calls
+          } else {
+            // Display the count
+            $('#queued-message-counting').text(response.count);
+            $('#queue-message-section').show(); // Ensure the section is visible
+          }
+        },
+        error: function() {
+          $('#queued-message-counting').text('Error fetching count');
+          console.log("Error fetching data");
+        }
+      });
+    }
+
+    // Initial call to update the count when the page loads
+    updateQueuedMessageCount();
+
+    // Set interval to refresh the count every minute (60000 milliseconds)
+    intervalId = setInterval(updateQueuedMessageCount, 1000);
+  });
+  
+</script>
+
+{% endblock base %}
+
+

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Developer API</h4>
+                <h6>Manage your developer API</h6>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    {% if not has_api %}
+                        <a name="" id="generateApiKey" class="btn btn-primary" href="#" role="button">Generate API Key</a>
+                    {% else %}
+                        Your API Key: <strong>{{ developer_api_instance.api_key }}</strong>
+                        <a name="" id="regenerateApiKey" class="btn btn-primary m-3" href="#" role="button">Re-generate API Key</a>
+                    {% endif %}
+                    
+                    <h5 class='pt-3'>Your API URL:</h5>
+                    <p>{{ developer_api_instance.api_url }}</p>
+
+                    <table class="table table-bordered mb-4">
+                        <thead>
+                            <tr>
+                                <th>Parameter Name</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>url</td>
+                                {% comment %} <td>{{ developer_api_instance.api_url }}</td> {% endcomment %}
+                                {% if developer_api_instance.api_url|length > 10 %}
+                                    <td>{{ developer_api_instance.api_url|slice:":50" }}.....</td>
+                                {% else %}
+                                    <td>{{ developer_api_instance.api_url }}</td>
+                                {% endif %}
+                                <td>API URL</td>
+                            </tr>
+                            <tr>
+                                <td>api_key</td>
+                                <td>{{ developer_api_instance.api_key }}</td>
+                                <td>Enter Your Generated API Key</td>
+                            </tr>
+                            <tr>
+                                <td>type</td>
+                                <td>text/unicode</td>
+                                <td>text for normal SMS/unicode for Bangla SMS</td>
+                            </tr>
+                            <tr>
+                                <td>phone</td>
+                                <td>8801XXXXXXXXX</td>
+                                <td>Exp: 88017XXXXXXXX+88018XXXXXXXX</td>
+                            </tr>
+                            <tr>
+                                <td>senderid</td>
+                                <td>Sender ID</td>
+                                <td>Get it from Messaging &gt; Sender ID option</td>
+                            </tr>
+                            <tr>
+                                <td>message</td>
+                                <td>Message From Developer API</td>
+                                <td>N.B: Please use URL encoding to send some special characters like &amp;, $, @ etc.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Error codes and meaning</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Error Code</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1001</td>
+                                <td>Wrong API Key</td>
+                            </tr>
+                            <tr>
+                                <td>1002</td>
+                                <td>Wrong Sender ID</td>
+                            </tr>
+                            <tr>
+                                <td>1003</td>
+                                <td>Type must be text or unicode</td>
+                            </tr>
+                            <tr>
+                                <td>1004</td>
+                                <td>Only GET and POST Methods Allow</td>
+                            </tr>
+                            <tr>
+                                <td>1005</td>
+                                <td>You can't send SMS to this prefix because of prefix inactivity.</td>
+                            </tr>
+                            <tr>
+                                <td>1006</td>
+                                <td>Insufficient Balance.</td>
+                            </tr>
+                            <tr>
+                                <td>1007</td>
+                                <td>Please use country code (88).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateApiKeyBtn = document.getElementById('generateApiKey');
+        const regenerateApiKeyBtn = document.getElementById('regenerateApiKey');
+
+        if (generateApiKeyBtn) {
+            generateApiKeyBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch('{% url "generate_api_key" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        }
+
+        if (regenerateApiKeyBtn) {
+            regenerateApiKeyBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch('{% url "regenerate_api_key" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>
+
+{% endblock base %}

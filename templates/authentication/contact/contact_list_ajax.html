@@ -1,0 +1,131 @@
+{% load static %}
+<div id="contact-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th>Contact No</th>
+                    <th>Group</th>
+                    {% if not request.user.role.name == 'CLIENT' %}
+                        <th>Client</th>
+                    {% endif %}
+                    {% if request.user.role.name == 'ADMIN' %}
+                        <th>Reseller</th>
+                    {% endif %}
+                    {% if request.user.role.name == 'CLIENT' %}
+                        <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for contact in contact_list %}
+                    <tr>
+                        <td>{{ forloop.counter0|add:contact_list.start_index }}</td>
+                        <td>{{ contact.name }}</td>
+                        <td>{{ contact.contact_no }}</td>
+                        <td>{{ contact.contact_group.name }}</td>
+                        {% if not request.user.role.name == 'CLIENT' %}
+                            <td>{{ contact.owner_user.username }}</td>
+                        {% endif %}
+                        {% if request.user.role.name == 'ADMIN' %}
+                            <td>{{ contact.owner_user.owner_user.username }}</td>
+                        {% endif %}
+                        {% if request.user.role.name == 'CLIENT' %}
+                            <td>
+                                <a class="me-3" href="{% url 'contact_update' contact.id %}">
+                                    <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                </a>
+                                <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'contact_delete' contact.id %}">
+                                    <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                </a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination Links -->
+    <div class="pagination-container d-flex justify-content-between">
+        <div class="pagination table-info">
+            {% if contact_list %}
+                <p>
+                    Showing 
+                    {{ contact_list.start_index }} 
+                    to 
+                    {{ contact_list.end_index }} 
+                    of 
+                    {{ contact_list.paginator.count }} 
+                    entries
+                </p>
+            {% endif %}
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if contact_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contact_list.previous_page_number }}" data-page="{{ contact_list.previous_page_number }}"><</a>
+                    </li>
+                {% endif %}
+                <!-- Always show the first page -->
+                {% if 1 != contact_list.number and contact_list.number > 4 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" data-page="1">1</a>
+                    </li>
+                {% endif %}
+    
+                <!-- Show ellipsis if there is a gap between first and current page -->
+                {% if contact_list.number > 4 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+    
+                <!-- Display pages near the current page -->
+                {% for num in contact_list.paginator.page_range %}
+                
+                    {% if contact_list.number < 5 %}
+                        {% if num <= 5 %}
+                            <li class="page-item {% if contact_list.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% comment %} {% elif contact_list.number|add:-5 < contact_list.paginator.num_pages %}
+                        {% if num >= contact_list.number|add:-1 and num <= contact_list.number|add:4 %}
+                            <li class="page-item {% if contact_list.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %} {% endcomment %}
+                    {% else %}
+                        {% if num >= contact_list.number|add:-1 and num <= contact_list.number|add:1 %}
+                            <li class="page-item {% if contact_list.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    
+                    
+                {% endfor %}
+    
+                <!-- Show ellipsis if there is a gap between current and last page -->
+                {% if contact_list.number < contact_list.paginator.num_pages|add:-3 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+
+                <!-- Always show the last page -->
+                {% if contact_list.number|add:"5" < contact_list.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contact_list.paginator.num_pages }}" data-page="{{ contact_list.paginator.num_pages }}">{{ contact_list.paginator.num_pages }}</a>
+                    </li>
+                {% endif %} 
+                {% if contact_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contact_list.next_page_number }}" data-page="{{ contact_list.next_page_number }}">></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+     
+</div>

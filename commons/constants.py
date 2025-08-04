@@ -1,0 +1,5 @@
+elitbuzz_api_name='Elitbuzz'
+jamanit_api_name='Jaman IT'
+durbarsms_api_name='Durbar SMS'
+revesms_api_name='Reve SMS'
+rtcom_api_name='RT Communication'

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS History Report</h4>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form method="get" action="{% url 'sms_history_report' %}">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-6 col-12">
+                            <div class="form-group">
+                                <small>Gateway</small>
+                                <select name="gateway" class="form-control select2_search">
+                                    <option value="">Select Gateway</option>
+                                    {% for gateway, display in SingleSms.GatewayType.choices %}
+                                        <option value="{{ gateway }}" {% if filter_gateway == gateway %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        {% if not request.user.role.name == 'CLIENT' %}
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <small>Sender</small>
+                                    <select name="sender" class="form-control select2_search" placeholder="Select Sender">
+                                        <option value="">Select Sender</option>
+                                        {% for sender in senders %}
+                                            <option value="{{ sender }}" {% if filter_sender == sender %}selected{% endif %}>{{ sender }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <small>User Group</small>
+                                    <select name="user_group" class="form-control select2_search">
+                                        <option value="">Select Group</option>
+                                        {% for user_group in user_groups %}
+                                            <option value="{{ user_group }}" {% if filter_user_group == user_group %}selected{% endif %}>{{ user_group }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                            
+                        <div class="col-lg-2 col-sm-6 col-12">
+                            <div class="form-group">
+                                <small>Date From</small>
+                                <div class="input-groupicon">
+                                    <input type="text" name="date_from" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_from }}">
+                                                                        <a class="addonset">
+                                        <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                            
+                        <div class="col-lg-2 col-sm-6 col-12">
+                            <div class="form-group">
+                                <small>Date To</small>
+                                <div class="input-groupicon">
+                                    <input type="text" name="date_to" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_to }}">
+                                    <a class="addonset">
+                                        <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 col-sm-6 col-12 mt-3">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-filters">
+                                    <img src="{% static 'img/icons/search-whites.svg' %}" alt="img"> Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Receiver</th>
+                                <th>Text</th>
+                                <th>Status</th>
+                                <th>Gateway Type</th>
+                                <th>Date</th>
+                                {% if request.user.role.name == "ADMIN" %}
+                                    <th>Route API</th>
+                                    <th>Reseller</th>
+                                {% endif %}
+                                {% if not request.user.role.name == "CLIENT" %}
+                                    <th>Client</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sms in sms_page %}
+                                <tr>
+                                    <td>{{ sms.receiver }}</td>
+                                    <td>{{ sms.message|truncatechars:15 }}</td>
+                                    <td>{{ sms.status }}</td>
+                                    <td>{{ sms.gateway_type }}</td>
+                                    <td>{{ sms.sent_at|date:"b. d, Y, g:i A" }}</td>
+                                    {% comment %} {% if request.user.role.name == "ADMIN" %}
+                                        <td>{{ sms.sms_api.name if sms.sms_api }}</td>
+                                        <td>{{ sms.sender.owner_user.username if sms.sender.owner_user }}</td>
+                                    {% endif %}
+                                    {% if not request.user.role.name == "CLIENT" %}
+                                        <td>{{ sms.sender.username }}</td>
+                                    {% endif %} {% endcomment %}
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8">No records found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            {% if sms_page.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ sms_page.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for page_num in sms_page.paginator.page_range %}
+                                <li class="page-item {% if sms_page.number == page_num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endfor %}
+
+                            {% if sms_page.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ sms_page.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock base %}
+

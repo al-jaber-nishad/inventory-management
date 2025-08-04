@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS API Summary Report</h4>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get" action="{% url 'sms_api_summary_report' %}">
+                    <div class="">
+                        <div class="">
+                            <div class="row">                                    
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date From</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_from" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_from }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date To</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_to" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_to }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-sm-6 col-12 mt-3">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>API Name</th>
+                                <th>Total SMS</th>
+                                <th>Sent</th>
+                                <th>Failed</th>
+                                <th>Pending</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for api_summary in api_summary_report %}
+                                <tr>
+                                    <td>{{ api_summary.sms_api__name }}</td>
+                                    <td>{{ api_summary.total_sms }}</td>
+                                    <td>{{ api_summary.total_sent }}</td>
+                                    <td>{{ api_summary.total_failed }}</td>
+                                    <td>{{ api_summary.total_pending }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock base %}

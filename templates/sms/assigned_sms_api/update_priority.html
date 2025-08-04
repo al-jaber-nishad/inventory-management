@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Update SMS API Priority</h4>
+                <h6>Drag and drop to update the priority</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <ul id="sms-api-list">
+                    {% for api in assign_sms_api_list %}
+                    <li data-id="{{ api.id }}">{{ api.sms_api.name }}</li>
+                    {% endfor %}
+                </ul>
+                <button id="save-priority" class="btn btn-primary">Save Priority</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#sms-api-list').sortable();
+
+        $('#save-priority').click(function() {
+            var priority = [];
+            $('#sms-api-list li').each(function(index) {
+                priority.push($(this).data('id'));
+            });
+
+            $.ajax({
+                url: "{% url 'update_priority' %}",
+                method: "POST",
+                data: {
+                    priority: priority,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert('Priority updated successfully.');
+                    } else {
+                        alert('Failed to update priority.');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

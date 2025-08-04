@@ -1,0 +1,56 @@
+{% extends 'particals/pdf_template_base.html' %}
+{% load static %}
+
+{% block report_header %}
+	SMS History Report
+{% endblock report_header %}
+	
+{% block base %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>SL No</th>
+            <th>Receiver</th>
+            <th>Text</th>
+            <th>Status</th>
+            <th>Gateway Type</th>
+            <th>Date</th>
+            {% if request.user.role.name == "ADMIN" %}
+                <th>Route API</th>
+                <th>Reseller</th>
+            {% endif %}
+            {% if not request.user.role.name == "CLIENT" %}
+                <th>Client</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for sms in instances %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ sms.receiver }}</td>
+            <td>
+                {% if sms.message|length > 15 %}
+                    {{ sms.message|slice:":15" }}...
+                {% else %}
+                    {{ sms.message }}
+                {% endif %}
+            </td>
+            <td>{{ sms.status }}</td>
+            <td>{{ sms.gateway_type }}</td>
+            <td>{{ sms.sent_at }}</td>
+                                    
+            {% if request.user.role.name == "ADMIN" %}
+                <td>{{ sms.sms_api.name }}</td>
+                <td>{{ sms.sender.owner_user.username }}</td>
+            {% endif %}
+            {% if not request.user.role.name == "CLIENT" %}
+                <td>{{ sms.sender.username }}</td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock base %}

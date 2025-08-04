@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Contact List</h4>
+                <h6>Manage your Contacts</h6>
+            </div>
+            {% if request.user.role.name == 'CLIENT' %}
+                <div class="page-btn">
+                    <a href="{% url 'contact_create' %}" class="btn btn-added"><img src="{% static 'img/icons/plus.svg' %}" alt="img">Add
+                        Contact</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Display any messages -->
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: "{% if message.tags == 'success' %}Success{% else %}Error{% endif %}",
+                            text: '{{ message }}',
+                            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get" action="{% url 'contact_list' %}">
+                    <div class="table-top">
+                        <div class="search-set">
+                            <div class="form-group mb-0">
+                                <input type="text" name="search_input" placeholder="Enter contact no or name" value="{% if filter_search_input %}{{ filter_search_input }}{% endif%}">
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12 pl-3">
+                                <div class="form-group mb-0">
+                                    <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Table and Pagination Container -->
+                <div id="contact-list">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Name</th>
+                                    <th>Contact No</th>
+                                    <th>Group</th>
+                                    {% if not request.user.role.name == 'CLIENT' %}
+                                        <th>Client</th>
+                                    {% endif %}
+                                    {% if request.user.role.name == 'ADMIN' %}
+                                        <th>Reseller</th>
+                                    {% endif %}
+                                    {% if request.user.role.name == 'CLIENT' %}
+                                        <th>Action</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contact in contact_list %}
+                                    <tr>
+                                        <td>{{ forloop.counter|add:contact_list.start_index|add:-1 }}</td>
+                                        <td>{{ contact.name }}</td>
+                                        <td>{{ contact.contact_no }}</td>
+                                        <td>{{ contact.contact_group.name }}</td>
+                                        {% if not request.user.role.name == 'CLIENT' %}
+                                            <td>{{ contact.owner_user.username }}</td>
+                                        {% endif %}
+                                        {% if request.user.role.name == 'ADMIN' %}
+                                            <td>{{ contact.owner_user.owner_user.username }}</td>
+                                        {% endif %}
+                                        {% if request.user.role.name == 'CLIENT' %}
+                                            <td>
+                                                <a class="me-3" href="{% url 'contact_update' contact.id %}">
+                                                    <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                                </a>
+                                                <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'contact_delete' contact.id %}">
+                                                    <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Links -->
+                    <div class="pagination-container d-flex justify-content-between">
+                        <div class="pagination table-info">
+                            {% if contact_list %}
+                                <p>
+                                    Showing 
+                                    {{ contact_list.start_index }} 
+                                    to 
+                                    {{ contact_list.end_index }} 
+                                    of 
+                                    {{ contact_list.paginator.count }} 
+                                    entries
+                                </p>
+                            {% endif %}
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <!-- Always show the first page -->
+                                {% if 1 != contact_list.number and contact_list.number > 4 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1" data-page="1">1</a>
+                                    </li>
+                                {% endif %}
+                    
+                                <!-- Show ellipsis if there is a gap between first and current page -->
+                                {% if contact_list.number > 4 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Display pages near the current page -->
+                                {% for num in contact_list.paginator.page_range %}
+                                    {% if contact_list.number < 5 %}
+                                        {% if num <= 5 %}
+                                            <li class="page-item {% if contact_list.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if num >= contact_list.number|add:-1 and num <= contact_list.number|add:1 %}
+                                            <li class="page-item {% if contact_list.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                    
+                                <!-- Show ellipsis if there is a gap between current and last page -->
+                                {% if contact_list.number < contact_list.paginator.num_pages|add:-3 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Always show the last page -->
+                                {% if contact_list.number|add:"3" < contact_list.paginator.num_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ contact_list.paginator.num_pages }}" data-page="{{ contact_list.paginator.num_pages }}">{{ contact_list.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %} 
+                                {% if contact_list.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ contact_list.next_page_number }}" data-page="{{ contact_list.next_page_number }}">></a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Handle pagination link clicks
+        $(document).on('click', '.pagination a', function(event) {
+            event.preventDefault();
+            
+            // Get the page number
+            var page = $(this).attr('data-page');
+            var formData = $('#filterForm').serialize();
+            
+            // Fetch contacts with pagination and form data
+            fetchContacts(page, formData);
+        });
+
+        // Function to fetch contacts via AJAX
+        function fetchContacts(page, formData) {
+            $.ajax({
+                url: "?page=" + page,
+                type: "GET",
+                data: formData,
+                success: function(data) {
+                    // Update the table and pagination from the returned HTML
+                    $('#contact-list').replaceWith(data);
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+    });
+</script>
+{% endblock base %}

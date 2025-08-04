@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Package Management</h4>
+                <h6>Edit Package</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}">Package Name</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.bill_type.id_for_label }}">Bill Type</label>
+                                {{ form.bill_type }}
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-sm-12 col-12">
+                            <div class="form-check">
+                                <label for="{{ form.prefix_based.id_for_label }}">Prefix Based</label>
+                                {{ form.prefix_based }}
+                            </div>
+                        </div>
+
+                        {% comment %} Non prefix charges {% endcomment %}
+                        <div class="col-lg-6 col-sm-6 col-12 non-prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_national_msg_charge.id_for_label }}">Masking National Msg Charge</label>
+                                {{ form.masking_national_msg_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 non-prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_national_msg_charge.id_for_label }}">Non-Masking National Msg Charge</label>
+                                {{ form.non_masking_national_msg_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 non-prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_internation_msg_charge.id_for_label }}">Masking International Msg Charge</label>
+                                {{ form.masking_internation_msg_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 non-prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_internation_msg_charge.id_for_label }}">Non-Masking International Msg Charge</label>
+                                {{ form.non_masking_internation_msg_charge }}
+                            </div>
+                        </div>
+
+                        {% comment %} Prefix charges {% endcomment %}
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_015_charge.id_for_label }}">Masking Price for "88013"</label>
+                                {{ form.masking_prefix_013_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_015_charge.id_for_label }}">Non-Masking Price for "88013"</label>
+                                {{ form.non_masking_prefix_013_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_015_charge.id_for_label }}">Masking Price for "88014"</label>
+                                {{ form.masking_prefix_014_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_015_charge.id_for_label }}">Non-Masking Price for "88014"</label>
+                                {{ form.non_masking_prefix_014_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_015_charge.id_for_label }}">Masking Price for "88015"</label>
+                                {{ form.masking_prefix_015_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_015_charge.id_for_label }}">Non-Masking Price for "88015"</label>
+                                {{ form.non_masking_prefix_015_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_016_charge.id_for_label }}">Masking Price for "88016"</label>
+                                {{ form.masking_prefix_016_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_016_charge.id_for_label }}">Non-Masking Price for "88016"</label>
+                                {{ form.non_masking_prefix_016_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_017_charge.id_for_label }}">Masking Price for "88017"</label>
+                                {{ form.masking_prefix_017_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_017_charge.id_for_label }}">Non-Masking Price for "88017"</label>
+                                {{ form.non_masking_prefix_017_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_018_charge.id_for_label }}">Masking Price for "88018"</label>
+                                {{ form.masking_prefix_018_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_018_charge.id_for_label }}">Non-Masking Price for "88018"</label>
+                                {{ form.non_masking_prefix_018_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.masking_prefix_019_charge.id_for_label }}">Masking Price for "88019"</label>
+                                {{ form.masking_prefix_019_charge }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-12 prefix-charge">
+                            <div class="form-group">
+                                <label for="{{ form.non_masking_prefix_019_charge.id_for_label }}">Non-Masking Price for "88019"</label>
+                                {{ form.non_masking_prefix_019_charge }}
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Submit</button>
+                            <a href="{% url 'package_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>  
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const prefixBasedField = document.querySelector('#id_prefix_based');
+        const prefixChargeFields = document.querySelectorAll('.prefix-charge');
+        const nonPrefixChargeFields = document.querySelectorAll('.non-prefix-charge');
+
+        function togglePrefixChargeFields() {
+            if (prefixBasedField.checked) {
+                prefixChargeFields.forEach(field => field.style.display = 'block');
+                nonPrefixChargeFields.forEach(field => field.style.display = 'none');
+            } else {
+                prefixChargeFields.forEach(field => field.style.display = 'none');
+                nonPrefixChargeFields.forEach(field => field.style.display = 'block');
+            }
+        }
+
+        // Initial toggle
+        togglePrefixChargeFields();
+
+        // Add event listener
+        prefixBasedField.addEventListener('change', togglePrefixChargeFields);
+    });
+</script>
+{% endblock base %}

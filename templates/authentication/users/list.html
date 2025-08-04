@@ -1,0 +1,466 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                {% if 'reseller' in request.path %}
+                    <h4>Reseller List</h4>
+                    <h6>Manage your reseller</h6>
+                {% elif 'client' in request.path %}
+                    <h4>Client List</h4>
+                    <h6>Manage your clients</h6>
+                {% else %}
+                    <h4>User List</h4>
+                    <h6>Manage your users</h6>
+                {% endif %}
+            </div>
+            <div class="page-btn">
+                <a href="{% url 'user_create' %}" class="btn btn-added"><img src="{% static 'img/icons/plus.svg' %}" alt="img">Add New</a>
+            </div>
+        </div>
+        
+        {% if not request.user.role.name == 'CLIENT' and not 'reseller' in request.path and not 'client' in request.path %}
+            <div class="row">
+                <div class="col-lg-3 col-sm-6 col-12 d-flex">
+                    <div class="dash-count">
+                        <div class="dash-counts">
+                            <h4>{{ reseller_count }}</h4>
+                            <h5>Resellers</h5>
+                        </div>
+                        <div class="dash-imgs">
+                            <i data-feather="user"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 col-12 d-flex">
+                    <div class="dash-count das1">
+                        <div class="dash-counts">
+                            <h4>{{ client_count }}</h4>
+                            <h5>Clients</h5>
+                        </div>
+                        <div class="dash-imgs">
+                            <i data-feather="user-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if message.tags == "error" %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{{ message.tags }}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+            
+        <div class="card">
+            <div class="card-body">
+                <div class="table-top">
+                    <div class="search-set">
+                        <div class="search-path">
+                            <a class="btn btn-filter" id="filter_search">
+                                <img src="{% static 'img/icons/filter.svg' %}" alt="img">
+                                <span><img src="{% static 'img/icons/closes.svg' %}" alt="img"></span>
+                            </a>
+                        </div>
+                        <div class="search-input">
+                            <a class="btn btn-searchset"><img src="{% static 'img/icons/search-white.svg' %}" alt="img"></a>
+                        </div>
+                    </div>
+                    <div class="wordset">
+                        {% comment %} <ul>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"><img src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"><img src="{% static 'img/icons/excel.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img src="{% static 'img/icons/printer.svg' %}" alt="img"></a>
+                            </li>
+                        </ul> {% endcomment %}
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label class="checkboxs">
+                                        <input type="checkbox">
+                                        <span class="checkmarks"></span>
+                                    </label>
+                                </th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                {% if request.user.role.name == 'ADMIN' %}
+                                    <th>Owner</th>
+                                {% endif %}
+                                <th>Primary Phone</th>
+                                <th>Is active</th>
+                                <th class='text-center'>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in user_list %}
+                                <tr class="user-row" 
+                                    data-local_masking_balance="{{ user.local_masking_balance }}" 
+                                    data-local_non_masking_balance="{{ user.local_non_masking_balance }}" 
+                                    data-local_masking_message_amount="{{ user.local_masking_message_amount }}" 
+                                    data-local_non_masking_message_amount="{{ user.local_non_masking_message_amount }}" 
+                                    data-is_prefix_based="{{ user.package.prefix_based }}" 
+                                >
+                                    <td>
+                                        <label class="checkboxs">
+                                            <input type="checkbox">
+                                            <span class="checkmarks"></span>
+                                        </label>
+                                    </td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.role }}</td>
+                                    {% if request.user.role.name == 'ADMIN' %}
+                                        <td>{{ user.owner_user.username }}</td>
+                                    {% endif %}
+                                    <td>{{ user.primary_phone }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="bg-lightgreen badges">True</span>
+                                        {% else %}
+                                            <span class="bg-lightred badges">False</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class='text-center'>
+                                        <a class="me-3" href="{% url 'user_update' user.id %}" title="Edit User">
+                                            <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                        </a>
+                                        <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'user_delete' user.id %}" title="Delete User">
+                                            <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                        </a>
+                                        <a class="me-3 change-password-btn" href="#" data-url="{% url 'user_change_password' user.id %}" data-username="{{ user.username }}" title="Change Password">
+                                            <img src="{% static 'img/icons/reset-password.png' %}" width='30px' alt="img">
+                                        </a>
+                                        
+                                        {% if 'reseller' in request.path or 'client' in request.path %}
+                                            <a class="me-3 add-update-btn" href="#" data-url="{% url 'user_change_balance' user.id %}" data-username="{{ user.username }}" title="Change Password">
+                                                <img src="{% static 'img/icons/dollar.png' %}" width='30px' alt="img">
+                                            </a>
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if errors %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Error!',
+                html: '{{ errors|join:"<br>"|escapejs }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
+{% endif %}
+
+<!-- Password Change Modal -->
+<div class="modal fade" id="passwordChangeModal" tabindex="-1" aria-labelledby="passwordChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="passwordChangeForm" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordChangeModalLabel">Change Password for <span id="username"></span></h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="passwordSubmitButton">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Balance Update Modal -->
+<div class="modal fade" id="balanceUpdateModal" tabindex="-1" aria-labelledby="balanceUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="balanceUpdateModalLabel">Update Balance for <span id="balanceUsername"></span></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="balance_div" class="alert alert-success alert-dismissible fade show">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Masking Balance: </label>
+                            <b><span id="maskingBalance"></span></b>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Non-Masking Balance: </label>
+                            <bold><span id="nonMaskingBalance"></span></bold>
+                        </div>
+                    </div>
+                </div>
+                <div id="amount_div" class="alert alert-success alert-dismissible fade show">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Masking Amount: </label>
+                            <span id="maskingAmount"></span>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Non-Masking Amount: </label>
+                            <bold><span id="nonMaskingAmount"></span></bold>
+                        </div>
+                    </div>
+                </div>
+                <form id="balanceUpdateForm" method="post">
+                    {% csrf_token %}
+
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <label>Balance Type</label>
+                            <div class="form-check">
+                                <input type="radio" id="maskingBalance" name="balance_type" value="masking" class="form-check-input">
+                                <label for="maskingBalance" class="form-check-label">Masking</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="nonMaskingBalance" name="balance_type" value="non_masking" class="form-check-input">
+                                <label for="nonMaskingBalance" class="form-check-label">Non Masking</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label>Transaction Type</label>
+                            <div class="form-check">
+                                <input type="radio" id="creditType" name="transaction_type" value="Credit" class="form-check-input">
+                                <label for="creditType" class="form-check-label">Credit</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="debitType" name="transaction_type" value="Debit" class="form-check-input">
+                                <label for="debitType" class="form-check-label">Debit</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <small>Valid Till</small>
+                            <!-- <div class="input-groupicon">
+                                <input
+                                    type="text"
+                                    placeholder="Valid Till"
+                                    name="balance_valid_till"
+                                    class="datetimepicker"
+                                />
+                                <a class="addonset">
+                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                </a>
+                            </div> -->
+                            <input type="date" name="balance_valid_till"  class="form-control" placeholder="Valid Till" value="{{ balance_valid_till }}">
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <label for="balanceAmount">Balance Amount</label>
+                            <input type="Decimal" class="form-control" id="balanceAmount" name="balance_amount" required>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <label for="balanceAmount">Remarks</label>
+                            <input type="text" class="form-control" id="remarks" name="remakrs">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="balanceSubmitButton">Update Balance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Change password modal
+        const changePasswordBtns = document.querySelectorAll('.change-password-btn');
+        const passwordChangeModal = new bootstrap.Modal(document.getElementById('passwordChangeModal'));
+        const passwordChangeForm = document.getElementById('passwordChangeForm');
+        const usernameSpan = document.getElementById('username');
+
+        changePasswordBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                const username = this.getAttribute('data-username');
+                usernameSpan.textContent = username;
+                passwordChangeForm.setAttribute('action', url);
+                passwordChangeModal.show();
+            });
+        });
+
+        passwordChangeForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const url = passwordChangeForm.getAttribute('action');
+            const formData = new FormData(passwordChangeForm);
+            
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        passwordChangeModal.hide();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }).catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error processing your request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+
+        // Add balance modal
+        const balanceUpdateBtns = document.querySelectorAll('.add-update-btn');
+        const balanceUpdateModal = new bootstrap.Modal(document.getElementById('balanceUpdateModal'));
+        const balanceUpdateForm = document.getElementById('balanceUpdateForm');
+        const balanceUsernameSpan = document.getElementById('balanceUsername');
+
+        balanceUpdateBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                const username = this.getAttribute('data-username');
+                balanceUsernameSpan.textContent = username;
+                balanceUpdateForm.setAttribute('action', url);
+                balanceUpdateModal.show();
+            });
+        });
+
+        balanceUpdateForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const url = balanceUpdateForm.getAttribute('action');
+            const formData = new FormData(balanceUpdateForm);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        balanceUpdateModal.hide();
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }).catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error processing your request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+
+        // showing balance/amount starts
+        const userRows = document.querySelectorAll('.user-row');
+        const maskingBalanceDiv = document.getElementById('maskingBalance');
+        const nonMaskingBalanceDiv = document.getElementById('nonMaskingBalance');
+        const maskingAmountDiv = document.getElementById('maskingAmount');
+        const nonMaskingAmountDiv = document.getElementById('nonMaskingAmount');
+        const balanceDiv = document.getElementById('balance_div');
+        const amountDiv = document.getElementById('amount_div');
+        
+
+        document.querySelectorAll('.user-row').forEach(function(row) {
+            row.addEventListener('click', function() {
+                const local_masking_balance = row.getAttribute('data-local_masking_balance');
+                const local_non_masking_balance = row.getAttribute('data-local_non_masking_balance');
+                const local_masking_message_amount = row.getAttribute('data-local_masking_message_amount');
+                const local_non_masking_message_amount = row.getAttribute('data-local_non_masking_message_amount');
+                const is_prefix_based = row.getAttribute('data-is_prefix_based');
+
+                maskingBalanceDiv.textContent = local_masking_balance;
+                nonMaskingBalanceDiv.textContent = local_non_masking_balance;
+                maskingAmountDiv.textContent = local_masking_message_amount;
+                nonMaskingAmountDiv.textContent = local_non_masking_message_amount;
+
+                if(is_prefix_based){
+                    balanceDiv.style.display = 'none';
+                }else{
+                    amountDiv.style.display = 'none';
+                }
+            });
+        });
+        // Showing balance/amount ends
+    });
+</script>
+{% endblock base %}

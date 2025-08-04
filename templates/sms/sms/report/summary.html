@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS Summary Report</h4>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <div class="card">
+                    <div class="card-body pb-0">
+                        <form method="get" action="{% url 'sms_report_summary' %}">
+                            <div class="row">
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <input type="text" name="receiver" placeholder="Enter Receiver" value="{% if filter_receiver %}{{ filter_receiver }}{% endif %}">
+                                    </div>
+                                </div> {% endcomment %}
+                                
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <input type="text" name="sender" placeholder="Enter Sender" value="{% if filter_sender %}{{ filter_sender }}{% endif %}">
+                                    </div>
+                                </div> {% endcomment %}
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <select name="operator" class="form-control">
+                                            <option value="">Select Operator</option>
+                                            {% for data in prefix_data %}
+                                                <option value="{{ data.operator }}" {% if filter_operator == data.operator %}selected{% endif %}>{{ data.operator }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div> {% endcomment %}
+                                {% comment %} <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Status</small>
+                                        <select name="status" class="form-control">
+                                            <option value="">Select Status</option>
+                                            {% for status, display in SingleSms.Status.choices %}
+                                                <option value="{{ status }}" {% if filter_status == status %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div> {% endcomment %}
+                                
+                                {% if not request.user.role.name == 'CLIENT' %}
+                                    <div class="col-lg-2 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <small>SMS Type</small>
+                                            <select name="sms_type" class="form-control select2_search">
+                                                <option value="" selected>Select SMS Type</option>
+                                                {% for sms_type, display in SingleSms.SmsType.choices %}
+                                                    <option value="{{ sms_type }}" {% if filter_sms_type == sms_type %}selected{% endif %}>{{ display }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <small>Sender</small>
+                                            <select name="sender" class="form-control select2_search" placeholder="Select Sender">
+                                                <option value="" selected>Select Sender</option>
+                                                {% for sender in senders %}
+                                                    <option value="{{ sender }}" {% if filter_sender == sender %}selected{% endif %}>{{ sender }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <small>User Group</small>
+                                            <select name="user_group" class="form-control select2_search">
+                                                <option value="" selected>Select User Group</option>
+                                                {% for user_group in user_groups %}
+                                                    <option value="{{ user_group }}" {% if filter_user_group == user_group %}selected{% endif %}>{{ user_group }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                    
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date From</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_from" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_from }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <small>Date To</small>
+                                        <div class="input-groupicon">
+                                        <input type="text" name="date_to" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_to }}">
+                                            <a class="addonset">
+                                                <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12 mt-3">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+
+                {% comment %} <div class="table-top mr-0">
+                    <div class="wordset">
+                        <ul>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"><img
+                                        src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"><img
+                                        src="{% static 'img/icons/excel.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img
+                                        src="{% static 'img/icons/printer.svg' %}" alt="img"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div> {% endcomment %}
+
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Operator</th>
+                                        <th>Delivered</th>
+                                        <th>Undelivered</th>
+                                        <th>Pending</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sms in sms_summary %}
+                                        <tr>
+                                            <td>{{ sms.operator }}</td>
+                                            <td>{{ sms.delivered }}</td>
+                                            <td>{{ sms.undelivered }}</td>
+                                            <td>{{ sms.pending }}</td>
+                                            <td>{{ sms.total }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>{{ total_delivered }}</strong></td>
+                                        <td><strong>{{ total_undelivered }}</strong></td>
+                                        <td><strong>{{ total_pending }}</strong></td>
+                                        <td><strong>{{ total_sms }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock base %}

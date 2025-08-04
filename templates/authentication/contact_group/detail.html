@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Edit Contact Group</h4>
+            </div>
+        </div>
+        
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}">User Group Name</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-sm-12 col-12">
+                            <div class="form-group">
+                                <label>Uploaded excel file should have the following columns: ['NAME', 'CONTACT']</label>
+                                {% csrf_token %}
+                                <div class=" mt-3 mb-3">
+                                    <input class="form-control" type="file" id="excelFile" name="excel_file" accept=".xls, .xlsx">
+                                </div>
+                            </div>
+                        </div>  
+                        
+                        <div class="col-lg-8 mt-lg-3">
+                            <button type="submit" class="btn btn-submit me-2">Update</button>
+                            <a href="{% url 'contact_group_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </div>
+                    <div class="row card">
+                        <div class="col-12 card-body">
+                            <h5>Contacts under this group</h5>
+                            <div class="table-responsive">
+                                <table class="table  datanew">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <label class="checkboxs">
+                                                    <input type="checkbox">
+                                                    <span class="checkmarks"></span>
+                                                </label>
+                                            </th>
+                                            <th>Name</th>
+                                            <th>Contact No</th>                                           
+                                                
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        {% for contact in contacts %}
+                                            <tr>
+                                                <td>
+                                                    <label class="checkboxs">
+                                                        <input type="checkbox">
+                                                        <span class="checkmarks"></span>
+                                                    </label>
+                                                </td>
+                                                <td>{{ contact.name }}</td>
+                                                <td>{{ contact.contact_no }}</td>
+                                            </tr>
+                                            
+                                        {% endfor %}
+                                            
+                                    </tbody>
+                                </table>
+                            </div>
+                                
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock base %}

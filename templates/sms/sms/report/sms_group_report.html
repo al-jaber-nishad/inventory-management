@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<style>
+    .message-column:hover,
+    .receiver-column:hover {
+        cursor: pointer;
+        background-color: #f1f1f1;
+        color: #ff9f43;
+    }
+</style>
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS Group Report</h4>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: 'Success',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get" action="{% url 'sms_group_report' %}">
+                    <div class="row">
+                        {% if request.user.role.name == 'ADMIN' %}
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <small>Sender</small>
+                                    <select name="sender" class="form-control select2_search" placeholder="Select Sender">
+                                        <option value="">Select Sender</option>
+                                        {% for sender in senders %}
+                                            <option value="{{ sender.username }}" {% if filter_sender == sender.username %}selected{% endif %}>{{ sender.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                            
+                        <div class="col-lg-2 col-sm-6 col-12">
+                            <div class="form-group">
+                                <small>Date From</small>
+                                <div class="input-groupicon">
+                                <input type="text" name="date_from" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_from }}">
+                                    <a class="addonset">
+                                        <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                            
+                        <div class="col-lg-2 col-sm-6 col-12">
+                            <div class="form-group">
+                                <small>Date To</small>
+                                <div class="input-groupicon">
+                                <input type="text" name="date_to" placeholder="Choose Date" class="datetimepicker" value="{{ filter_date_to }}">
+                                    <a class="addonset">
+                                        <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-6 col-12 mt-3">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Icons -->
+                    <div class="table-top mr-0" style="position:absolute, margin-right:0px">
+                        <div class="wordset">
+                            <ul>
+                                <li>
+                                    <strong>Total Number: {{ total_sms }}</strong>
+                                </li>
+                                <li>
+                                    <strong>Message Count: {{ total_number_of_messages}}</strong>
+                                </li>
+                                {% comment %} <li>
+                                    <a href="#" id="print_export" data-format="pdf">
+                                        <img src="{% static 'img/icons/printer.svg' %}" alt="img" data-bs-toggle="tooltip" data-bs-placement="top" title="Print">
+                                    </a>
+                                </li> {% endcomment %}
+                            </ul>
+                            <input type="hidden" name="export_format" id="exportFormat" class="form-control">
+                        </div>
+                        {% comment %} <div class="search-input">
+                            <a class="btn btn-searchset"><img src="{% static 'img/icons/search-white.svg' %}" alt="img"></a>
+                        </div> {% endcomment %}
+                    </div>
+
+                </form>
+                
+                <div id="sms-list">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Message</th>
+                                    <th>Total Number</th>
+                                    <th>Total SMS</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sms in sms_list %}
+                                    <tr>
+                                        <td class="message-column" data-message="{{ sms.message }}">
+                                            {% if sms.message|length > 15 %}
+                                                {{ sms.message|slice:":15" }}...
+                                            {% else %}
+                                                {{ sms.message }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="receiver-column" data-receiver="{{ sms.receiver }}">
+                                            {{ sms.total_sms }}
+                                        </td>
+                                        <td>{{ sms.total_number_of_messages }}</td>
+                                        <td>{{ sms.sent_date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Links -->
+                    <div class="pagination-container d-flex justify-content-between">
+                        <div class="pagination table-info">
+                            {% if sms_list %}
+                                <p>
+                                    Showing 
+                                    {{ sms_list.start_index }} 
+                                    to 
+                                    {{ sms_list.end_index }} 
+                                    of 
+                                    {{ sms_list.paginator.count }} 
+                                    entries
+                                </p>
+                            {% endif %}
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <!-- Always show the first page -->
+                                {% if 1 != sms_list.number and sms_list.number > 4 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1" data-page="1">1</a>
+                                    </li>
+                                {% endif %}
+                    
+                                <!-- Show ellipsis if there is a gap between first and current page -->
+                                {% if sms_list.number > 4 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Display pages near the current page -->
+                                {% for num in sms_list.paginator.page_range %}
+                                
+                                    {% if sms_list.number < 5 %}
+                                        {% if num <= 5 %}
+                                            <li class="page-item {% if sms_list.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if num >= sms_list.number|add:-1 and num <= sms_list.number|add:1 %}
+                                            <li class="page-item {% if sms_list.number == num %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    
+                                {% endfor %}
+                    
+                                <!-- Show ellipsis if there is a gap between current and last page -->
+                                {% if sms_list.number < sms_list.paginator.num_pages|add:-3 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                    
+                                <!-- Always show the last page -->
+                                {% if sms_list.number|add:"3" < sms_list.paginator.num_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ sms_list.paginator.num_pages }}" data-page="{{ sms_list.paginator.num_pages }}">{{ sms_list.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %} 
+                                {% if sms_list.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ sms_list.next_page_number }}" data-page="{{ sms_list.next_page_number }}">></a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Handle pagination link clicks
+        $(document).on('click', '.pagination a', function(event) {
+            event.preventDefault();
+            
+            // Get the page number
+            var page = $(this).attr('data-page');
+            var formData = $('#filterForm').serialize();
+            
+            // Fetch contacts with pagination and form data
+            fetchContacts(page, formData);
+        });
+
+        // Function to fetch contacts via AJAX
+        function fetchContacts(page, formData) {
+            $.ajax({
+                url: "?page=" + page,
+                type: "GET",
+                data: formData,
+                success: function(data) {
+                    // Update the table and pagination from the returned HTML
+                    $('#sms-list').replaceWith(data);
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        };
+
+        // Click handler for message column to show full message
+        $(document).on('click', '.message-column', function() {
+            const message = $(this).data('message');
+            Swal.fire({
+                title: 'SMS Details',
+                html: `<p><strong>Message:</strong> ${message}</p>`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        });
+        
+        $(document).on('click', '.receiver-column', function () {
+            const receiverRaw = $(this).data('receiver');  // e.g., "['8801...', '8801...']"
+
+            // Safely parse the stringified list to an actual JS array
+            let receivers = [];
+            try {
+                receivers = JSON.parse(receiverRaw.replace(/'/g, '"'));
+            } catch (e) {
+                console.error('Invalid receiver list format:', e);
+            }
+            {% comment %} const receivers = receiverRaw.split(',').map(item => [item.trim()]);  // Make 2D array for Excel {% endcomment %}
+        
+            Swal.fire({
+                title: 'Receiver list',
+                html: `
+                    <p><strong>Receivers:</strong></p>
+                    <textarea readonly style="width:100%; height:150px;">${receiverRaw}</textarea>
+                    <br><button id="downloadExcelBtn" class="swal2-confirm swal2-styled" style="margin-top:10px;">Download as Excel</button>`,
+                showConfirmButton: true,
+                confirmButtonText: 'Close',
+                didOpen: () => {
+                    document.getElementById('downloadExcelBtn').addEventListener('click', function () {
+                        const worksheet = XLSX.utils.aoa_to_sheet([
+                            ["Receiver List"],
+                            [],
+                            ...receivers.map(number => [number])
+                        ]);
+                        const workbook = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(workbook, worksheet, "Receivers");
+                        XLSX.writeFile(workbook, "receivers.xlsx");
+                    });
+                }
+            });
+        });
+
+        // Export to file
+        document.querySelectorAll('[data-format]').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                const format = event.currentTarget.getAttribute('data-format');
+                if(format!=null){
+                    submitForm(format);
+                };
+            });
+        });
+
+        function submitForm(format) {
+            const exportFormat = document.getElementById('exportFormat');
+            exportFormat.value = format;
+            
+            const filterForm = document.getElementById('filterForm');
+            const action = filterForm.getAttribute('action');
+            const formData = new FormData(filterForm);
+
+            const params = new URLSearchParams(formData).toString();
+            window.open(`${action}?${params}`, '_blank');
+            exportFormat.value = null
+        }
+        // Export to file ends.
+    });
+
+
+    function fetchContacts(page, formData) {
+        $('#pagination-loader').show();  // Show loader
+        $('#sms-list').hide();           // Hide SMS list
+    
+        $.ajax({
+            url: "?page=" + page,
+            type: "GET",
+            data: formData,
+            success: function(data) {
+                $('#sms-list').replaceWith(data);
+                $('#pagination-loader').hide(); // Hide loader
+                $('#sms-list').show();          // Show updated list
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                $('#pagination-loader').hide(); // Hide loader on error
+                $('#sms-list').show();          // Show list even on error
+            }
+        });
+    }
+    
+</script>
+
+{% endblock base %}

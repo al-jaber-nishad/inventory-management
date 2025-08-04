@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+{% comment %} <link rel="stylesheet" href="{% static 'css/dragula.min.css' %}"> {% endcomment %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS API Management</h4>
+                <h6>Add/Update SMS API</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+            {% if messages %}
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.user.id_for_label }}">Reseller User</label>
+                                {{ form.user }}
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.sms_api.id_for_label }}">SMS API</label>
+                                {{ form.sms_api }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.priority.id_for_label }}">Priority</label>
+                                {{ form.priority }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-check">
+                                <label for="{{ form.is_active.id_for_label }}">Is Active</label>
+                                {{ form.is_active }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-check">
+                                <label for="{{ form.is_shared.id_for_label }}">Is Shared?</label>
+                                {{ form.is_shared }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.share_percentage.id_for_label }}">Share Percentage</label>
+                                {{ form.share_percentage }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Submit</button>
+                            <a href="{% url 'assigned_sms_api_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>  
+
+{% endblock base %}

@@ -1,0 +1,61 @@
+with dcheckincheckout as (select date(check_datetime) as check_date, id, employee_id, 
+to_char(first_value(check_datetime) over w, 'HH24:MI:SS') as checkin,
+to_char(last_value(check_datetime) over w, 'HH24:MI:SS') as checkout,
+first_value(check_datetime) over w, last_value(check_datetime) over w
+from payroll_checkincheckout where employee_id in (155, 156) and date(check_datetime) >= '2022-09-28' 
+and date(check_datetime) <= '2022-10-26'
+window w as (partition by employee_id, date(check_datetime)))
+select distinct check_date, checkin, checkout, dcio.id, dcio.employee_id, es.shift_id, sdt.timetable_id
+from dcheckincheckout dcio
+inner join payroll_employeeschedule es on dcio.employee_id = es.employee_id
+inner join payroll_shiftdaytime sdt on es.shift_id = sdt.shift_id;
+
+-- order by employee_id, check_datetime;
+-- select employee_id, first_value(check_datetime) over w, last_value(check_datetime) over w
+-- from payroll_checkincheckout window w as (partition by employee_id, check_datetime)
+-- order by employee_id, check_datetime;
+
+
+FINALIZED VERSION:
+
+with dcheckincheckout as (select date(check_datetime) as check_date, id, employee_id, 
+to_char(first_value(check_datetime) over w, 'HH24:MI:SS') as checkin,
+to_char(last_value(check_datetime) over w, 'HH24:MI:SS') as checkout,
+first_value(check_datetime) over w, last_value(check_datetime) over w
+from payroll_checkincheckout where employee_id in (155, 156)
+-- and date(check_datetime) >= '2022-09-28' and date(check_datetime) <= '2022-10-26'
+window w as (partition by employee_id, date(check_datetime)))
+select check_date, employee_name, timetable_name, onduty_time::time, offduty_time::time, checkin::time, checkout::time, id as checkinout_id, employee_id,
+shift_id, timetable_id, (case when late::char ilike '-' then '0' else late end)::time as late
+from (select distinct check_date, concat(emp.first_name,' ', emp.last_name) as employee_name, stt.name  as timetable_name,
+stt.onduty_time, stt.offduty_time, checkin, checkout, (checkin::time - stt.onduty_time::time) as late, 
+dcio.id, dcio.employee_id, es.shift_id, sdt.timetable_id
+from dcheckincheckout dcio
+inner join payroll_employeeschedule es on dcio.employee_id = es.employee_id
+inner join payroll_shiftdaytime sdt on es.shift_id = sdt.shift_id
+inner join payroll_shifttimetable stt on stt.id = sdt.timetable_id
+inner join authentication_user emp on emp.id = dcio.employee_id ) as foo;
+
+
+OVERTIME AND EARLY ADDED:
+
+with dcheckincheckout as (select date(check_datetime) as check_date, id, employee_id, 
+to_char(first_value(check_datetime) over w, 'HH24:MI:SS') as checkin,
+to_char(last_value(check_datetime) over w, 'HH24:MI:SS') as checkout,
+first_value(check_datetime) over w, last_value(check_datetime) over w
+from payroll_checkincheckout where employee_id in (155, 156)
+-- and date(check_datetime) >= '2022-09-28' and date(check_datetime) <= '2022-10-26'
+window w as (partition by employee_id, date(check_datetime)))
+select check_date, employee_name, timetable_name, onduty_time::time, offduty_time::time, checkin::time, checkout::time, id as checkinout_id, employee_id,
+shift_id, timetable_id, (case when late::char ilike '-' then '0' else late end)::time as late,
+(case when early::char ilike '-' then '0' else early end)::time as early,
+(case when overtime::char ilike '-' then '0' else overtime end)::time as overtime
+from (select distinct check_date, concat(emp.first_name,' ', emp.last_name) as employee_name, stt.name  as timetable_name,
+stt.onduty_time, stt.offduty_time, checkin, checkout, (checkin::time - stt.onduty_time::time) as late,
+(stt.offduty_time::time - checkout::time) as early, (checkout::time - stt.offduty_time::time) as overtime,
+dcio.id, dcio.employee_id, es.shift_id, sdt.timetable_id
+from dcheckincheckout dcio
+inner join payroll_employeeschedule es on dcio.employee_id = es.employee_id
+inner join payroll_shiftdaytime sdt on es.shift_id = sdt.shift_id
+inner join payroll_shifttimetable stt on stt.id = sdt.timetable_id
+inner join authentication_user emp on emp.id = dcio.employee_id ) as foo;

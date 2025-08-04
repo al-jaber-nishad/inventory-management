@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* body{
+            height: 90vh;
+        } */
+        .center-container {
+            height: 95vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .login-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+        }
+
+        .login-logo {
+            max-width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            flex: 1;
+            margin-right: 30px;
+        }
+
+        .welcome-section {
+            flex: 2;
+            padding: 20px;
+        }
+
+        .toggle-password {
+            cursor: pointer;
+        }
+
+        .hover-a {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+        }
+
+        .footer {
+            height: 1rem;
+            text-align: center;
+            /* margin-top: 20px; */
+            color: #888;
+            padding: 5px;
+        }
+
+        @media (max-width: 767px) {
+            .welcome-section {
+                display: none;
+            }
+            .login-form{
+                margin-right: 0;
+            }
+            .center-container{
+                height: 90vh;
+            }
+            .footer{
+                padding: 0 5px;
+                height: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container">
+        <div class="login-card">
+            <div class="login-form">
+                <div class="text-center">
+                    <img src="{% static 'img/logo.jpeg' %}" alt="Logo" class="login-logo" />
+                </div>
+                <h2 class="text-center">Login</h2>
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            <div>{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <form method="POST" class="form-login">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password">Password</label>
+                        {{ form.password }}
+                    </div>
+                    {% comment %} <div class="form-group text-right">
+                        <a href="{% url 'password_reset' %}" class="hover-a">Forgot password?</a>
+                    </div> {% endcomment %}
+                    <button type="submit" class="btn btn-primary btn-login">Log In</button>
+                </form>
+            </div>
+            <div class="welcome-section">
+                <img src="{% static 'img/login-page-banner.jpeg' %}" width="450px" style="border-radius: 10px;" alt="" srcset="">
+                {% comment %} <h3>Welcome to SMS Solution</h3>
+                <ul>
+                    <li>Send SMS (single/bulk) from web/mobile/tablet</li>
+                    <li>Manage Contacts</li>
+                    <li>Schedule SMS</li>
+                    <li>Integrate with other applications</li>
+                </ul> {% endcomment %}
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Home | About SMS Solution | Feedback | Terms & Condition | Privacy Policy | FAQ</p>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends 'particals/pdf_template_base.html' %}
+{% load static %}
+
+{% block report_header %}
+	Transactions Report
+{% endblock report_header %}
+	
+{% block base %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+            <tr>
+                <th>SL No</th>
+                <th>Transaction Detail</th>
+                <th>Type</th>
+                <th>Amount</th>
+
+                <th>From</th>
+                <th>To</th>
+                <th>Rate per message</th>
+                <th>Message Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in instances %}
+                <tr class="sms-row">
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        Transaction ID: {{ transaction.transaction_id }} <br>
+                        Transaction Date: {{ transaction.created_at }} <br>
+                        Expiry Date: {{ transaction.balance_valid_till }} <br>
+                        Remarks: {{ transaction.remarks }}
+                    </td>
+
+                    <td>{{ transaction.transaction_type }}</td>
+                    <td class="center-align-td">{{ transaction.balance }}</td>
+                    <td>{{ transaction.recharged_by.username }}</td>
+                    <td>{{ transaction.recharged_to.username }}</td>
+                    <td class="center-align-td">{{ transaction.respective_package_price }}</td>
+                    <td class="center-align-td">{{ transaction.message_amount }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock base %}

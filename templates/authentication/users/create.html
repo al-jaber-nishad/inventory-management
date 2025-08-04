@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+<style>
+    .mandatory {
+        border: 1px solid #ff6b6b !important;
+    } 
+    .has-data {
+        border: 1px solid #ced4da;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>User Management</h4>
+                <h6>Add New User</h6>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card p-3">
+                <div class="row mandatory-fields">
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">Username</label>
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.password1.id_for_label }}">Password</label>
+                            {{ form.password1 }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.primary_phone.id_for_label }}">Primary Phone</label>
+                            {{ form.primary_phone }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.role.id_for_label }}">User Type</label>
+                            {{ form.role }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.user_group.id_for_label }}">User Group</label>
+                            {{ form.user_group }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.package.id_for_label }}">Package</label>
+                            {{ form.package }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.package.id_for_label }}">Region</label>
+                            {{ form.region_type }}
+                        </div>
+                    </div>
+                    
+                    <small>Balance Type</small>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-check">
+                                <input type="radio" id="maskingBalance" name="balance_type" value="masking" class="form-check-input">
+                                <label for="maskingBalance" class="form-check-label">Masking</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="nonMaskingBalance" name="balance_type" value="non_masking" class="form-check-input">
+                                <label for="nonMaskingBalance" class="form-check-label">Non Masking</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group mt-3">
+                            <label for="balanceAmount">Balance Amount</label>
+                            <input type="number" class="form-control mandatory" id="balanceAmount" name="balance_amount" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group mt-3">
+                            <label for="{{ form.balance_valid_till.id_for_label }}">Balance Valid Till</label>
+                            {{ form.balance_valid_till }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3">
+                <div class="row">
+                    <h2 class="pb-3">Personal Information</h2>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.company_name.id_for_label }}">Institute Name</label>
+                            {{ form.company_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.gender.id_for_label }}">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.secondary_phone.id_for_label }}">Secondary Phone</label>
+                            {{ form.secondary_phone }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                            {{ form.date_of_birth }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.sender_show_number.id_for_label }}">Sender Show Number</label>
+                            {{ form.sender_show_number }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.address.id_for_label }}">Address</label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.father_name.id_for_label }}">Father's Name</label>
+                            {{ form.father_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.mother_name.id_for_label }}">Mother's Name</label>
+                            {{ form.mother_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.nid_no.id_for_label }}">NID Number</label>
+                            {{ form.nid_no }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-12 col-12">
+                        <div class="">
+                            <label class='pb-2' for="{{ form.nid_image.id_for_label }}">NID Image</label>
+                            {{ form.nid_image }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.trade_licence_no.id_for_label }}">Trade Licence Number</label>
+                            {{ form.trade_licence_no }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-sm-12 col-12">
+                        <div class="">
+                            <label class='pb-2' for="{{ form.trade_licence_image.id_for_label }}">Trade Licence Image</label>
+                            {{ form.trade_licence_image }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-sm-12 col-12 mt-3 mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }} Is Active
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <button type="submit" class="btn btn-submit me-2">Submit</button>
+                        <a href="{% url 'user_list' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if errors %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Error!',
+                html: '{{ errors|join:"<br>"|escapejs }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mandatoryFields = document.querySelectorAll('.mandatory');
+
+        mandatoryFields.forEach(field => {
+            field.addEventListener('input', function () {
+                if (field.value.trim() === '') {
+                    field.classList.remove('has-data');
+                    field.classList.add('mandatory');
+                } else {
+                    field.classList.remove('mandatory');
+                    field.classList.add('has-data');
+                }
+            });
+
+            // Initial check in case the form is pre-filled
+            if (field.value.trim() !== '') {
+                field.classList.remove('mandatory');
+                field.classList.add('has-data');
+            }
+        });
+
+        // Show/Hide balance fields based on radio button selection
+        const maskingRadio = document.getElementById('maskingBalance');
+        const nonMaskingRadio = document.getElementById('nonMaskingBalance');
+
+        maskingRadio.addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('balanceAmount').classList.add('mandatory');
+            }
+        });
+
+        nonMaskingRadio.addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('balanceAmount').classList.add('mandatory');
+            }
+        });
+    });
+</script>
+
+{% endblock base %}

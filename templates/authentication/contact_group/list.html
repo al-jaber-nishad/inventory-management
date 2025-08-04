@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Contact Group List</h4>
+                <h6>Manage your Contact Groups</h6>
+            </div>
+            <div class="page-btn">
+                <a href="{% url 'contact_group_create' %}" class="btn btn-added"><img src="{% static 'img/icons/plus.svg' %}" alt="img">Add
+                    Contact Group</a>
+            </div>
+        </div>
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if message.tags == "error" %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{{ message.tags }}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-top">
+                    <div class="search-set">
+                        <div class="search-path">
+                            <a class="btn btn-filter" id="filter_search">
+                                <img src="{% static 'img/icons/filter.svg' %}" alt="img">
+                                <span><img src="{% static 'img/icons/closes.svg' %}" alt="img"></span>
+                            </a>
+                        </div>
+                        <div class="search-input">
+                            <a class="btn btn-searchset"><img src="{% static 'img/icons/search-white.svg' %}"
+                                    alt="img"></a>
+                        </div>
+                    </div>
+                    <div class="wordset">
+                        <ul>
+                            {% comment %} <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"><img
+                                        src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"><img
+                                        src="{% static 'img/icons/excel.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img
+                                        src="{% static 'img/icons/printer.svg' %}" alt="img"></a>
+                            </li> {% endcomment %}
+                        </ul>
+                    </div>
+                </div>
+
+                {% comment %} <div class="card" id="filter_inputs">
+                    <div class="card-body pb-0">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Enter User Group Name">
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Enter Phone">
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Enter Email">
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <input type="text" class="datetimepicker cal-icon"
+                                        placeholder="Choose Date">
+                                </div>
+                            </div>
+                            <div class="col-lg-1 col-sm-6 col-12 ms-auto">
+                                <div class="form-group">
+                                    <a class="btn btn-filters ms-auto"><img
+                                            src="{% static 'img/icons/search-whites.svg' %}" alt="img"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <div class="table-responsive">
+                    <table class="table  datanew">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label class="checkboxs">
+                                        <input type="checkbox">
+                                        <span class="checkmarks"></span>
+                                    </label>
+                                </th>
+                                <th>Name </th>
+                                {% if not request.user.role.name == 'CLIENT' %}
+                                    <th>Client</th>
+                                {% endif %}
+                                {% if request.user.role.name == 'ADMIN' %}
+                                    <th>Reseller</th>
+                                {% endif %}
+                                
+                                {% if request.user.role.name == 'CLIENT' %}
+                                    <th>Action</th>
+                                {% endif %}
+                                
+                                    
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {% for contact_group in contact_group_list %}
+                                <tr>
+                                    <td>
+                                        <label class="checkboxs">
+                                            <input type="checkbox">
+                                            <span class="checkmarks"></span>
+                                        </label>
+                                    </td>
+                                    <td>{{ contact_group.name }}</td>
+                                    {% if not request.user.role.name == 'CLIENT' %}
+                                        <td>{{ contact_group.owner_user.username }}</td>
+                                    {% endif %}
+                                    {% if request.user.role.name == 'ADMIN' %}
+                                        <td>{{ contact_group.owner_user.owner_user.username }}</td>
+                                    {% endif %}
+                                    
+                                    {% if request.user.role.name == 'CLIENT' %}
+                                        <td>
+                                            <a class="me-3" href="{% url 'contact_group_update' contact_group.id %}">
+                                                <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                            </a>
+                                            <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'contact_group_delete' contact_group.id %}">
+                                                <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                                
+                            {% endfor %}
+                                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock base %}

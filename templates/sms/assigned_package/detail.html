@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Edit SMS API</h4>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}"><h4>User</h4></label>
+                                Name: {{ assigned_package.first_name }} {{ assigned_package.last_name }} <br>
+                                User email: {{ assigned_package.email }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.url.id_for_label }}">Package</label>
+                                {{ form.package }}
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Update</button>
+                            <a href="{% url 'assigned_package_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock base %}

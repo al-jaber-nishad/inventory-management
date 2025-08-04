@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Send SMS</h4>
+                <h6>Compose and send your message</h6>
+            </div>
+        </div>
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if message.tags == "error" %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{{ message.tags }}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        {% if not form_submit %}
+            <!-- Tab Structure starts -->
+            <div class="card bg-white">
+                <div class="card-body">
+                    <ul class="nav nav-tabs nav-tabs-solid">
+                        <li class="nav-item">
+                        <a
+                            class="nav-link active"
+                            href="#solid-tab1"
+                            data-bs-toggle="tab"
+                            >SMS Recipient</a
+                        >
+                        </li>
+                        <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="#solid-tab2"
+                            data-bs-toggle="tab"
+                            >Group Contact</a
+                        >
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- Recipient tab start -->
+                        <div class="tab-pane show active pt-4" id="solid-tab1">
+                            <form method="post" action="{% url 'send_sms' %}" enctype="multipart/form-data" id="smsForm">
+                                {% csrf_token %}
+                                <!-- Radio button for general and batch mode -->
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="mode" id="generalMode" value="generalMode" checked>
+                                            <label class="form-check-label" for="generalMode">General Mode</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="mode" id="batchMode" value="batchMode">
+                                            <label class="form-check-label" for="batchMode">Batch Mode</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- General Mode Form -->
+                                <div id="generalModeForm">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Receivers</label>
+                                                <div class="">
+                                                    <textarea style="height: 200px;" name="receivers" placeholder="Enter Receiver's number here"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <!-- <label class="col-form-label">Instructions</label> -->
+                                            
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5>Instructions</h5>
+                                                        <hr>
+                                                        <ol>
+                                                            <li>1. Start each number with country code(88)</li>
+                                                            <li>
+                                                                2. Keep the numbers separated with
+                                                                <ul class="pl-3">
+                                                                    <li>○ space [' ']</li>
+                                                                    <li>○ comma [',']</li>
+                                                                    <li>○ new line['\n']</li>
+                                                                </ul>
+                                                            </li>
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Message (max <span style="font-weight: 600;">1530 characters for English and 670 characters for Bengali</span> [10 parts])</label>
+                                                <div class="">
+                                                    <textarea id="id_text" style="height: 200px;" name="message" rows="25" cols="5" class="form-control" placeholder="Enter message text here"></textarea>
+                                                    <p id="char_count" style="margin-top: 5px; display: none;">0 / 1530 characters</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Character Insights</label>
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <ul class="list-unstyled">
+                                                            <li>Characters Used: <span id="charactersUsed">0</span></li>
+                                                            <li>Remaining Characters: <span id="remainingCharacters">160</span></li>
+                                                            <li>Sms Parts: <span id="smsParts">0</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 text-right">
+                                            <button type="submit" class="btn btn-primary" id="submitButton">Send Sms</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Batch Mode Form -->
+                                <div id="batchModeForm" style="display: none;">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <h5 class="pb-3">Select mode</h5>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label" for="batch">
+                                                            <strong>Batch Format(one message to one receiver)</strong>
+                                                        </label>
+                                                        <input class="form-check-input" type="radio" name="batch_type" id="batch" value="batch" checked>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label" for="broadcast">
+                                                            <strong>Brodcast Format(one message to many receiver)</strong>
+                                                        </label>
+                                                        <input class="form-check-input" type="radio" name="batch_type" id="broadcast" value="broadcast">
+                                                    </div>
+
+                                                    <!-- File Upload Section -->
+                                                    <div class="form-group mt-5">
+                                                        <label for="fileUpload">Select the file to upload</label>
+                                                        <input type="file" class="form-control" id="fileUpload" name="file">
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                                                    </div>
+                                                    <!-- File upload selection ends -->
+                                                </div>
+                                                <div class="col-lg-6 border-left">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <h5>Instructions</h5>
+                                                            <hr>
+                                                            <p>In this mode you can send SMS to multiple recipients by uploading a spreadsheet file (.xls/.xlsx). Please DO NOT upload files with more than 10KB. Make sure all recipient numbers are valid.</p>
+        
+                                                            <div class="batch_mode_instructions mb-3">
+                                                                <span>Download the Batch Mode Sample file from below and upload/edit the same way.</span><br>
+                                                                <a href="{% static 'sample_files/batch_sample.xlsx' %}">[Download sample file]</a>
+                                                            </div>
+                                                            <!-- Brodcast Instructions -->
+                                                            
+                                                            
+                                                            <div class="brodcast_mode_instructions mb-3">
+                                                                <span>Download the Brodcast Mode Sample file from below and upload/edit the same way.</span> <br>
+                                                                <a href="{% static 'sample_files/broadcast_sample.xlsx' %}">[Download sample file]</a>
+                                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Recipient tab ends -->
+                        <!-- Group Contact tab starts -->
+                        <div class="tab-pane pt-4" id="solid-tab2">
+                            <form method="post" action="{% url 'send_group_sms' %}" enctype="multipart/form-data" id="groupSmsForm">
+                                {% csrf_token %}
+                                
+                                <div class="row mb-2">
+                                    <!-- Radio button for Contact and Group mode -->
+                                    <div class="col-12">
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label" for="groupMode">Group Mode</label>
+                                            <input class="form-check-input" type="radio" name="contact_mode" id="groupMode" value="groupMode" checked>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label" for="contactMode">Contact Mode</label>
+                                            <input class="form-check-input" type="radio" name="contact_mode" id="contactMode" value="contactMode">
+                                        </div>
+                                    </div>
+                                </div>
+                                    <!-- Instruction Part -->
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div id="groupModeForm">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Groups</label>
+                                                <div class="">
+                                                    <select name="contact_group" class="form-control select2_search">
+                                                        <option value="">Select Group</option>
+                                                        {% for group in contact_groups %}
+                                                            <option value="{{ group.id }}">{{ group.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="contactModeForm" style="display: none;">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Contacts</label>
+                                                <div class="">
+                                                    <select name="contact" class="form-control select2_search">
+                                                        <option value="">Select Contact</option>
+                                                        {% for contact in contacts %}
+                                                            <option value="{{ contact.id }}">{{ contact.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <!-- <label class="col-form-label">Instructions</label> -->
+                                        
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5>Instructions</h5>
+                                                    <hr>
+                                                    <ol>
+                                                        <li>1. Start each number with country code(88)</li>
+                                                        <li>
+                                                            2. Keep the numbers separated with
+                                                            <ul class="pl-3">
+                                                                <li>○ space [' ']</li>
+                                                                <li>○ comma [',']</li>
+                                                                <li>○ new line['\n']</li>
+                                                            </ul>
+                                                        </li>
+                                                    </ol>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-lg-8">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Message (max <span style="font-weight: 600;">1530 characters for English and 670 characters for Bengali</span> [10 parts])</label>
+                                            <div class="">
+                                                <textarea id="id_group_text" style="height: 200px;" name="message" rows="25" cols="5" class="form-control" placeholder="Enter message text here"></textarea>
+                                                <p id="group_char_count" style="margin-top: 5px; display: none;">0 / 1530 characters</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Character Insights</label>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <ul class="list-unstyled">
+                                                        <li>Characters Used: <span id="groupCharactersUsed">0</span></li>
+                                                        <li>Remaining Characters: <span id="groupRemainingCharacters">160</span></li>
+                                                        <li>Sms Parts: <span id="groupSmsParts">0</span></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 text-right">
+                                        <button type="submit" class="btn btn-primary" id="submitButton">Send Sms</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Group Contact tab ends -->
+                    </div>
+                </div>
+            </div>
+            <!-- Tab Structure ends -->
+            
+        {% else %}
+            <!-- Result Card -->
+            <div id="resultCard" class="card mt-3">
+                <div class="card-body text-center">
+                    <h5>Send SMS Result</h5>
+                    <p>Number of Receiver: {{ receiver_count }}</p>
+                    <p>Total SMS parts: {{ number_of_message }}</p>
+                </div>
+            </div>
+            <div class="col-lg-12 text-center mt-3">
+                <a href="{% url 'all_sms_list' %}" class="btn btn-primary">All SMS List</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textField = document.querySelector('#id_text');
+        const groupTextField = document.querySelector('#id_group_text');
+        const charactersUsed = document.querySelector('#charactersUsed');
+        const remainingCharacters = document.querySelector('#remainingCharacters');
+        const smsParts = document.querySelector('#smsParts');
+        const totalSMS = document.querySelector('#totalSMS');
+        const groupCharactersUsed = document.querySelector('#groupCharactersUsed');
+        const groupRemainingCharacters = document.querySelector('#groupRemainingCharacters');
+        const groupSmsParts = document.querySelector('#groupSmsParts');
+        const batchRadio = document.getElementById('batch');
+        const broadcastRadio = document.getElementById('broadcast');
+        const batchInstructions = document.querySelector('.batch_mode_instructions');
+        const broadcastInstructions = document.querySelector('.brodcast_mode_instructions');
+
+        // General or Batch mode tab
+        const generalModeForm = document.getElementById('generalModeForm');
+        const batchModeForm = document.getElementById('batchModeForm');
+        const generalMode = document.getElementById('generalMode');
+        const batchMode = document.getElementById('batchMode');
+        // Contact or Group tab
+        const contactModeForm = document.getElementById('contactModeForm');
+        const groupModeForm = document.getElementById('groupModeForm');
+        const contactMode = document.getElementById('contactMode');
+        const groupMode = document.getElementById('groupMode');
+
+        // Function to determine if the text is in English
+        function isEnglish(text) {
+            return /^[\x00-\x7F]*$/.test(text);
+        }
+
+        // Reusable function to update SMS details for any text field
+        function updateSMSDetails(textField, charactersUsedField, remainingCharactersField, smsPartsField) {
+            textField.value = textField.value.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            {% comment %} textField.value = textField.value.trim(); {% endcomment %}
+            const length = textField.value.length;
+            let messagePartLength;
+            
+            // Determine message part length based on the language and message length
+            if (isEnglish(textField.value)) {
+                messagePartLength = length > 160 ? 153 : 160;
+            } else {
+                messagePartLength = length > 70 ? 67 : 70;
+            }
+
+            // Calculate the number of parts and remaining characters
+            const parts = Math.ceil(length / messagePartLength);
+            charactersUsedField.textContent = length;
+            remainingCharactersField.textContent = messagePartLength * parts - length;
+            smsPartsField.textContent = parts;
+        }
+
+        // Reusable function to limit the maximum text length based on the language
+        function limitTextLength(textField) {
+            const maxLength = isEnglish(textField.value) ? 1530 : 670;
+            
+            // Trim the text if it exceeds the maxLength
+            if (textField.value.length > maxLength) {
+                textField.value = textField.value.substring(0, maxLength);
+            }
+        }
+
+        // Function to handle both typing and pasting events
+        function handleInput(textField, charactersUsedField, remainingCharactersField, smsPartsField) {
+            // Event listener for input (typing)
+            textField.addEventListener('input', function () {
+                limitTextLength(textField); // Limit the text during typing
+                updateSMSDetails(textField, charactersUsedField, remainingCharactersField, smsPartsField); // Update SMS info
+            });
+
+            // Event listener for paste (to handle pasting large content)
+            textField.addEventListener('paste', function (event) {
+                setTimeout(function () {
+                    limitTextLength(textField); // Limit the text after pasting
+                    updateSMSDetails(textField, charactersUsedField, remainingCharactersField, smsPartsField); // Update SMS info
+                }, 0);  // Ensure it runs after the paste action completes
+            });
+        }
+
+        // Apply input and paste handling for both fields
+        if (textField) {
+            handleInput(textField, charactersUsed, remainingCharacters, smsParts);
+        }
+
+        if (groupTextField) {
+            handleInput(groupTextField, groupCharactersUsed, groupRemainingCharacters, groupSmsParts);
+        }
+
+        // Toggle General/Batch Mode
+        function toggleBatchForms() {
+            if (generalMode.checked) {
+                generalModeForm.style.display = 'block';
+                batchModeForm.style.display = 'none';
+            } else if (batchMode.checked) {
+                generalModeForm.style.display = 'none';
+                batchModeForm.style.display = 'block';
+            }
+        }
+
+        // Toggle Contact/Group Mode
+        function toggleGroupForms() {
+            if (contactMode.checked) {
+                contactModeForm.style.display = 'block';
+                groupModeForm.style.display = 'none';
+            } else if (groupMode.checked) {
+                contactModeForm.style.display = 'none';
+                groupModeForm.style.display = 'block';
+            }
+        }
+
+        // Show/Hide instructions based on selected radio
+        function showInstructions() {
+            if (batchRadio.checked) {
+                batchInstructions.style.display = 'block';
+                broadcastInstructions.style.display = 'none';
+            } else if (broadcastRadio.checked) {
+                batchInstructions.style.display = 'none';
+                broadcastInstructions.style.display = 'block';
+            }
+        }
+
+        // Initial toggle
+        toggleBatchForms();
+        toggleGroupForms();
+        showInstructions();
+
+        // Event listeners for mode changes
+        generalMode.addEventListener('change', toggleBatchForms);
+        batchMode.addEventListener('change', toggleBatchForms);
+        contactMode.addEventListener('change', toggleGroupForms);
+        groupMode.addEventListener('change', toggleGroupForms);
+        batchRadio.addEventListener('change', showInstructions);
+        broadcastRadio.addEventListener('change', showInstructions);
+    });
+</script>
+{% endblock base %}

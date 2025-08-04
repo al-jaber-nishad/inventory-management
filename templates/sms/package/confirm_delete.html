@@ -1,0 +1,26 @@
+<!-- templates/sms/sms_api/sms_api_confirm_delete.html -->
+{% extends 'base.html' %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMS API Management</h4>
+                <h6>Delete SMS API</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2>Confirm Delete</h2>
+                <p>Are you sure you want to delete "{{ package }}"?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                    <a href="{% url 'package_list' %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock base %}

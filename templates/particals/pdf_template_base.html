@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      header {
+        position: running(header);
+        /* height of the header */
+        height: 2.7cm;
+        text-align: center;
+      }
+      header img {
+        padding-bottom: 5px;
+      }
+
+      header hr {
+        color: tomato;
+        margin-top: 3px;
+      }
+
+      @page:first {
+        size: A4;
+        margin: 4cm 1cm 1.5cm 1cm; /* Margin for the first page */
+        @top-center {
+          content: element(header);
+          width: 100%;
+          margin-bottom: 2px;
+        }
+		@bottom-center {
+          content: "Page " counter(page) " of " counter(pages);
+          font-size: 8px;
+        }
+      }
+
+      @page {
+        size: A4;
+        margin: 4.2cm 1cm 1.5cm 1cm; /* Larger top margin for subsequent pages */
+        @top-center {
+          content: element(header);
+          width: 100%;
+          margin-bottom: 11px;
+        }
+		@bottom-center {
+          content: "Page " counter(page) " of " counter(pages);
+          font-size: 8px;
+        }
+      }
+
+      .page-break {
+        page-break-after: always;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+      tfoot {
+        display: table-footer-group;
+      }
+	  tr {
+        page-break-inside: avoid;
+      }
+
+      table {
+        margin: 0;
+        border-collapse: collapse;
+        position: relative;
+        width: 100%;
+      }
+
+      table, th, td {
+        border: 1px solid #1c1c1c;
+      }
+
+      th, td {
+        padding: 5px;
+      }
+	  .center-align-td{
+		text-align: center;
+	  }
+
+      th {
+        background-color: #f2f2f2;
+        text-align: center;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+      }
+      .report-header {
+        text-align: center;
+		margin: 0;
+      }
+
+      footer {
+        font-size: 8px;
+      }
+
+      footer .left-block {
+        position: fixed;
+        left: 40px;
+        bottom: -33px;
+      }
+
+      footer .right-block {
+        position: fixed;
+        right: 40px;
+        bottom: -33px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="{{ logo_image }}"
+        alt="Logo"
+        style="width: 250px; height: auto"
+      />
+      <div>
+        Address: Road No-06 Smritidhara, Japani Bazar, Shonir Akhra, Jatrabari,
+        Dhaka-1236 <br>
+        Phone: +8801861-650206 Email: admin@bluebayit.com
+      </div>
+      <hr />
+
+      <h2 class="report-header">
+	  {% block report_header %}
+		
+	  {% endblock report_header %}
+		</h2>
+    </header>
+
+    
+	{% block base %}
+		
+	{% endblock base %}
+		
+
+    <footer>
+      <div class="left-block">Printed at: {% now "d-m-Y H:i:s" %}</div>
+      <div class="right-block">
+        Developed by RAMS (Bluebay IT Limited) - 01861650206
+      </div>
+    </footer>
+  </body>
+</html>

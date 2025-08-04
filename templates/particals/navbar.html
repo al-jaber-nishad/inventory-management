@@ -1,0 +1,83 @@
+{% load static %}
+    <div class="header">
+      <div class="header-left active">
+        <a href="{% url 'home' %}" class="logo">
+          <img src="{% static 'img/full-logo.png' %}" alt="" />
+        </a>
+        <a href="{% url 'home' %}" class="logo-small">
+          <img src="{% static 'img/logo.jpeg' %}" alt="" />
+        </a>
+        <a id="toggle_btn" href=""> </a>
+      </div>
+
+      <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+        <span class="bar-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </a>
+
+      <ul class="nav user-menu">
+        <li class="nav-item dropdown has-arrow main-drop">
+          <a
+            href=""
+            class="dropdown-toggle nav-link userset"
+            data-bs-toggle="dropdown"
+          >
+          <span style="padding-right: 15px;">
+              <span>{{ request.user.username }} </span> | 
+              <span class="pr-2">{{ request.user.role.name}}</span>
+          </span>
+            <span class="user-img"
+              >
+              {% if request.user.profile_picture %}
+                <img src="{{request.user.profile_picture.url}}">
+              {% else %}
+                <img src="{% static 'img/icons/avator.png' %}">
+              {% endif %}
+
+
+              <span class="status online"></span
+            ></span>
+          </a>
+          <div class="dropdown-menu menu-drop-user">
+            <div class="profilename">
+              <div class="profileset">
+                <div class="profilesets">
+                  <h6>{{ request.user.email}} </h6>
+                  <h5>{{ request.user.username }} | {{ request.user.role.name}}</h5>
+                </div>
+              </div>
+              <hr class="m-0" />
+              <a class="dropdown-item" href="{% url 'profile' %}">
+                <i class="me-2" data-feather="user"></i> My Profile</a
+              >
+              
+              <hr class="m-0" />
+              <a class="dropdown-item logout pb-0" href="{% url 'logout' %}"
+                ><img
+                  src="{% static 'img/icons/log-out.svg' %}"
+                  class="me-2"
+                  alt="img"
+                />Logout</a
+              >
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="dropdown mobile-user-menu">
+        <a
+          href=""
+          class="nav-link dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          ><i class="fa fa-ellipsis-v"></i
+        ></a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+  </div>
