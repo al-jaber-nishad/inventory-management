@@ -20,6 +20,8 @@ urlpatterns = [
 	path('', include('sms.urls.package_urls')),
 	path('', include('sms.urls.sms_api_urls')),
 	path('', include('sms.urls.sms_urls')),
+
+	path('inventory/', include('product.urls')),
 	
 	# Products
 	# path('brand/', include('product.urls.brand_urls')),	

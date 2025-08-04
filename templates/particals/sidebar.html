@@ -17,6 +17,17 @@
                 </li>
 
                 <li class="submenu">
+                    <a href="#" class="{% if 'inventory' in request.path %}active{% endif %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Product</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="{% if 'product' in request.path %}show{% endif %}">
+                        <li><a href="{% url 'product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">Products</a></li>
+                    </ul>
+                </li>
+
+                <li class="submenu">
                     <a href="#" class="{% if 'sms' in request.path %}active{% endif %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
                         <span>SMS</span>

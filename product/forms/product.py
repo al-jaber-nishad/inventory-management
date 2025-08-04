@@ -1,0 +1,41 @@
+from django import forms
+from product.models import Product, ProductCategory
+from django.core.exceptions import ValidationError
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'sku', 'category', 'description', 'price', 'stock', 'is_active']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-control select2_search'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # expecting request passed in for possible future scoping/choices
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        # Example: if you want to limit categories to some user-specific subset later
+        # if self.request:
+        #     self.fields['category'].queryset = ProductCategory.objects.filter(...) 
+
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price is None:
+            raise ValidationError("Price is required.")
+        if price < 0:
+            raise ValidationError("Price cannot be negative.")
+        return price
+
+    def clean_stock(self):
+        stock = self.cleaned_data.get('stock')
+        if stock is None:
+            return 0
+        if stock < 0:
+            raise ValidationError("Stock cannot be negative.")
+        return stock
+
+    def clean_sku(self):
+        sku = self.cleaned_data.get('sku', '').strip().upper()
+        if not sku:
+            raise ValidationError("SKU is required.")
+        return sku
