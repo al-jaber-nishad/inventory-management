@@ -1,0 +1,40 @@
+{% load static %}
+<div id="brand-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for brand in brand_list %}
+                    <tr>
+                        <td>{{ brand_list.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ brand.name }}</td>
+                        <td>
+                            {% if brand.image %}
+                                <img src="{{ brand.image.url }}" alt="{{ brand.name }}" width="60">
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a class="me-3" href="{% url 'brand_update' brand.id %}">
+                                <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                            </a>
+                            <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'brand_delete' brand.id %}">
+                                <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="text-center">No brands found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
