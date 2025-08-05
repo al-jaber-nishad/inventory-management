@@ -1,7 +1,7 @@
 venv
 env
 media
-migrations
+# migrations
 baira-data/
 
 *.pyc
@@ -13,7 +13,6 @@ staticfiles/
 data/
 .env
 
-*.sqlite3
 
 logs
 .qodo
