@@ -1,0 +1,73 @@
+{% load static %}
+<div id="group-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th>Head Group</th>
+                    <th>Head Primary Group</th>
+                    <th>Is Primary</th>
+                    <th>Is Default</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in group_list %}
+                    <tr>
+                        <td>{{ group_list.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.head_group|default:"-" }}</td>
+                        <td>{{ group.head_primarygroup|default:"-" }}</td>
+                        <td>{% if group.is_primary %}Yes{% else %}No{% endif %}</td>
+                        <td>{% if group.is_default %}Yes{% else %}No{% endif %}</td>
+                        <td class="text-end">
+                            <a class="me-3" href="{% url 'group_update' group.id %}">
+                                    <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                </a>
+                                {% if group.is_deletable %}
+                                <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'group_delete' group.id %}">
+                                    <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                </a>
+                                {% endif %}
+                            </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" class="text-center">No groups found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if group_list %}
+    <div class="pagination-container d-flex justify-content-between">
+        <div class="pagination table-info">
+            <p>Showing {{ group_list.start_index }} to {{ group_list.end_index }} of {{ group_list.paginator.count }} entries</p>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if group_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ group_list.previous_page_number }}" data-page="{{ group_list.previous_page_number }}">‹</a>
+                    </li>
+                {% endif %}
+
+                {% for num in group_list.paginator.page_range %}
+                    {% if num >= group_list.number|add:-1 and num <= group_list.number|add:1 %}
+                        <li class="page-item {% if group_list.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if group_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ group_list.next_page_number }}" data-page="{{ group_list.next_page_number }}">›</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>

@@ -35,8 +35,10 @@ INSTALLED_APPS = [
     
     # Local
     'authentication',
+    'accounts',
     'sms',
     'product',
+    'sales',
 ]
 
 INSTALLED_APPS += ['sequences.apps.SequencesConfig']
@@ -88,7 +90,7 @@ AUTH_USER_MODEL = 'authentication.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db2.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
