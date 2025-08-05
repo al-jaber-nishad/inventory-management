@@ -24,6 +24,9 @@
                     </a>
                     <ul class="{% if 'product' in request.path %}show{% endif %}">
                         <li><a href="{% url 'product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">Products</a></li>
+                        <li><a href="{% url 'unit_list' %}" class="{% if request.resolver_match.url_name == 'unit_list' %}active{% endif %}">Units</a></li>
+                        <li><a href="{% url 'brand_list' %}" class="{% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}">Brands</a></li>
+                        <li><a href="{% url 'productcategory_list' %}" class="{% if request.resolver_match.url_name == 'productcategory_list' %}active{% endif %}">Categories</a></li>
                     </ul>
                 </li>
 

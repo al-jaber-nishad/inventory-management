@@ -1,0 +1,63 @@
+{% load static %}
+<div id="unit-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unit in unit_list %}
+                    <tr>
+                        <td>{{ unit_list.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ unit.name }}</td>
+                        <td class="text-end">
+                            <a class="me-3" href="{% url 'unit_update' unit.id %}">
+                                    <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                                </a>
+                                <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'unit_delete' unit.id %}">
+                                    <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                                </a>
+                            </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="text-center">No units found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if unit_list %}
+    <div class="pagination-container d-flex justify-content-between">
+        <div class="pagination table-info">
+            <p>Showing {{ unit_list.start_index }} to {{ unit_list.end_index }} of {{ unit_list.paginator.count }} entries</p>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if unit_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ unit_list.previous_page_number }}" data-page="{{ unit_list.previous_page_number }}">‹</a>
+                    </li>
+                {% endif %}
+
+                {% for num in unit_list.paginator.page_range %}
+                    {% if num >= unit_list.number|add:-1 and num <= unit_list.number|add:1 %}
+                        <li class="page-item {% if unit_list.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if unit_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ unit_list.next_page_number }}" data-page="{{ unit_list.next_page_number }}">›</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
