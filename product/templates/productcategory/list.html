@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Category List</h4>
+                <h6>Manage your Product Categories</h6>
+            </div>
+            <div class="page-btn">
+                <a href="{% url 'productcategory_create' %}" class="btn btn-added">
+                    <img src="{% static 'img/icons/plus.svg' %}" alt="img"> Add Category
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: "{% if message.tags == 'success' %}Success{% else %}Error{% endif %}",
+                            text: '{{ message }}',
+                            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get" action="{% url 'productcategory_list' %}">
+                    <div class="table-top">
+                        <div class="search-set">
+                            <div class="form-group mb-0">
+                                <input type="text" name="search_input" placeholder="Enter category name" value="{{ filter_search_input }}">
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-12 pl-3">
+                                <div class="form-group mb-0">
+                                    <button type="submit" class="btn btn-filters">
+                                        <img src="{% static 'img/icons/search-whites.svg' %}" alt="img">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                {% include 'productcategory/_table_fragment.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.pagination a', function(event) {
+            event.preventDefault();
+            var page = $(this).attr('data-page');
+            var formData = $('#filterForm').serialize();
+            fetchCategories(page, formData);
+        });
+
+        function fetchCategories(page, formData) {
+            $.ajax({
+                url: "?page=" + page,
+                type: "GET",
+                data: formData,
+                success: function(data) {
+                    $('#category-list').replaceWith(data.html);
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+    });
+</script>
+{% endblock base %}

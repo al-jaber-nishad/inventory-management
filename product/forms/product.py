@@ -8,6 +8,7 @@ class ProductForm(forms.ModelForm):
         fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control select2_search'}),
+            'brand': forms.Select(attrs={'class': 'form-control select2_search'}),
         }
 
     def __init__(self, *args, **kwargs):

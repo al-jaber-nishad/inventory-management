@@ -9,9 +9,7 @@
                     <th>SKU</th>
                     <th>Category</th>
                     <th>Price</th>
-                    <th>Owner</th>
-                    <th>Created By</th>
-                    <th>Action</th>
+                    <th class="text-end">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,16 +20,14 @@
                         <td>{{ product.sku }}</td>
                         <td>{{ product.category.name }}</td>
                         <td>{{ product.price }}</td>
-                        <td>{{ product.owner_user.username }}</td>
-                        <td>{{ product.created_by.username }}</td>
-                        <td>
+                        <td class="text-end">
                             <a class="me-3" href="{% url 'product_update' product.id %}">
-                                    <img src="{% static 'img/icons/edit.svg' %}" alt="img">
-                                </a>
-                                <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'product_delete' product.id %}">
-                                    <img src="{% static 'img/icons/delete.svg' %}" alt="img">
-                                </a>
-                            </td>
+                                <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                            </a>
+                            <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'product_delete' product.id %}">
+                                <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                            </a>
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
