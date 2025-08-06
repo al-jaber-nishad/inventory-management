@@ -1,43 +1,56 @@
-from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
-
-from django_currentuser.middleware import (get_current_authenticated_user, get_current_user)
-
-from authentication.models import *
-
-User = get_user_model()
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from authentication.models import Customer, Supplier
+from accounts.models import LedgerAccount, Group
 
 
-def created_by_signals(sender, instance, created, **kwargs):
-	if created:
-		user = get_current_authenticated_user()
-		if user is not None:
-			sender.objects.filter(id=instance.id).update(created_by=user)
+# ---------- Customer Signals ----------
+
+@receiver(post_save, sender=Customer)
+def create_or_update_ledger_for_customer(sender, instance, created, **kwargs):
+    ledger, _ = LedgerAccount.objects.get_or_create(
+        reference_id=str(instance.id),
+        ledger_type='customer',
+        defaults={
+            'name': instance.name,
+            'details': f"Auto-created ledger for customer: {instance.name}",
+            'head_group': Group.objects.filter(name__iexact='Customer').first(),
+            'is_deletable': True,
+            'is_default': False
+        }
+    )
+    if not created:
+        ledger.name = instance.name
+        ledger.details = f"Auto-updated ledger for customer: {instance.name}"
+        ledger.save()
 
 
-def updated_by_signals(sender, instance, created, **kwargs):
-	if not created:
-		user = get_current_authenticated_user()
-		if user is not None:
-			sender.objects.filter(id=instance.id).update(updated_by=user)
+@receiver(post_delete, sender=Customer)
+def delete_ledger_for_customer(sender, instance, **kwargs):
+    LedgerAccount.objects.filter(reference_id=str(instance.id), ledger_type='customer').delete()
 
 
+# ---------- Supplier Signals ----------
+
+@receiver(post_save, sender=Supplier)
+def create_or_update_ledger_for_supplier(sender, instance, created, **kwargs):
+    ledger, _ = LedgerAccount.objects.get_or_create(
+        reference_id=str(instance.id),
+        ledger_type='supplier',
+        defaults={
+            'name': instance.name,
+            'details': f"Auto-created ledger for supplier: {instance.name}",
+            'head_group': Group.objects.filter(name__iexact='Supplier').first(),
+            'is_deletable': True,
+            'is_default': False
+        }
+    )
+    if not created:
+        ledger.name = instance.name
+        ledger.details = f"Auto-updated ledger for supplier: {instance.name}"
+        ledger.save()
 
 
-
-# Department signals
-post_save.connect(created_by_signals, sender=Department)
-post_save.connect(updated_by_signals, sender=Department)
-
-# Role signals
-post_save.connect(created_by_signals, sender=Role)
-post_save.connect(updated_by_signals, sender=Role)
-
-# user signals
-post_save.connect(created_by_signals, sender=User)
-post_save.connect(updated_by_signals, sender=User)
-
-
-
-
-
+@receiver(post_delete, sender=Supplier)
+def delete_ledger_for_supplier(sender, instance, **kwargs):
+    LedgerAccount.objects.filter(reference_id=str(instance.id), ledger_type='supplier').delete()

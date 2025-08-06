@@ -12,6 +12,8 @@ from django.contrib.auth import user_logged_in, user_logged_out
 # from rest_framework_simplejwt.tokens import RefreshToken
 
 from phonenumber_field.modelfields import PhoneNumberField
+from product.models import Brand
+from utils.base_model import BaseModel
 
 # from sms.models import Package
 
@@ -170,6 +172,28 @@ class User(AbstractUser):
         return f"{self.email}"
 
 
+class Customer(BaseModel):
+    name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20)
+    address = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.name
+
+
+class Supplier(BaseModel):
+    name = models.CharField(max_length=255)
+    brand = models.ForeignKey(Brand, on_delete=models.RESTRICT, null=True, blank=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20)
+    address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+    
 
 class ContactGroup(models.Model):
     name = models.CharField(max_length=30)
