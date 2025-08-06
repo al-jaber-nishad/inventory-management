@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Sub Ledger Account</h4>
+                <h6>{% if object %}Edit Sub Ledger Account{% else %}Add New Sub Ledger Account{% endif %}</h6>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if is_error %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{% if is_error %}error{% else %}success{% endif %}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card p-3">
+                <div class="row mandatory-fields">
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Name</label>
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-submit me-2">{% if object %}Update{% else %}Submit{% endif %}</button>
+                        <a href="{% url 'subledgeraccount_list' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock base %}

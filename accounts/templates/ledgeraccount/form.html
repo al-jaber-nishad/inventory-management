@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Ledger Account</h4>
+                <h6>{% if object %}Edit Ledger Account{% else %}Add New Ledger Account{% endif %}</h6>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if is_error %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{% if is_error %}error{% else %}success{% endif %}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card p-3">
+                <div class="row mandatory-fields">
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Name</label>
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.ledger_type.id_for_label }}">Ledger Type</label>
+                            {{ form.ledger_type }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.reference_id.id_for_label }}">Reference ID</label>
+                            {{ form.reference_id }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.details.id_for_label }}">Details</label>
+                            {{ form.details }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.head_group.id_for_label }}">Head Group</label>
+                            {{ form.head_group }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.amount.id_for_label }}">Amount</label>
+                            {{ form.amount }}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.note.id_for_label }}">Note</label>
+                            {{ form.note }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.is_deletable.id_for_label }}">Is Deletable</label>
+                            {{ form.is_deletable }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.is_default.id_for_label }}">Is Default</label>
+                            {{ form.is_default }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-submit me-2">{% if object %}Update{% else %}Submit{% endif %}</button>
+                        <a href="{% url 'ledgeraccount_list' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock base %}
