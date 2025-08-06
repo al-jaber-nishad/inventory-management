@@ -43,7 +43,7 @@ class ProductListView(LoginRequiredMixin, OwnerFilterMixin, ListView):
 
         # product_list here is a Page object from the ListView pagination
         queryset = context.get('product_list')
-        paginator = Paginator(queryset, 2)
+        paginator = Paginator(queryset, 50)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['product_list'] = page_obj

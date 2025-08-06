@@ -26,7 +26,7 @@ class UnitListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = context.get('unit_list')
-        paginator = Paginator(queryset, 10)
+        paginator = Paginator(queryset, 50)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['unit_list'] = page_obj
