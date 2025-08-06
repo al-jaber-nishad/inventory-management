@@ -37,7 +37,11 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="{% if 'accounts' in request.path %}show{% endif %}">
+                        <li><a href="{% url 'bank_list' %}" class="{% if request.resolver_match.url_name == 'bank_list' %}active{% endif %}">Banks</a></li>
+                        <li><a href="{% url 'primarygroup_list' %}" class="{% if request.resolver_match.url_name == 'primarygroup_list' %}active{% endif %}">Primary Groups</a></li>
                         <li><a href="{% url 'group_list' %}" class="{% if request.resolver_match.url_name == 'group_list' %}active{% endif %}">Groups</a></li>
+                        <li><a href="{% url 'ledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'ledgeraccount_list' %}active{% endif %}">Ledger Accounts</a></li>
+                        <li><a href="{% url 'subledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'subledgeraccount_list' %}active{% endif %}">Sub Ledgers</a></li>
                     </ul>
                 </li>
 

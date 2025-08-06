@@ -7,10 +7,13 @@ from django_currentuser.middleware import get_current_user
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from django.contrib.auth.models import User
+from celery import shared_task
 
 
+@shared_task
 def soft_delete_related_objects(app_label, model_name, instance_pk, using=None):
     """
     Soft delete related objects for a given model instance
@@ -202,7 +205,21 @@ class BaseModel(AuditModel):
     class Meta:
         abstract = True
 
+    def clean(self):
+        # Validate uniqueness manually if unique_fields are defined
+        if self.unique_fields:
+            query = self.__class__.all_objects.filter(deleted_at__isnull=True)
+            for field in self.unique_fields:
+                value = getattr(self, field)
+                query = query.filter(**{field: value})
+            if self.pk:
+                query = query.exclude(pk=self.pk)
+            if query.exists():
+                raise ValidationError({field: f"{field} must be unique." for field in self.unique_fields})
+
+
     def save(self, *args, created_by_id=None, disable_auto_set_user=False, **kwargs):
+        self.clean() 
         if not disable_auto_set_user:
             # Check if created_by_id is provided
             if created_by_id:
