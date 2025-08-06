@@ -207,15 +207,16 @@ class BaseModel(AuditModel):
 
     def clean(self):
         # Validate uniqueness manually if unique_fields are defined
-        if self.unique_fields:
-            query = self.__class__.all_objects.filter(deleted_at__isnull=True)
-            for field in self.unique_fields:
-                value = getattr(self, field)
-                query = query.filter(**{field: value})
-            if self.pk:
-                query = query.exclude(pk=self.pk)
-            if query.exists():
-                raise ValidationError({field: f"{field} must be unique." for field in self.unique_fields})
+        if not hasattr(self, 'unique_fields') or not self.unique_fields:
+            return
+        query = self.__class__.all_objects.filter(deleted_at__isnull=True)
+        for field in self.unique_fields:
+            value = getattr(self, field)
+            query = query.filter(**{field: value})
+        if self.pk:
+            query = query.exclude(pk=self.pk)
+        if query.exists():
+            raise ValidationError({field: f"{field} must be unique." for field in self.unique_fields})
 
 
     def save(self, *args, created_by_id=None, disable_auto_set_user=False, **kwargs):
