@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from authentication.models import Contact, ContactGroup
-from authentication.forms import ContactForm
+from authentication.forms.user import ContactForm
 from authentication.serializers import ContactSerializer, ContactListSerializer
 from authentication.filters import ContactFilter
 from django.db.models import Q

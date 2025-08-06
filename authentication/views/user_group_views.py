@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.db.models.deletion import RestrictedError
-from authentication.forms import  UserGroupForm
+from authentication.forms.user import  UserGroupForm
 from authentication.models import User, UserGroup
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404

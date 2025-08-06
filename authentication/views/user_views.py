@@ -2,7 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
-from authentication.forms import CustomLoginForm, CustomUserUpdateForm, UserForm, CustomUserCreationForm, UserProfileForm
+from authentication.forms.user import CustomLoginForm, CustomUserUpdateForm, UserForm, CustomUserCreationForm, UserProfileForm
 from authentication.models import DeveloperApi, User, Transaction
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
