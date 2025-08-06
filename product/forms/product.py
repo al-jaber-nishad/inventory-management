@@ -5,10 +5,11 @@ from django.core.exceptions import ValidationError
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand']
+        fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand', 'unit']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control select2_search'}),
             'brand': forms.Select(attrs={'class': 'form-control select2_search'}),
+            'unit': forms.Select(attrs={'class': 'form-control select2_search'}),
         }
 
     def __init__(self, *args, **kwargs):

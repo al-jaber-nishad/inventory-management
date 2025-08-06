@@ -8,8 +8,6 @@
                     <th>Name</th>
                     <th>Head Group</th>
                     <th>Head Primary Group</th>
-                    <th>Is Primary</th>
-                    <th>Is Default</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -20,8 +18,6 @@
                         <td>{{ group.name }}</td>
                         <td>{{ group.head_group|default:"-" }}</td>
                         <td>{{ group.head_primarygroup|default:"-" }}</td>
-                        <td>{% if group.is_primary %}Yes{% else %}No{% endif %}</td>
-                        <td>{% if group.is_default %}Yes{% else %}No{% endif %}</td>
                         <td class="text-end">
                             <a class="me-3" href="{% url 'group_update' group.id %}">
                                     <img src="{% static 'img/icons/edit.svg' %}" alt="img">

@@ -39,6 +39,7 @@ class Product(BaseModel):
     sku = models.CharField(max_length=64, unique=True)
     category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
+    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     is_active = models.BooleanField(default=True)

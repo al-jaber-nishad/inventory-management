@@ -66,6 +66,13 @@
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
+                            <label for="{{ form.unit.id_for_label }}">Unit</label>
+                            {{ form.unit }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
                             <label for="{{ form.is_active.id_for_label }}">Active</label>
                             <div>
                                 {{ form.is_active }}
