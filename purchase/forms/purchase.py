@@ -18,10 +18,11 @@ class PurchaseForm(forms.ModelForm):
     class Meta:
         model = Purchase
         fields = [
-            'supplier', 'invoice_number', 'purchase_date', 'due_date',
+            'payment_ledger', 'supplier', 'invoice_number', 'purchase_date', 'due_date',
             'discount', 'paid', 'due', 'tax', 'note', 'status', 'is_active'
         ]
         widgets = {
+            'payment_ledger': forms.Select(attrs={'class': 'form-control select2_search'}),
             'supplier': forms.Select(attrs={'class': 'form-control select2_search'}),
             'invoice_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Invoice number', 'readonly': 'readonly',}),
             'purchase_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
@@ -95,7 +96,7 @@ class PurchaseItemForm(forms.ModelForm):
         model = PurchaseItem
         fields = ['product', 'quantity', 'unit_price']
         widgets = {
-            'product': forms.Select(attrs={'class': 'form-control product-select'}),
+            'product': forms.Select(attrs={'class': 'form-control product-select select2_search'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control quantity-input', 'step': '0.01', 'min': '0.01'}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control price-input', 'step': '0.01', 'min': '0.01'}),
         }

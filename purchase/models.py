@@ -16,8 +16,9 @@ class Purchase(BaseModel):
         RECEIVED = 'received', 'Received'
         CANCELLED = 'cancelled', 'Cancelled'
 
-    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, related_name='purchases')
-    invoice_number = models.CharField(max_length=100, unique=True)
+    payment_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, null=True, blank=True, related_name='purchases_payment')
+    supplier = models.ForeignKey(LedgerAccount, on_delete=models.SET_NULL, null=True, related_name='supplier_purchases')
+    invoice_number = models.CharField(max_length=100)
     purchase_date = models.DateField()
     due_date = models.DateField(blank=True, null=True)
 
@@ -31,6 +32,8 @@ class Purchase(BaseModel):
     note = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
     is_active = models.BooleanField(default=True)
+
+    unique_fields = ['invoice_number']
 
     def __str__(self):
         return f"Purchase #{self.invoice_number} - {self.supplier.name}"
@@ -46,6 +49,7 @@ class PurchaseItem(BaseModel):
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     total_price = models.DecimalField(max_digits=12, decimal_places=2)
+
 
     def __str__(self):
         return f"{self.product.name} - {self.quantity} x {self.unit_price}"

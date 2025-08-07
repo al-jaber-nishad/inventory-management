@@ -11,7 +11,7 @@
                     <th>Due Date</th>
                     <th>Total</th>
                     <th>Status</th>
-                    <th class="text-end">Action</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,9 +35,9 @@
                                 <span class="bg-lightred badges">Cancelled</span>
                             {% endif %}
                         </td> {% endcomment %}
-                        <td class="text-end">
-                            <a class="me-3" href="{% url 'purchase_detail' purchase.id %}">
-                                <img src="{% static 'img/icons/eye.svg' %}" alt="img">
+                        <td>
+                            <a class="me-3" href="{% url 'purchase_invoice_pdf' purchase.id %}" title="Download Invoice PDF" target='__blank'>
+                                <img src="{% static 'img/icons/printer.svg' %}" alt="Print Invoice">
                             </a>
                             <a class="me-3" href="{% url 'purchase_update' purchase.id %}">
                                 <img src="{% static 'img/icons/edit.svg' %}" alt="img">

@@ -69,6 +69,13 @@
                 <div class="row mandatory-fields">
                     <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
+                            <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
+                            {{ form.payment_ledger }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
                             <label for="{{ form.supplier.id_for_label }}">Supplier *</label>
                             {{ form.supplier }}
                         </div>
@@ -302,7 +309,7 @@
 <template id="empty-item-row">
     <tr class="item-row">
         <td>
-            <select name="items-__prefix__-product" class="form-control product-select" id="id_items-__prefix__-product">
+            <select name="items-__prefix__-product" class="form-control select2_search" id="id_items-__prefix__-product">
                 <option value="">Select product...</option>
                 {% for product in item_formset.0.product.field.queryset %}
                     <option value="{{ product.id }}">{{ product.name }}</option>
@@ -329,7 +336,21 @@
 </template>
 
 <script>
+
+function initSelect2() {
+$('.select2_search').select2({
+});
+}
+
 $(document).ready(function() {
+    initSelect2();  // initial load
+
+    $(document).on('select2:open', () => {
+        setTimeout(() => {
+            document.querySelector('.select2-container--open .select2-search__field')?.focus();
+        }, 0);
+    });
+
     let formCount = parseInt($('#id_items-TOTAL_FORMS').val());
     
     // Add new item row
@@ -339,6 +360,8 @@ $(document).ready(function() {
         $('#items-table-body').append(newRow);
         formCount++;
         $('#id_items-TOTAL_FORMS').val(formCount);
+
+        initSelect2();
         updateCalculations();
     });
     
