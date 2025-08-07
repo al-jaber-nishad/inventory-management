@@ -27,3 +27,23 @@ class LedgerAccountAdmin(admin.ModelAdmin):
 @admin.register(SubLedgerAccount)
 class SubLedgerAccountAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in SubLedgerAccount._meta.fields]
+
+
+@admin.register(PaymentVoucher)
+class PaymentVoucherAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in PaymentVoucher._meta.fields]
+
+
+@admin.register(ReceiptVoucher)
+class ReceiptVoucherAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in ReceiptVoucher._meta.fields]
+
+
+@admin.register(Contra)
+class ContraAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in Contra._meta.fields]
+
+
+@admin.register(AccountLog)
+class AccountLogAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in AccountLog._meta.fields]
