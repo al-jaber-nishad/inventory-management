@@ -17,7 +17,7 @@ class Purchase(BaseModel):
         CANCELLED = 'cancelled', 'Cancelled'
 
     payment_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, null=True, blank=True, related_name='purchases_payment')
-    supplier = models.ForeignKey(LedgerAccount, on_delete=models.SET_NULL, null=True, related_name='supplier_purchases')
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, related_name='supplier_purchases')
     invoice_number = models.CharField(max_length=100)
     purchase_date = models.DateField()
     due_date = models.DateField(blank=True, null=True)

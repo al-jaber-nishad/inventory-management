@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block report_header %}
-	API History Report
+	Purchase Order
 {% endblock report_header %}
 	
 {% block base %}
@@ -23,24 +23,10 @@
             padding: 0;
         }
         
-        .invoice-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
-        
-        .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
         .invoice-info {
             display: table;
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
         
         .invoice-info-left, .invoice-info-right {
@@ -147,11 +133,17 @@
                 <div class="info-title">Supplier Information</div>
                 <div class="info-content">
                     <strong>{{ purchase.supplier.name|default:"N/A" }}</strong><br>
-                    {% if purchase.supplier.email %}
-                        Email: {{ purchase.supplier.email }}<br>
+                    {% if purchase.supplier.brand %}
+                        Company: {{ purchase.supplier.brand }}<br>
                     {% endif %}
                     {% if purchase.supplier.phone %}
                         Phone: {{ purchase.supplier.phone }}<br>
+                    {% endif %}
+                    {% if purchase.supplier.email %}
+                        Email: {{ purchase.supplier.email }}<br>
+                    {% endif %}
+                    {% if purchase.supplier.address %}
+                        Address: {{ purchase.supplier.address }}<br>
                     {% endif %}
                 </div>
             </div>
@@ -176,10 +168,6 @@
                     {% endif %}
                     <strong>Status:</strong> {{ purchase.get_status_display }} <br>
                     {% comment %} <span class="status-badge status-{{ purchase.status }}">{{ purchase.get_status_display }}</span><br> {% endcomment %}
-                    <strong>Created:</strong> {{ purchase.created_at|date:"M d, Y H:i" }}<br>
-                    {% if purchase.updated_at != purchase.created_at %}
-                        <strong>Last Updated:</strong> {{ purchase.updated_at|date:"M d, Y H:i" }}<br>
-                    {% endif %}
                 </div>
             </div>
         </div>

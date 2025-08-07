@@ -278,7 +278,3 @@ def purchase_invoice_pdf(request, pk):
     response['Content-Disposition'] = f'inline; filename="purchase_invoice_{purchase.invoice_number}.pdf"'
     
     return response
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename=report.pdf'
-    return response
