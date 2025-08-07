@@ -65,6 +65,7 @@
                     </a>
                     <ul class="{% if 'purchase' in request.path %}show{% endif %}">
                         <li><a href="{% url 'purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active{% endif %}">Purchases</a></li>
+                        <li><a href="{% url 'purchase_return_list' %}" class="{% if request.resolver_match.url_name == 'purchase_return_list' %}active{% endif %}">Purchase Returns</a></li>
                     </ul>
                 </li>
 

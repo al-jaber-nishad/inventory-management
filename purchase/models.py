@@ -2,6 +2,7 @@ from django.db import models
 
 from accounts.models import LedgerAccount
 from authentication.models import Supplier
+from inventory.models import InventoryTransaction
 from product.models import Product
 from utils.base_model import BaseModel
 

@@ -6,7 +6,7 @@ from django.utils.timezone import now
 
 @receiver(post_save, sender=Purchase)
 def create_or_update_account_logs_for_purchase(sender, instance, created, **kwargs):
-    supplier_ledger = LedgerAccount.objects.filter(reference_no=instance.supplier.id).first()
+    supplier_ledger = LedgerAccount.objects.filter(reference_id=instance.supplier.id).first()
     payment_ledger = instance.payment_ledger
     reference_no = instance.invoice_number
     total = instance.total
@@ -49,3 +49,5 @@ def create_or_update_account_logs_for_purchase(sender, instance, created, **kwar
 @receiver(post_delete, sender=Purchase)
 def delete_account_log_of_purchase(sender, instance, **kwargs):
     AccountLog.objects.filter(reference_id=instance.invoice_number, log_type='purchase_payment').delete()
+
+

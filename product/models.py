@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
 from django.db.models.fields.related import ForeignKey
+from inventory.utils.stock_quantity import get_current_stock
 from utils.base_model import BaseModel
 
 
@@ -51,6 +52,10 @@ class Product(BaseModel):
             models.Index(fields=['sku']),
             models.Index(fields=['name']),
         ]
+
+    @property
+    def stock(self):
+        return get_current_stock(self.id)
 
     def save(self, *args, **kwargs):
         # slugify from name if missing

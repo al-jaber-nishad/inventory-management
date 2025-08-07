@@ -189,8 +189,8 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>${{ item.unit_price|floatformat:2 }}</td>
-                <td>${{ item.total_price|floatformat:2 }}</td>
+                <td>৳{{ item.unit_price|floatformat:2 }}</td>
+                <td>৳{{ item.total_price|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>
@@ -204,32 +204,32 @@
         <table class="totals-table">
             <tr>
                 <td>Subtotal:</td>
-                <td class="text-right">${{ purchase.subtotal|floatformat:2 }}</td>
+                <td class="text-right">৳{{ purchase.subtotal|floatformat:2 }}</td>
             </tr>
             {% if purchase.discount > 0 %}
             <tr>
                 <td>Discount:</td>
-                <td class="text-right">-${{ purchase.discount|floatformat:2 }}</td>
+                <td class="text-right">-৳{{ purchase.discount|floatformat:2 }}</td>
             </tr>
             {% endif %}
             {% if purchase.tax > 0 %}
             <tr>
                 <td>Tax:</td>
-                <td class="text-right">${{ purchase.tax|floatformat:2 }}</td>
+                <td class="text-right">৳{{ purchase.tax|floatformat:2 }}</td>
             </tr>
             {% endif %}
             <tr class="total-row">
                 <td>Total Amount:</td>
-                <td class="text-right">${{ purchase.total|floatformat:2 }}</td>
+                <td class="text-right">৳{{ purchase.total|floatformat:2 }}</td>
             </tr>
             {% if purchase.paid > 0 %}
             <tr>
                 <td>Paid Amount:</td>
-                <td class="text-right">${{ purchase.paid|floatformat:2 }}</td>
+                <td class="text-right">৳{{ purchase.paid|floatformat:2 }}</td>
             </tr>
             <tr class="total-row">
                 <td>Due Amount:</td>
-                <td class="text-right">${{ purchase.due|floatformat:2 }}</td>
+                <td class="text-right">৳{{ purchase.due|floatformat:2 }}</td>
             </tr>
             {% endif %}
         </table>

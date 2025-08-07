@@ -8,7 +8,7 @@
                     <th>Name</th>
                     <th>SKU</th>
                     <th>Category</th>
-                    <th>Price</th>
+                    <th>Stock</th>
                     <th class="text-end">Action</th>
                 </tr>
             </thead>
@@ -19,7 +19,7 @@
                         <td>{{ product.name }}</td>
                         <td>{{ product.sku }}</td>
                         <td>{{ product.category.name }}</td>
-                        <td>{{ product.price }}</td>
+                        <td>{{ product.stock }}</td>
                         <td class="text-end">
                             <a class="me-3" href="{% url 'product_update' product.id %}">
                                 <img src="{% static 'img/icons/edit.svg' %}" alt="img">
