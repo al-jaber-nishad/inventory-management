@@ -38,17 +38,7 @@
                             <div class="form-group mb-0">
                                 <input type="text" name="search_input" placeholder="Enter invoice number or supplier name" value="{% if filter_search_input %}{{ filter_search_input }}{% endif%}">
                             </div>
-                            <div class="col-lg-2 col-sm-6 col-12 pl-3">
-                                <div class="form-group mb-0">
-                                    <select name="status" class="form-control">
-                                        <option value="">All Status</option>
-                                        {% for value, label in status_choices %}
-                                            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-6 col-12 pl-3">
+                            <div class="col-lg-2 col-sm-6 col-4 pl-0">
                                 <div class="form-group mb-0">
                                     <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
                                 </div>

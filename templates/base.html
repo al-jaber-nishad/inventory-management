@@ -7,17 +7,17 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=0"
     />
-    <meta name="description" content="BlueBay IT Limited - SMS Server" />
+    <meta name="description" content="Home Decor" />
     <meta
       name="keywords"
       content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive"
     />
-    <meta name="author" content="Bluebay IT Limited - SMS Server" />
+    <meta name="author" content="Al Jaber Nishad" />
     <meta name="robots" content="noindex, nofollow" />
     {% if title %}
       <title>{{ title }}</title>
     {% else %}
-      <title>BlueBay IT SMS Server</title>
+      <title>Home Decor POS</title>
     {% endif %}
 
     <link
@@ -77,7 +77,7 @@
       {% block base %}{% endblock base %}
       <div id="footer">
         <div class="text-center">
-          © {% now "Y" %} BlueBay IT Limited. All rights reserved.
+          © {% now "Y" %} Home Decor, Dhaka. All rights reserved.
         </div>
       </div>
     </div>
@@ -87,6 +87,12 @@
   // Add select2 search functionality in the dropdown
   $(document).ready(function() {
       $('.select2_search').select2();
+      // Focus search box when dropdown opens
+      $(document).on('select2:open', () => {
+          setTimeout(() => {
+              document.querySelector('.select2-container--open .select2-search__field')?.focus();
+          }, 0);
+      });
   });
 
     {% comment %} 

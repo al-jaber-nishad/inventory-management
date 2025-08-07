@@ -1,13 +1,17 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.forms import inlineformset_factory
+from django.contrib.auth.decorators import login_required
+import weasyprint
+from django.conf import settings
+import os
 
 from purchase.models import Purchase, PurchaseItem
 from purchase.forms.purchase import PurchaseForm, PurchaseItemForm
@@ -246,3 +250,35 @@ class PurchaseDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(self.request, "Purchase deleted successfully.")
         return redirect(self.success_url)
+
+
+@login_required
+def purchase_invoice_pdf(request, pk):
+    """Generate and download PDF invoice for a purchase"""
+    purchase = get_object_or_404(Purchase, pk=pk)
+    
+    # Check permissions - only allow if user owns the purchase or is admin
+    user = request.user
+    if not getattr(user, 'role', None) or getattr(user.role, 'name', '').upper() != 'ADMIN':
+        if purchase.created_by != user:
+            messages.error(request, "You don't have permission to access this purchase.")
+            return redirect('purchase_list')
+    
+    # Render the template to HTML
+    html_string = render_to_string('purchase/invoice_pdf.html', {
+        'purchase': purchase,
+    }, request=request)
+    
+    # Generate PDF
+    html = weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri())
+    pdf = html.write_pdf()
+    
+    # Create response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="purchase_invoice_{purchase.invoice_number}.pdf"'
+    
+    return response
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename=report.pdf'
+    return response
