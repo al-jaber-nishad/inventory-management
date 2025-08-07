@@ -22,8 +22,8 @@ def create_or_update_account_logs_for_purchase_return(sender, instance, created,
         defaults={
             'date': now(),
             'sub_ledger': sub_ledger,
-            'debit_amount': 0,
-            'credit_amount': total,
+            'debit_amount': total,
+            'credit_amount': 0,
             'details': f'Purchase return to supplier: {supplier_ledger.name}',
         }
     )
@@ -37,8 +37,8 @@ def create_or_update_account_logs_for_purchase_return(sender, instance, created,
             defaults={
                 'date': now(),
                 'sub_ledger': sub_ledger,
-                'debit_amount': refunded,
-                'credit_amount': 0,
+                'debit_amount': 0,
+                'credit_amount': refunded,
                 'details': f'Refund processed for return: {supplier_ledger.name}',
             }
         )

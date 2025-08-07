@@ -19,7 +19,7 @@ class Bank(BaseModel):
 
 
 class PrimaryGroup(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     is_deletable = models.BooleanField(default=False)
 
     unique_fields = ['name']
@@ -75,7 +75,7 @@ class LedgerAccount(BaseModel):
         CREDITORS = 'creditors', _('Creditors')
         DEBTORS = 'debtors', _('Debtors')
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     ledger_type = models.CharField(max_length=30, null=True, blank=True)
     reference_id = models.CharField(max_length=255, null=True, blank=True)
     details =  models.CharField(max_length=255, null=True, blank=True)
@@ -104,7 +104,7 @@ class LedgerAccount(BaseModel):
 
 
 class SubLedgerAccount(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
 
     unique_fields = ['name']
 

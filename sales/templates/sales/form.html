@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+
+<style>
+    .item-row:hover .remove-item {
+        opacity: 1;
+    }
+    .remove-item {
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    #items-table input {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px;
+    }
+    .total-price {
+        font-weight: bold;
+    }
+    input[type="checkbox"][id*="DELETE"] {
+        display: none;
+    }
+    .btn:focus-visible {
+    outline: none;
+    border: 2px solid #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    }
+</style>
+
+
+<div class="page-wrapper">
+    <div class="content mb-4">
+        {% comment %} <div class="page-header">
+            <div class="page-title">
+                <h4>Sale Order</h4>
+                <h6>{% if object %}Edit Sale Order{% else %}Create Sale Order{% endif %}</h6>
+            </div>
+        </div> {% endcomment %}
+            
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if is_error %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{% if is_error %}error{% else %}success{% endif %}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" id="sale-form">
+            {% csrf_token %}
+            
+            <!-- General Information -->
+            <div class="card p-3 mb-3">
+                <div class="row">
+                    <div class="col-3">
+                        <h2 class="text-lg font-semibold mb-4">Sale Order</h2>
+                    </div>
+                </div>
+
+                
+                <div class="row mandatory-fields">
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
+                            {{ form.payment_ledger }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.customer.id_for_label }}">Customer *</label>
+                            {{ form.customer }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.invoice_number.id_for_label }}">Sale Order #</label>
+                            {{ form.invoice_number }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.invoice_number.id_for_label }}">Sale Date</label>
+                            <div class="input-groupicon">
+                            <input type="text" name="sale_date" placeholder="Choose Date" class="datetimepicker" value="{{ sale_date }}">
+                                <a class="addonset">
+                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.invoice_number.id_for_label }}">Due Date</label>
+                            <div class="input-groupicon">
+                            <input type="text" name="due_date" placeholder="Choose Date" class="datetimepicker" value="{{ due_date }}">
+                                <a class="addonset">
+                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.status.id_for_label }}">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Items Section -->
+                <div class="col-lg-7">
+                    <div class="card p-3 mb-3">
+
+                        <div class="table-responsive">
+                            {{ item_formset.management_form }}
+                            <table class="table" id="items-table">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Product *</th>
+                                        <th>Quantity *</th>
+                                        <th>Unit Price *</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-table-body">
+                                    {% for form in item_formset %}
+                                        <tr class="item-row">
+                                            {{ form.id }}
+                                            <td>
+                                                {{ form.product }}
+                                                {% if form.product.errors %}
+                                                    <div class="text-danger small">{{ form.product.errors|first }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ form.quantity }}
+                                                {% if form.quantity.errors %}
+                                                    <div class="text-danger small">{{ form.quantity.errors|first }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ form.unit_price }}
+                                                {% if form.unit_price.errors %}
+                                                    <div class="text-danger small">{{ form.unit_price.errors|first }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="total-price">৳0.00</td>
+                                            <td>
+                                                <button type="button" class="add-item btn btn-added btn-sm">
+                                                    <img src="{% static 'img/icons/plus.svg' %}" alt="img" class="me-1">
+                                                </button>
+
+                                                {% if form.instance.pk %}
+                                                    {{ form.DELETE }}
+                                                    <label for="{{ form.DELETE.id_for_label }}" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </label>
+                                                {% else %}
+                                                    <button type="button" class="btn btn-danger btn-sm remove-item">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                {% endif %}
+
+                                                
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                {% comment %} <div class="col-lg-5">
+                    <div class="card p-3 mb-3">
+                        <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Subtotal</span>
+                                <span id="subtotal">৳0.00</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="{{ form.discount.id_for_label }}" class="text-muted">Discount</label>
+                                <div style="width: 30%; height: 20%;">{{ form.discount }}</div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="{{ form.tax.id_for_label }}" class="text-muted">Tax</label>
+                                <div style="width: 30%; height: 80%;">{{ form.tax }}</div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="border-top pt-4">
+                            <div class="d-flex justify-content-between font-weight-bold text-lg">
+                                <span>Grand Total</span>
+                                <span id="grand-total">৳0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <script src="https://cdn.tailwindcss.com"></script>
+                <div class="col-lg-5">
+                    <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span id="subtotal">৳0.00</span>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-gray-600 mr-2">Discount</span>
+                                </div>
+                                {{ form.discount }}
+                            </div>
+
+                            <div class="flex justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-gray-600 mr-2">Tax</span>
+                                </div>
+                                {{ form.tax }}
+                            </div>
+{% comment %}                             
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tax (8%)</span>
+                                <span>৳7.60</span>
+                            </div>
+                            
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Round Off</span>
+                                <span>৳0.02</span>
+                            </div> {% endcomment %}
+                        </div>
+                        <hr>
+                        <div class="border-t border-gray-200">
+                            <div class="flex justify-between font-bold">
+                                <span>Grand Total</span>
+                                <span id="grand-total">৳0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-1">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-2">Paid</span>
+                            </div>
+                            {{ form.paid }}
+                        </div>
+
+                        <div class="flex justify-between mt-1">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-2">Due</span>
+                            </div>
+                            <span id="id_due_display">৳0.00</span>
+                            {{ form.due.as_hidden }}
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="{{ form.note.id_for_label }}">Notes</label>
+                    {{ form.note }}
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" name="action" value="confirm" class="btn btn-submit me-2">
+                        <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save & Confirm{% endif %}
+                    </button>
+                    <button type="submit" name="action" value="draft" class="btn btn-secondary me-2">
+                        <i class="fas fa-save me-1"></i>Save as Draft
+                    </button>
+                    <a href="{% url 'sale_list' %}" class="btn btn-cancel">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Empty item row template -->
+<template id="empty-item-row">
+    <tr class="item-row">
+        <td>
+            <select name="items-__prefix__-product" class="form-control select2_search" id="id_items-__prefix__-product">
+                <option value="">Select product...</option>
+                {% for product in item_formset.0.product.field.queryset %}
+                    <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <input type="number" name="items-__prefix__-quantity" step="0.01" min="0.01" class="form-control quantity-input" id="id_items-__prefix__-quantity">
+        </td>
+        <td>
+            <input type="number" name="items-__prefix__-unit_price" step="0.01" min="0.01" class="form-control price-input" id="id_items-__prefix__-unit_price">
+        </td>
+        <td class="total-price">৳0.00</td>
+        <td>
+            <button type="button" class="add-item btn btn-added btn-sm">
+                <img src="{% static 'img/icons/plus.svg' %}" alt="img" class="me-1">
+            </button>
+
+            <button type="button" class="btn btn-danger btn-sm remove-item">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+
+function initSelect2() {
+$('.select2_search').select2({
+});
+}
+
+$(document).ready(function() {
+    initSelect2();  // initial load
+
+    $(document).on('select2:open', () => {
+        setTimeout(() => {
+            document.querySelector('.select2-container--open .select2-search__field')?.focus();
+        }, 0);
+    });
+
+    let formCount = parseInt($('#id_items-TOTAL_FORMS').val());
+    
+    // Add new item row
+    $(document).on('click', '.add-item', function() {
+        const template = $('#empty-item-row').html();
+        const newRow = template.replace(/__prefix__/g, formCount);
+        $('#items-table-body').append(newRow);
+        formCount++;
+        $('#id_items-TOTAL_FORMS').val(formCount);
+
+        initSelect2();
+        updateCalculations();
+    });
+    
+    // Remove item row
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('tr').remove();
+        updateCalculations();
+    });
+    
+    // Calculate totals when inputs change
+    $(document).on('input', '.quantity-input, .price-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
+        updateCalculations();
+    });
+    
+    // Handle form submission with action
+    $('button[name="action"]').click(function() {
+        const action = $(this).val();
+        if (action === 'draft') {
+            $('#id_status').val('draft');
+        } else if (action === 'confirm') {
+            $('#id_status').val('confirmed');
+        }
+    });
+    
+    function updateCalculations() {
+        let subtotal = 0;
+        
+        // Calculate each row total and sum up subtotal
+        $('.item-row').each(function() {
+            const quantity = parseFloat($(this).find('.quantity-input').val()) || 0;
+            const unitPrice = parseFloat($(this).find('.price-input').val()) || 0;
+            const total = quantity * unitPrice;
+            
+            $(this).find('.total-price').text('৳' + total.toFixed(2));
+            subtotal += total;
+        });
+        
+        const discount = parseFloat($('#id_discount').val()) || 0;
+        const tax = parseFloat($('#id_tax').val()) || 0;
+        const paid = parseFloat($('#id_paid').val()) || 0;
+        const due = parseFloat($('#id_due').val()) || 0;
+        const grandTotal = subtotal - discount + tax;
+        const due_amount = grandTotal - paid;
+
+        
+        $('#subtotal').text('৳' + subtotal.toFixed(2));
+        $('#grand-total').text('৳' + grandTotal.toFixed(2));
+        $('#id_due_display').text('৳' + due_amount.toFixed(2));
+        $('#id_due').val(due_amount.toFixed(2)); 
+    }
+    
+    // Initial calculation
+    updateCalculations();
+    
+    // Initialize Select2 for customer dropdown
+    if ($.fn.select2) {
+        $('.select2_search').select2({
+            width: '100%',
+            placeholder: 'Select an option'
+        });
+    }
+});
+</script>
+{% endblock base %}

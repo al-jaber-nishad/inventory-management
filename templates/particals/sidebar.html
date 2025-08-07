@@ -58,6 +58,18 @@
                 </li>
 
                 <li class="submenu">
+                    <a href="#" class="{% if 'sale' in request.path %}active{% endif %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Sales</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="{% if 'sale' in request.path %}show{% endif %}">
+                        <li><a href="{% url 'sale_list' %}" class="{% if request.resolver_match.url_name == 'sale_list' %}active{% endif %}">Sales</a></li>
+                        <li><a href="{% url 'sale_return_list' %}" class="{% if request.resolver_match.url_name == 'sale_return_list' %}active{% endif %}">Sales Returns</a></li>
+                    </ul>
+                </li>
+
+                <li class="submenu">
                     <a href="#" class="{% if 'purchase' in request.path %}active{% endif %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
                         <span>Purchase</span>

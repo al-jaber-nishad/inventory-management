@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class SalesConfig(AppConfig):
+class SalesReturnConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'sales'
-
+    name = 'sales_return'
+    
     def ready(self):
-        import sales.signals
+        import sales_return.signals

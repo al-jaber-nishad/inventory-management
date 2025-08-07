@@ -134,7 +134,7 @@ class User(AbstractUser):
     package = models.ForeignKey('sms.Package', on_delete=models.SET_NULL, null=True, blank=True)
     region_type = models.CharField(max_length=20, choices=Region.choices, null=True, blank=True)
 
-    primary_phone = PhoneNumberField(verbose_name='phone_number', null=True, blank=True, unique=True)
+    primary_phone = PhoneNumberField(verbose_name='phone_number', null=True, blank=True)
     secondary_phone = PhoneNumberField(null=True, blank=True)
 
     sender_show_number = models.CharField(max_length=500, null=True, blank=True)

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'sms',
     'product',
     'sales',
+    'sales_return',
     'purchase',
     'purchase_return',
     'inventory',

@@ -1,0 +1,237 @@
+{% extends 'particals/pdf_template_base.html' %}
+{% load static %}
+
+{% block report_header %}
+	Sale Invoice
+{% endblock report_header %}
+	
+{% block base %}
+
+    <style>
+        @page {
+            margin: 1cm;
+            size: A4;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .invoice-info {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-info-left, .invoice-info-right {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+        
+        .info-section {
+            margin-bottom: 20px;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        
+        .info-content {
+            margin-left: 10px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .items-table th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .items-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .items-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            width: 300px;
+            margin-left: auto;
+            margin-bottom: 30px;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .totals-table .total-row {
+            font-weight: bold;
+            background-color: #ecf0f1;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-draft { background-color: #95a5a6; color: white; }
+        .status-confirmed { background-color: #3498db; color: white; }
+        .status-delivered { background-color: #27ae60; color: white; }
+        .status-cancelled { background-color: #e74c3c; color: white; }
+        
+        .footer-notes {
+            margin-top: 40px;
+            font-size: 11px;
+            color: #7f8c8d;
+            text-align: center;
+        }
+    </style>
+    
+    <div class="invoice-info">
+        <div class="invoice-info-left">
+            <div class="info-section">
+                <div class="info-title">Customer Information</div>
+                <div class="info-content">
+                    <strong>{{ sale.customer.name|default:"N/A" }}</strong><br>
+                    {% if sale.customer.brand %}
+                        Company: {{ sale.customer.brand }}<br>
+                    {% endif %}
+                    {% if sale.customer.phone %}
+                        Phone: {{ sale.customer.phone }}<br>
+                    {% endif %}
+                    {% if sale.customer.email %}
+                        Email: {{ sale.customer.email }}<br>
+                    {% endif %}
+                    {% if sale.customer.address %}
+                        Address: {{ sale.customer.address }}<br>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if sale.note %}
+            <div class="info-section">
+                <div class="info-title">Notes</div>
+                <div class="info-content">
+                    {{ sale.note }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="invoice-info-right">
+            <div class="info-section">
+                <div class="info-title">Invoice Details</div>
+                <div class="info-content">
+                    <strong>Sale Date:</strong> {{ sale.sale_date|date:"M d, Y" }}<br>
+                    {% if sale.due_date %}
+                        <strong>Due Date:</strong> {{ sale.due_date|date:"M d, Y" }}<br>
+                    {% endif %}
+                    <strong>Status:</strong> {{ sale.get_status_display }} <br>
+                    {% comment %} <span class="status-badge status-{{ sale.status }}">{{ sale.get_status_display }}</span><br> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sale.items.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>৳{{ item.unit_price|floatformat:2 }}</td>
+                <td>৳{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No items found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals-section">
+        <table class="totals-table">
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">৳{{ sale.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% if sale.discount > 0 %}
+            <tr>
+                <td>Discount:</td>
+                <td class="text-right">-৳{{ sale.discount|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            {% if sale.tax > 0 %}
+            <tr>
+                <td>Tax:</td>
+                <td class="text-right">৳{{ sale.tax|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-row">
+                <td>Total Amount:</td>
+                <td class="text-right">৳{{ sale.total|floatformat:2 }}</td>
+            </tr>
+            {% if sale.paid > 0 %}
+            <tr>
+                <td>Paid Amount:</td>
+                <td class="text-right">৳{{ sale.paid|floatformat:2 }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Due Amount:</td>
+                <td class="text-right">৳{{ sale.due|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+{% endblock base%}
