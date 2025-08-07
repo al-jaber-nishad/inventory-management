@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'product',
     'sales',
     'purchase',
+    'purchase_return',
+    'inventory',
 ]
 
 INSTALLED_APPS += ['sequences.apps.SequencesConfig']
