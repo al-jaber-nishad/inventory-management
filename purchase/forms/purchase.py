@@ -7,11 +7,19 @@ import uuid
 
 
 class PurchaseForm(forms.ModelForm):
+    purchase_date = forms.DateField(
+        input_formats=['%d-%m-%Y'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'type': 'text'})
+    )
+    due_date = forms.DateField(
+        input_formats=['%d-%m-%Y'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'type': 'text'})
+    )
     class Meta:
         model = Purchase
         fields = [
             'supplier', 'invoice_number', 'purchase_date', 'due_date',
-            'discount', 'tax', 'note', 'status', 'is_active'
+            'discount', 'paid', 'due', 'tax', 'note', 'status', 'is_active'
         ]
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control select2_search'}),
@@ -20,6 +28,8 @@ class PurchaseForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'discount': forms.NumberInput(attrs={'class':"w-20 px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
             'tax': forms.NumberInput(attrs={'class':"w-20 px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
+            'paid': forms.NumberInput(attrs={'class':"w-20 px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
+            'due': forms.NumberInput(attrs={'id': '', 'class':"w-20 px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Additional notes'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

@@ -80,6 +80,17 @@ class PurchaseCreateView(LoginRequiredMixin, CreateView):
             extra=1, 
             can_delete=True
         )
+
+        instance = self.object
+        if instance and instance.purchase_date:
+            context['purchase_date'] = instance.purchase_date.strftime('%d-%m-%Y')
+        else:
+            context['purchase_date'] = ''
+
+        if instance and instance.due_date:
+            context['due_date'] = instance.due_date.strftime('%d-%m-%Y')
+        else:
+            context['due_date'] = ''
         
         if self.request.POST:
             context['item_formset'] = PurchaseItemFormSet(self.request.POST, instance=self.object)
@@ -154,6 +165,17 @@ class PurchaseUpdateView(LoginRequiredMixin, UpdateView):
             extra=0, 
             can_delete=True
         )
+
+        instance = self.object
+        if instance and instance.purchase_date:
+            context['purchase_date'] = instance.purchase_date.strftime('%d-%m-%Y')
+        else:
+            context['purchase_date'] = ''
+
+        if instance and instance.due_date:
+            context['due_date'] = instance.due_date.strftime('%d-%m-%Y')
+        else:
+            context['due_date'] = ''
         
         if self.request.POST:
             context['item_formset'] = PurchaseItemFormSet(self.request.POST, instance=self.object)

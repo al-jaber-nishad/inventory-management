@@ -31,13 +31,13 @@
 
 
 <div class="page-wrapper">
-    <div class="content">
-        <div class="page-header">
+    <div class="content mb-4">
+        {% comment %} <div class="page-header">
             <div class="page-title">
                 <h4>Purchase Order</h4>
                 <h6>{% if object %}Edit Purchase Order{% else %}Create Purchase Order{% endif %}</h6>
             </div>
-        </div>
+        </div> {% endcomment %}
             
         {% if messages %}
             <script>
@@ -61,7 +61,7 @@
             <div class="card p-3 mb-3">
                 <div class="row">
                     <div class="col-3">
-                        <h2 class="text-lg font-semibold mb-4">General Information</h2>
+                        <h2 class="text-lg font-semibold mb-4">Purchase Order</h2>
                     </div>
                 </div>
 
@@ -154,7 +154,7 @@
                                                     <div class="text-danger small">{{ form.unit_price.errors|first }}</div>
                                                 {% endif %}
                                             </td>
-                                            <td class="total-price">$0.00</td>
+                                            <td class="total-price">৳0.00</td>
                                             <td>
                                                 <button type="button" class="add-item btn btn-added btn-sm">
                                                     <img src="{% static 'img/icons/plus.svg' %}" alt="img" class="me-1">
@@ -189,7 +189,7 @@
                         <div class="space-y-3 mb-4">
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted">Subtotal</span>
-                                <span id="subtotal">$0.00</span>
+                                <span id="subtotal">৳0.00</span>
                             </div>
                             
                             <div class="d-flex justify-content-between align-items-center">
@@ -207,7 +207,7 @@
                         <div class="border-top pt-4">
                             <div class="d-flex justify-content-between font-weight-bold text-lg">
                                 <span>Grand Total</span>
-                                <span id="grand-total">$0.00</span>
+                                <span id="grand-total">৳0.00</span>
                             </div>
                         </div>
                     </div>
@@ -221,7 +221,7 @@
                         <div class="space-y-3 mb-4">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span id="subtotal">$0.00</span>
+                                <span id="subtotal">৳0.00</span>
                             </div>
 
                             <div class="flex justify-between">
@@ -245,16 +245,33 @@
                             
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Round Off</span>
-                                <span>$0.02</span>
+                                <span>৳0.02</span>
                             </div> {% endcomment %}
                         </div>
                         <hr>
-                        <div class="border-t border-gray-200 pt-4">
-                            <div class="flex justify-between font-bold text-lg">
+                        <div class="border-t border-gray-200">
+                            <div class="flex justify-between font-bold">
                                 <span>Grand Total</span>
-                                <span id="grand-total">$0.00</span>
+                                <span id="grand-total">৳0.00</span>
                             </div>
                         </div>
+
+                        <div class="flex justify-between mt-1">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-2">Paid</span>
+                            </div>
+                            {{ form.paid }}
+                        </div>
+
+                        <div class="flex justify-between mt-1">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-2">Due</span>
+                            </div>
+                            <span id="id_due_display">৳0.00</span>
+                            {{ form.due.as_hidden }}
+                        </div>
+
+
                     </div>
                 </div>
             </div>
@@ -298,7 +315,7 @@
         <td>
             <input type="number" name="items-__prefix__-unit_price" step="0.01" min="0.01" class="form-control price-input" id="id_items-__prefix__-unit_price">
         </td>
-        <td class="total-price">$0.00</td>
+        <td class="total-price">৳0.00</td>
         <td>
             <button type="button" class="add-item btn btn-added btn-sm">
                 <img src="{% static 'img/icons/plus.svg' %}" alt="img" class="me-1">
@@ -332,7 +349,7 @@ $(document).ready(function() {
     });
     
     // Calculate totals when inputs change
-    $(document).on('input', '.quantity-input, .price-input, #id_discount, #id_tax', function() {
+    $(document).on('input', '.quantity-input, .price-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
         updateCalculations();
     });
     
@@ -355,16 +372,22 @@ $(document).ready(function() {
             const unitPrice = parseFloat($(this).find('.price-input').val()) || 0;
             const total = quantity * unitPrice;
             
-            $(this).find('.total-price').text('$' + total.toFixed(2));
+            $(this).find('.total-price').text('৳' + total.toFixed(2));
             subtotal += total;
         });
         
         const discount = parseFloat($('#id_discount').val()) || 0;
         const tax = parseFloat($('#id_tax').val()) || 0;
+        const paid = parseFloat($('#id_paid').val()) || 0;
+        const due = parseFloat($('#id_due').val()) || 0;
         const grandTotal = subtotal - discount + tax;
+        const due_amount = grandTotal - paid;
+
         
-        $('#subtotal').text('$' + subtotal.toFixed(2));
-        $('#grand-total').text('$' + grandTotal.toFixed(2));
+        $('#subtotal').text('৳' + subtotal.toFixed(2));
+        $('#grand-total').text('৳' + grandTotal.toFixed(2));
+        $('#id_due_display').text('৳' + due_amount.toFixed(2));
+        $('#id_due').val(due_amount.toFixed(2)); 
     }
     
     // Initial calculation

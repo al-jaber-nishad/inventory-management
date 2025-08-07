@@ -25,6 +25,8 @@ class Purchase(BaseModel):
     discount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     tax = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    paid = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    due = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     note = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
