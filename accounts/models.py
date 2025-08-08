@@ -1,7 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.core.validators import BaseValidator
 from django.db import models
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from utils.base_model import BaseModel
 
@@ -36,7 +34,7 @@ class PrimaryGroup(BaseModel):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        if self.is_deletable == False:
+        if not self.is_deletable:
             raise ValidationError("Primary group is not deletable!")
         else:
             super().delete(*args, **kwargs)
@@ -124,7 +122,8 @@ class SubLedgerAccount(BaseModel):
 
 class PaymentVoucher(BaseModel):
     date = models.DateField(null=True, blank=True)
-    ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='paymentvoucher')
+    payment_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='payment_ledger_paymentvoucher')
+    expense_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='expense_ledger_paymentvoucher')
     sub_ledger = models.ForeignKey(SubLedgerAccount, on_delete=models.RESTRICT, related_name='paymentvoucher', null=True, blank=True)
 
     bank_or_cash = models.BooleanField(default=False, null=True, blank=True)
@@ -132,9 +131,7 @@ class PaymentVoucher(BaseModel):
     cheque_no = models.CharField(max_length=255, null=True, blank=True)
     cheque_date =  models.DateField(null=True, blank=True)
     
-    debit_amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
-    credit_amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
-
+    amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
     bill_no = models.IntegerField(default=0, null=True, blank=True)
     invoice_no = models.CharField(max_length=255, null=True, blank=True)
     

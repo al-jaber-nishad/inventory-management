@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Payment Voucher</h4>
+                <h6>{% if object %}{% if request.resolver_match.url_name == 'paymentvoucher_detail' %}View{% else %}Edit{% endif %} Payment Voucher{% else %}Add New Payment Voucher{% endif %}</h6>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: '{% if is_error %}Error{% else %}Success{% endif %}',
+                            text: '{{ message }}',
+                            icon: '{% if is_error %}error{% else %}success{% endif %}',
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        {% if request.resolver_match.url_name == 'paymentvoucher_detail' %}
+            <div class="card p-3">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.invoice_number.id_for_label }}">Due Date</label>
+                            <div class="input-groupicon">
+                            <input type="text" name="date" placeholder="Choose Date" class="datetimepicker" value="{{ date }}">
+                                <a class="addonset">
+                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Invoice No</label>
+                            <p class="form-control-static">{{ object.invoice_no|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Payment Ledger</label>
+                            <p class="form-control-static">{{ object.payment_ledger.name|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Expense Ledger</label>
+                            <p class="form-control-static">{{ object.expense_ledger.name|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Sub Ledger Account</label>
+                            <p class="form-control-static">{{ object.sub_ledger.name|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Bank or Cash</label>
+                            <p class="form-check">
+                                {% if object.bank_or_cash %}
+                                    Bank{% if object.bank_name %} - {{ object.bank_name }}{% endif %}
+                                {% else %}
+                                    Cash
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Cheque No</label>
+                            <p class="form-control-static">{{ object.cheque_no|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Cheque Date</label>
+                            <p class="form-control-static">{{ object.cheque_date|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <p class="form-control-static">{{ object.amount|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Bill No</label>
+                            <p class="form-control-static">{{ object.bill_no|default:"-" }}</p>
+                        </div>
+                    </div>
+                    {% if object.file %}
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>File</label>
+                            <p class="form-control-static">
+                                <a href="{{ object.file.url }}" target="_blank">View File</a>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Details</label>
+                            <p class="form-control-static">{{ object.details|default:"-" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <a href="{% url 'paymentvoucher_list' %}" class="btn btn-cancel">Back to List</a>
+                        <a href="{% url 'paymentvoucher_update' object.id %}" class="btn btn-submit me-2">Edit</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card p-3">
+                    <div class="row mandatory-fields">
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.date.id_for_label }}">Date</label>
+                                <div class="input-groupicon">
+                                    <input type="text" name="date" placeholder="Choose Date" class="datetimepicker" value="{{ form.date.value|default:'' }}">
+                                    <a class="addonset">
+                                        <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger</label>
+                                {{ form.payment_ledger }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.sub_ledger.id_for_label }}">Sub Ledger Account</label>
+                                {{ form.sub_ledger }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.amount.id_for_label }}">Amount</label>
+                                {{ form.amount }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.bill_no.id_for_label }}">Bill No</label>
+                                {{ form.bill_no }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="{{ form.file.id_for_label }}">File</label>
+                                {{ form.file }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="{{ form.details.id_for_label }}">Details</label>
+                                {{ form.details }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-submit me-2">{% if object %}Update{% else %}Submit{% endif %}</button>
+                            <a href="{% url 'paymentvoucher_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock base %}
