@@ -151,7 +151,8 @@ class PaymentVoucher(BaseModel):
 
 class ReceiptVoucher(BaseModel):
     date = models.DateField(null=True, blank=True)
-    ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='receiptvoucher')
+    receipt_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='receipt_voucher_receipt')
+    income_ledger = models.ForeignKey(LedgerAccount, on_delete=models.RESTRICT, related_name='receipt_voucher_payment')
     sub_ledger = models.ForeignKey(SubLedgerAccount, on_delete=models.RESTRICT, related_name='receiptvoucher', null=True, blank=True)
 
     bank_or_cash = models.BooleanField(default=False, null=True, blank=True)
@@ -159,13 +160,11 @@ class ReceiptVoucher(BaseModel):
     cheque_no = models.CharField(max_length=255, null=True, blank=True)
     cheque_date =  models.DateField(null=True, blank=True)
     
-    debit_amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
-    credit_amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
-
+    amount = models.DecimalField(default=0, max_digits=20, decimal_places=2, blank=True)
     bill_no = models.IntegerField(default=0, null=True, blank=True)
     invoice_no = models.CharField(max_length=255, null=True, blank=True)
     
-    file = models.FileField(upload_to='account/PaymentVoucher/', null=True, blank=True)
+    file = models.FileField(upload_to='account/ReceiptVoucher/', null=True, blank=True)
     details = models.TextField(null=True, blank=True)
 
     class Meta:

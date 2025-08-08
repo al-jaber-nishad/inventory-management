@@ -42,6 +42,8 @@
                         <li><a href="{% url 'group_list' %}" class="{% if request.resolver_match.url_name == 'group_list' %}active{% endif %}">Groups</a></li>
                         <li><a href="{% url 'ledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'ledgeraccount_list' %}active{% endif %}">Ledger Accounts</a></li>
                         <li><a href="{% url 'subledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'subledgeraccount_list' %}active{% endif %}">Sub Ledgers</a></li>
+                        <li><a href="{% url 'paymentvoucher_list' %}" class="{% if request.resolver_match.url_name == 'paymentvoucher_list' %}active{% endif %}">Payment Vouchers</a></li>
+                        <li><a href="{% url 'receiptvoucher_list' %}" class="{% if request.resolver_match.url_name == 'receiptvoucher_list' %}active{% endif %}">Receipt Vouchers</a></li>
                     </ul>
                 </li>
 
