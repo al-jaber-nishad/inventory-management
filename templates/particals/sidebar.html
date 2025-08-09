@@ -106,11 +106,6 @@
                         </a>
                         <ul class="{% if 'user' in request.path %}show{% endif %}">
                             <li><a href="{% url 'user_list' %}" class="{% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">User List</a></li>
-                            {% if request.user.role.name == "ADMIN" %}
-                                <li><a href="{% url 'reseller_list' %}" class="{% if request.resolver_match.url_name == 'reseller_list' %}active{% endif %}">Reseller List</a></li>
-                            {% endif %}
-                            <li><a href="{% url 'client_list' %}" class="{% if request.resolver_match.url_name == 'client_list' %}active{% endif %}">Client List</a></li>
-                            <li><a href="{% url 'user_group_list' %}" class="{% if request.resolver_match.url_name == 'user_group_list' %}active{% endif %}">User Group List</a></li>
                         </ul>
                     </li>
                 {% endif %}

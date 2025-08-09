@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block base %}
 <div class="page-wrapper">
   <div class="content">
@@ -180,9 +179,6 @@
                     <td>{{ product.stock }}</td>
                   </tr>
                   {% empty %}
-                  <tr>
-                    <td colspan="4" class="text-center">No products available</td>
-                  </tr>
                   {% endfor %}
                 </tbody>
               </table>
@@ -230,9 +226,6 @@
                 </td>
               </tr>
               {% empty %}
-              <tr>
-                <td colspan="6" class="text-center">No low stock items</td>
-              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -242,59 +235,61 @@
   </div>
 </div>
 
+    <script src="{% static 'plugins/apexchart/apexcharts.min.js' %}"></script>
+
 <script>
-// Chart data from Django context
-var salesChartData = {
-  series: [{
-    name: "Sales",
-    type: "area",
-    data: [{% for data in monthly_data %}{{ data.sales }}{% if not forloop.last %},{% endif %}{% endfor %}]
-  }, {
-    name: "Purchase",
-    type: "line",
-    data: [{% for data in monthly_data %}{{ data.purchases }}{% if not forloop.last %},{% endif %}{% endfor %}]
-  }],
-  chart: {
-    height: 300,
-    type: "line",
-    zoom: {
-      enabled: false
-    }
-  },
-  stroke: {
-    curve: "straight"
-  },
-  fill: {
-    type: "solid",
-    opacity: [0.35, 1]
-  },
-  labels: [{% for data in monthly_data %}"{{ data.month }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-  markers: {
-    size: 0
-  },
-  yaxis: [{
-    title: {
-      text: "Amount (৳)"
-    }
-  }],
-  tooltip: {
-    shared: true,
-    intersect: false,
-    y: {
-      formatter: function (y) {
-        if (typeof y !== "undefined") {
-          return "৳" + y.toFixed(2);
+  // Chart data from Django context
+  var salesChartData = {
+    series: [{
+      name: "Sales",
+      type: "area",
+      data: [{% for data in monthly_data %}{{ data.sales }}{% if not forloop.last %},{% endif %}{% endfor %}]
+    }, {
+      name: "Purchase",
+      type: "line",
+      data: [{% for data in monthly_data %}{{ data.purchases }}{% if not forloop.last %},{% endif %}{% endfor %}]
+    }],
+    chart: {
+      height: 300,
+      type: "line",
+      zoom: {
+        enabled: false
+      }
+    },
+    stroke: {
+      curve: "straight"
+    },
+    fill: {
+      type: "solid",
+      opacity: [0.35, 1]
+    },
+    labels: [{% for data in monthly_data %}"{{ data.month }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    markers: {
+      size: 0
+    },
+    yaxis: [{
+      title: {
+        text: "Amount (৳)"
+      }
+    }],
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: function (y) {
+          if (typeof y !== "undefined") {
+            return "৳" + y.toFixed(2);
+          }
+          return y;
         }
-        return y;
       }
     }
+  };
+  
+  // Render chart
+  if (document.getElementById("sales_charts")) {
+    var salesChart = new ApexCharts(document.querySelector("#sales_charts"),);
+    salesChart.render();
   }
-};
-
-// Render chart
-if (document.getElementById("sales_charts")) {
-  var salesChart = new ApexCharts(document.querySelector("#sales_charts"), salesChartData);
-  salesChart.render();
-}
 </script>
 {% endblock %}

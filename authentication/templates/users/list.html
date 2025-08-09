@@ -20,33 +20,6 @@
                 <a href="{% url 'user_create' %}" class="btn btn-added"><img src="{% static 'img/icons/plus.svg' %}" alt="img">Add New</a>
             </div>
         </div>
-        
-        {% if not request.user.role.name == 'CLIENT' and not 'reseller' in request.path and not 'client' in request.path %}
-            <div class="row">
-                <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                    <div class="dash-count">
-                        <div class="dash-counts">
-                            <h4>{{ reseller_count }}</h4>
-                            <h5>Resellers</h5>
-                        </div>
-                        <div class="dash-imgs">
-                            <i data-feather="user"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                    <div class="dash-count das1">
-                        <div class="dash-counts">
-                            <h4>{{ client_count }}</h4>
-                            <h5>Clients</h5>
-                        </div>
-                        <div class="dash-imgs">
-                            <i data-feather="user-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
 
         {% if messages %}
             <script>
@@ -105,9 +78,6 @@
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                {% if request.user.role.name == 'ADMIN' %}
-                                    <th>Owner</th>
-                                {% endif %}
                                 <th>Primary Phone</th>
                                 <th>Is active</th>
                                 <th class='text-center'>Action</th>
@@ -131,9 +101,6 @@
                                     <td>{{ user.username }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.role }}</td>
-                                    {% if request.user.role.name == 'ADMIN' %}
-                                        <td>{{ user.owner_user.username }}</td>
-                                    {% endif %}
                                     <td>{{ user.primary_phone }}</td>
                                     <td>
                                         {% if user.is_active %}
@@ -153,11 +120,6 @@
                                             <img src="{% static 'img/icons/reset-password.png' %}" width='30px' alt="img">
                                         </a>
                                         
-                                        {% if 'reseller' in request.path or 'client' in request.path %}
-                                            <a class="me-3 add-update-btn" href="#" data-url="{% url 'user_change_balance' user.id %}" data-username="{{ user.username }}" title="Change Password">
-                                                <img src="{% static 'img/icons/dollar.png' %}" width='30px' alt="img">
-                                            </a>
-                                        {% endif %}
                                     </td>
 
                                 </tr>
