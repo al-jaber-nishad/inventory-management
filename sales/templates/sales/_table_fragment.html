@@ -22,7 +22,7 @@
                         <td>{{ sale.customer.name|default:"N/A" }}</td>
                         <td>{{ sale.sale_date|date:"M d, Y" }}</td>
                         <td>{{ sale.due_date|date:"M d, Y"|default:"N/A" }}</td>
-                        <td>${{ sale.total|floatformat:2 }}</td>
+                        <td>৳{{ sale.total|floatformat:2 }}</td>
                         <td>{{ sale.status }}</td>
                         {% comment %} <td>
                             {% if sale.status == 'draft' %}
