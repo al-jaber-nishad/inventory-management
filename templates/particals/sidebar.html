@@ -27,6 +27,7 @@
                         <li><a href="{% url 'unit_list' %}" class="{% if request.resolver_match.url_name == 'unit_list' %}active{% endif %}">Units</a></li>
                         <li><a href="{% url 'brand_list' %}" class="{% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}">Brands</a></li>
                         <li><a href="{% url 'productcategory_list' %}" class="{% if request.resolver_match.url_name == 'productcategory_list' %}active{% endif %}">Categories</a></li>
+                        <li><a href="{% url 'adjustment_list' %}" class="{% if request.resolver_match.url_name == 'adjustment_list' %}active{% endif %}">Inventory Adjustments</a></li>
                     </ul>
                 </li>
 
@@ -80,6 +81,18 @@
                     <ul class="{% if 'purchase' in request.path %}show{% endif %}">
                         <li><a href="{% url 'purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active{% endif %}">Purchases</a></li>
                         <li><a href="{% url 'purchase_return_list' %}" class="{% if request.resolver_match.url_name == 'purchase_return_list' %}active{% endif %}">Purchase Returns</a></li>
+                    </ul>
+                </li>
+
+                <li class="submenu">
+                    <a href="#" class="{% if 'report' in request.path %}active{% endif %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Report</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="{% if 'report' in request.path %}show{% endif %}">
+                        <li><a href="{% url 'balance_sheet_list' %}" class="{% if request.resolver_match.url_name == 'balance_sheet_list' %}active{% endif %}">Balance Sheet Report</a></li>
+                        <li><a href="{% url 'stock_report_list' %}" class="{% if request.resolver_match.url_name == 'stock_report_list' %}active{% endif %}">Stock Report</a></li>
                     </ul>
                 </li>
 

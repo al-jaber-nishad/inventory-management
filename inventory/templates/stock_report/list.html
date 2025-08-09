@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load balance_sheet_filters %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Stock Report</h4>
+                <h6>View current stock levels and inventory status</h6>
+            </div>
+            <div class="page-btn">
+                <a href="?export_format=pdf{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" class="btn btn-added" target="_blank">
+                    <img src="{% static 'img/icons/pdf.svg' %}" alt="img"> Export PDF
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: "{% if message.tags == 'success' %}Success{% else %}Error{% endif %}",
+                            text: '{{ message }}',
+                            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/product.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ total_products }}</h5>
+                        <h6>Total Products</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/dollar-square.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ total_stock_value|floatformat:2 }}</h5>
+                        <h6>Total Stock Value</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/dash1.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ low_stock_count }}</h5>
+                        <h6>Low Stock Items</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/dash2.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ out_of_stock_count }}</h5>
+                        <h6>Out of Stock</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get">
+                    <div class="table-top">
+                        <div class="search-set">
+                            <div class="form-group mb-0">
+                                <input type="text" name="search_input" placeholder="Search by product name or SKU" value="{{ filter_search }}">
+                            </div>
+                            <div class="col-lg-2 col-sm-6 col-4 pl-0">
+                                <div class="form-group mb-0">
+                                    <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="search-path">
+                            <a class="btn btn-filter" id="filter_search">
+                                <img src="{% static 'img/icons/filter.svg' %}" alt="img">
+                                <span>
+                                    <img src="{% static 'img/icons/closes.svg' %}" alt="img">
+                                </span>
+                            </a>
+                        </div>
+                        {% comment %} <div class="wordset">
+                            <ul>
+                                <li>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" href="?export_format=pdf{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" target="_blank"><img src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
+                                </li>
+                            </ul>
+                        </div> {% endcomment %}
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="card" id="filter_inputs">
+                        <div class="card-body pb-0">
+                            <div class="row">
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select name="category" class="form-control select2">
+                                            <option value="">All Categories</option>
+                                            {% for category in categories %}
+                                                <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>Brand</label>
+                                        <select name="brand" class="form-control select2">
+                                            <option value="">All Brands</option>
+                                            {% for brand in brands %}
+                                                <option value="{{ brand.id }}" {% if selected_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>Stock Status</label>
+                                        <select name="stock_status" class="form-control">
+                                            <option value="">All Status</option>
+                                            <option value="in_stock" {% if filter_stock_status == 'in_stock' %}selected{% endif %}>In Stock</option>
+                                            <option value="low_stock" {% if filter_stock_status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                                            <option value="out_of_stock" {% if filter_stock_status == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="input-group">
+                                            <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% include 'stock_report/_table_fragment.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter toggle
+    $('#filter_search').click(function() {
+        $('#filter_inputs').toggle();
+    });
+
+    // AJAX form submission for filters
+    $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        
+        $.ajax({
+            url: '{% url 'stock_report_list' %}',
+            type: 'GET',
+            data: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                $('#stock-report-table').html(response);
+            },
+            error: function() {
+                alert('Error loading data. Please try again.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

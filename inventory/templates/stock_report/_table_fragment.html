@@ -1,0 +1,117 @@
+{% load static %}
+{% load balance_sheet_filters %}
+<div id="stock-report-table">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Stock Qty</th>
+                    <th>Stock Value</th>
+                    <th>Status</th>
+                    <th>Last Transaction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in stock_data %}
+                    <tr>
+                        <td>{{ stock_data.start_index|add:forloop.counter0 }}</td>
+                        <td>
+                            <div class="productimgname">
+                                <div class="product-name">
+                                    <a href="#">{{ item.product.name }}</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ item.product.sku }}</td>
+                        <td>{{ item.product.category.name|default:"N/A" }}</td>
+                        <td>{{ item.product.brand.name|default:"N/A" }}</td>
+                        <td>{{ item.product.unit.name|default:"N/A" }}</td>
+                        <td>{{ item.product.price|floatformat:2 }}</td>
+                        <td>
+                            <span class="{% if item.stock_status == 'out_of_stock' %}text-danger{% elif item.stock_status == 'low_stock' %}text-warning{% else %}text-success{% endif %}">
+                                {{ item.current_stock }}
+                            </span>
+                        </td>
+                        <td>{{ item.stock_value|floatformat:2 }}</td>
+                        <td>
+                            {% if item.stock_status == 'out_of_stock' %}
+                                <span class="badges bg-lightred">Out of Stock</span>
+                            {% elif item.stock_status == 'low_stock' %}
+                                <span class="badges bg-lightyellow">Low Stock</span>
+                            {% else %}
+                                <span class="badges bg-lightgreen">In Stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.recent_transactions %}
+                                {% with last_transaction=item.recent_transactions.0 %}
+                                    <small>
+                                        {{ last_transaction.transaction_type|title }}
+                                        <br>{{ last_transaction.date|date:"M d, Y" }}
+                                        <br>Qty: {{ last_transaction.quantity }}
+                                    </small>
+                                {% endwith %}
+                            {% else %}
+                                <small class="text-muted">No transactions</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center">No stock data found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-container d-flex justify-content-between">
+        <div class="pagination table-info">
+            {% if stock_data %}
+                <p>
+                    Showing 
+                    {{ stock_data.start_index }} 
+                    to 
+                    {{ stock_data.end_index }} 
+                    of 
+                    {{ stock_data.paginator.count }} 
+                    entries
+                </p>
+            {% endif %}
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if stock_data.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ stock_data.previous_page_number }}{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" data-page="{{ stock_data.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+
+                {% for num in stock_data.paginator.page_range %}
+                    {% if stock_data.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > stock_data.number|add:-3 and num < stock_data.number|add:3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" data-page="{{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if stock_data.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ stock_data.next_page_number }}{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" data-page="{{ stock_data.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>

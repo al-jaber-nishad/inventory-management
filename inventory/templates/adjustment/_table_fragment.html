@@ -1,0 +1,117 @@
+{% load static %}
+<div id="adjustment-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Reason</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for adjustment in adjustment_list %}
+                    <tr>
+                        <td>{{ adjustment_list.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ adjustment.date|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <div class="productimgname">
+                                <div class="product-name">
+                                    <a href="#">{{ adjustment.product.name }}</a>
+                                    <small class="text-muted d-block">SKU: {{ adjustment.product.sku }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if adjustment.adjustment_type == 'increase' %}
+                                <span class="badges bg-lightgreen">{{ adjustment.get_adjustment_type_display }}</span>
+                            {% else %}
+                                <span class="badges bg-lightred">{{ adjustment.get_adjustment_type_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if adjustment.adjustment_type == 'increase' %}
+                                <span class="text-success">+{{ adjustment.quantity }}</span>
+                            {% else %}
+                                <span class="text-danger">-{{ adjustment.quantity }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ adjustment.reason|truncatechars:30 }}</td>
+                        <td>
+                            <a class="me-3" href="{% url 'adjustment_update' adjustment.id %}">
+                                <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                            </a>
+                            <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'adjustment_delete' adjustment.id %}">
+                                <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">No adjustments found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-container d-flex justify-content-between">
+        <div class="pagination table-info">
+            {% if adjustment_list %}
+                <p>
+                    Showing 
+                    {{ adjustment_list.start_index }} 
+                    to 
+                    {{ adjustment_list.end_index }} 
+                    of 
+                    {{ adjustment_list.paginator.count }} 
+                    entries
+                </p>
+            {% endif %}
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if 1 != adjustment_list.number and adjustment_list.number > 4 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" data-page="1">1</a>
+                    </li>
+                {% endif %}
+                {% if adjustment_list.number > 4 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% for num in adjustment_list.paginator.page_range %}
+                    {% if adjustment_list.number < 5 %}
+                        {% if num <= 5 %}
+                            <li class="page-item {% if adjustment_list.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        {% if num >= adjustment_list.number|add:-1 and num <= adjustment_list.number|add:1 %}
+                            <li class="page-item {% if adjustment_list.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}" data-page="{{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% if adjustment_list.number < adjustment_list.paginator.num_pages|add:-3 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% if adjustment_list.number|add:"3" < adjustment_list.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ adjustment_list.paginator.num_pages }}" data-page="{{ adjustment_list.paginator.num_pages }}">{{ adjustment_list.paginator.num_pages }}</a>
+                    </li>
+                {% endif %}
+                {% if adjustment_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ adjustment_list.next_page_number }}" data-page="{{ adjustment_list.next_page_number }}">></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,147 @@
+{% load balance_sheet_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stock Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .status-in-stock {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .status-low-stock {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .status-out-of-stock {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Stock Report</h1>
+    </div>
+    
+    <div class="summary">
+        <h3>Summary</h3>
+        <div class="summary-row">
+            <span>Total Products:</span>
+            <span>{{ total_products }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Total Stock Value:</span>
+            <span>{{ total_stock_value|floatformat:2 }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Low Stock Items:</span>
+            <span>{{ low_stock_count }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Out of Stock Items:</span>
+            <span>{{ out_of_stock_count }}</span>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Brand</th>
+                <th>Unit Price</th>
+                <th class="text-right">Stock Qty</th>
+                <th class="text-right">Stock Value</th>
+                <th class="text-center">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in stock_data %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.sku }}</td>
+                    <td>{{ item.product.category.name|default:"N/A" }}</td>
+                    <td>{{ item.product.brand.name|default:"N/A" }}</td>
+                    <td class="text-right">{{ item.product.price|floatformat:2 }}</td>
+                    <td class="text-right">{{ item.current_stock }}</td>
+                    <td class="text-right">{{ item.stock_value|floatformat:2 }}</td>
+                    <td class="text-center">
+                        {% if item.stock_status == 'out_of_stock' %}
+                            <span class="status-out-of-stock">Out of Stock</span>
+                        {% elif item.stock_status == 'low_stock' %}
+                            <span class="status-low-stock">Low Stock</span>
+                        {% else %}
+                            <span class="status-in-stock">In Stock</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center;">No stock data found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Generated on {% now "F d, Y \a\\t H:i" %}
+    </div>
+</body>
+</html>
