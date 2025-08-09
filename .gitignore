@@ -2,7 +2,8 @@ venv
 env
 media
 migrations
-# !migrations/__init__.py
+!migrations/__init__.py
+
 
 *.pyc
 __pycache__/
