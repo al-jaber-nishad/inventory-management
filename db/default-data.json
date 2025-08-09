@@ -1,0 +1,1435 @@
+[
+    {
+        "model": "authentication.role",
+        "pk": 1,
+        "fields": {
+            "name": "ADMIN",
+            "created_at": "2025-08-05T13:32:28.764Z",
+            "updated_at": "2025-08-05T13:32:28.764Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "authentication.role",
+        "pk": 2,
+        "fields": {
+            "name": "MANAGER",
+            "created_at": "2025-08-09T08:27:57.427Z",
+            "updated_at": "2025-08-09T08:27:57.427Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 1,
+        "fields": {
+            "name": "Current Assets",
+            "head_group": null,
+            "head_primarygroup": 1,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.622Z",
+            "updated_at": "2021-12-13T05:19:44.622Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 2,
+        "fields": {
+            "name": "Fixed Assets",
+            "head_group": null,
+            "head_primarygroup": 1,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.626Z",
+            "updated_at": "2021-12-13T05:19:44.626Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 3,
+        "fields": {
+            "name": "Investments",
+            "head_group": null,
+            "head_primarygroup": 1,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.626Z",
+            "updated_at": "2021-12-13T05:19:44.626Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 4,
+        "fields": {
+            "name": "Misc. Expenses (ASSETS)",
+            "head_group": null,
+            "head_primarygroup": 1,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.627Z",
+            "updated_at": "2021-12-13T05:19:44.627Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 5,
+        "fields": {
+            "name": "Bank Accounts",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.628Z",
+            "updated_at": "2021-12-13T05:19:44.628Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 6,
+        "fields": {
+            "name": "Cash-in-Hand",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.628Z",
+            "updated_at": "2021-12-13T05:19:44.628Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 7,
+        "fields": {
+            "name": "Deposits (Asssets)",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.629Z",
+            "updated_at": "2021-12-13T05:19:44.629Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 8,
+        "fields": {
+            "name": "Loans and Advances (Assets)",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.629Z",
+            "updated_at": "2021-12-13T05:19:44.629Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 9,
+        "fields": {
+            "name": "Stock-in-Hand",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.630Z",
+            "updated_at": "2021-12-13T05:19:44.630Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 10,
+        "fields": {
+            "name": "Sundry Debtors",
+            "head_group": 1,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.630Z",
+            "updated_at": "2021-12-13T05:19:44.631Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 11,
+        "fields": {
+            "name": "Branch / Divisions",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.637Z",
+            "updated_at": "2021-12-13T05:19:44.637Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 12,
+        "fields": {
+            "name": "Capital Account",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.637Z",
+            "updated_at": "2021-12-13T05:19:44.637Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 13,
+        "fields": {
+            "name": "Current Liabilities",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.638Z",
+            "updated_at": "2021-12-13T05:19:44.638Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 14,
+        "fields": {
+            "name": "Salary",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.639Z",
+            "updated_at": "2021-12-13T05:19:44.639Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 16,
+        "fields": {
+            "name": "Loans (Liability)",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.640Z",
+            "updated_at": "2021-12-13T05:19:44.640Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 17,
+        "fields": {
+            "name": "Suspense A/c",
+            "head_group": null,
+            "head_primarygroup": 2,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.641Z",
+            "updated_at": "2021-12-13T05:19:44.641Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 18,
+        "fields": {
+            "name": "Reserves & Surplus",
+            "head_group": 12,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.642Z",
+            "updated_at": "2021-12-13T05:19:44.642Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 19,
+        "fields": {
+            "name": "Duties & Taxes",
+            "head_group": 13,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.642Z",
+            "updated_at": "2021-12-13T05:19:44.642Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 20,
+        "fields": {
+            "name": "Provisions",
+            "head_group": 13,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.643Z",
+            "updated_at": "2021-12-13T05:19:44.643Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 21,
+        "fields": {
+            "name": "Sundry Creditors",
+            "head_group": 13,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.644Z",
+            "updated_at": "2021-12-13T05:19:44.644Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 22,
+        "fields": {
+            "name": "Bank OD A/c",
+            "head_group": 16,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.645Z",
+            "updated_at": "2021-12-13T05:19:44.645Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 23,
+        "fields": {
+            "name": "Secured Loans",
+            "head_group": 16,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.646Z",
+            "updated_at": "2021-12-13T05:19:44.646Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 24,
+        "fields": {
+            "name": "Unsecured Loans",
+            "head_group": 16,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.646Z",
+            "updated_at": "2021-12-13T05:19:44.646Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 25,
+        "fields": {
+            "name": "Direct Expenses",
+            "head_group": null,
+            "head_primarygroup": 3,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.647Z",
+            "updated_at": "2021-12-13T05:19:44.647Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 26,
+        "fields": {
+            "name": "Indirect Expenses",
+            "head_group": null,
+            "head_primarygroup": 3,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.647Z",
+            "updated_at": "2021-12-13T05:19:44.647Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 27,
+        "fields": {
+            "name": "Purchase Accounts",
+            "head_group": null,
+            "head_primarygroup": 3,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.648Z",
+            "updated_at": "2021-12-13T05:19:44.648Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 28,
+        "fields": {
+            "name": "Direct Incomes",
+            "head_group": null,
+            "head_primarygroup": 4,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.649Z",
+            "updated_at": "2021-12-13T05:19:44.649Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 29,
+        "fields": {
+            "name": "Indirect Incomes",
+            "head_group": null,
+            "head_primarygroup": 4,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.650Z",
+            "updated_at": "2021-12-13T05:19:44.650Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 30,
+        "fields": {
+            "name": "Sales Accounts",
+            "head_group": null,
+            "head_primarygroup": 4,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2021-12-13T05:19:44.651Z",
+            "updated_at": "2021-12-13T05:19:44.651Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 31,
+        "fields": {
+            "name": "Customers",
+            "head_group": 10,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": false,
+            "created_at": "2022-01-03T09:39:19.054Z",
+            "updated_at": "2022-01-03T09:39:19.054Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 36,
+        "fields": {
+            "name": "Members",
+            "head_group": 28,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": true,
+            "created_at": "2023-06-10T12:35:34.234Z",
+            "updated_at": "2023-12-06T05:24:11.348Z",
+            "created_by": 1,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 38,
+        "fields": {
+            "name": "Member Income",
+            "head_group": 28,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": true,
+            "created_at": "2023-06-17T07:44:22.960Z",
+            "updated_at": "2023-06-17T07:45:01.570Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 44,
+        "fields": {
+            "name": "FDR",
+            "head_group": 7,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": true,
+            "created_at": "2023-08-27T11:36:33.804Z",
+            "updated_at": "2023-08-29T06:00:29.965Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 45,
+        "fields": {
+            "name": "Member Expense",
+            "head_group": 25,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": true,
+            "created_at": "2023-08-31T05:38:17.558Z",
+            "updated_at": "2023-08-31T05:38:17.558Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.group",
+        "pk": 46,
+        "fields": {
+            "name": "Vendor",
+            "head_group": 21,
+            "head_primarygroup": null,
+            "is_deletable": false,
+            "is_primary": false,
+            "is_default": true,
+            "created_at": "2023-11-27T10:47:35.541Z",
+            "updated_at": "2023-11-27T10:47:35.541Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.primarygroup",
+        "pk": 1,
+        "fields": {
+            "name": "Assets",
+            "is_deletable": false,
+            "created_at": "2021-12-13T05:19:44.616Z",
+            "updated_at": "2021-12-13T05:19:44.616Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.primarygroup",
+        "pk": 2,
+        "fields": {
+            "name": "Liabilities",
+            "is_deletable": false,
+            "created_at": "2021-12-13T05:19:44.620Z",
+            "updated_at": "2021-12-13T05:19:44.620Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.primarygroup",
+        "pk": 3,
+        "fields": {
+            "name": "Expenses",
+            "is_deletable": false,
+            "created_at": "2021-12-13T05:19:44.620Z",
+            "updated_at": "2021-12-13T05:19:44.620Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.primarygroup",
+        "pk": 4,
+        "fields": {
+            "name": "Incomes",
+            "is_deletable": false,
+            "created_at": "2021-12-13T05:19:44.621Z",
+            "updated_at": "2021-12-13T05:19:44.621Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 1,
+        "fields": {
+            "name": "Agrani Bank Limited",
+            "created_at": "2023-06-21T05:31:56.342Z",
+            "updated_at": "2023-06-21T05:31:56.342Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 2,
+        "fields": {
+            "name": "AB Bank Limited",
+            "created_at": "2023-06-21T05:32:23.309Z",
+            "updated_at": "2023-06-21T05:32:23.309Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 3,
+        "fields": {
+            "name": "Al-Arafah Islami Bank Limited",
+            "created_at": "2023-06-21T05:32:45.410Z",
+            "updated_at": "2023-06-21T05:32:45.410Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 4,
+        "fields": {
+            "name": "Bangladesh Commerce Bank Ltd.",
+            "created_at": "2023-06-21T05:33:12.606Z",
+            "updated_at": "2023-06-21T05:33:12.606Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 5,
+        "fields": {
+            "name": "Bangladesh Development Bank Limited",
+            "created_at": "2023-06-21T05:33:41.331Z",
+            "updated_at": "2023-06-21T05:33:41.331Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 6,
+        "fields": {
+            "name": "Bangladesh Krishi Bank",
+            "created_at": "2023-06-21T05:34:06.333Z",
+            "updated_at": "2023-06-21T05:34:06.333Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 7,
+        "fields": {
+            "name": "Bank Asia",
+            "created_at": "2023-06-21T05:34:31.808Z",
+            "updated_at": "2023-06-21T05:34:31.808Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 8,
+        "fields": {
+            "name": "BASIC Bank Limited",
+            "created_at": "2023-06-21T05:34:50.295Z",
+            "updated_at": "2023-06-21T05:35:17.348Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 9,
+        "fields": {
+            "name": "Bank Alfalah",
+            "created_at": "2023-06-21T05:35:03.889Z",
+            "updated_at": "2023-06-21T05:35:03.889Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 10,
+        "fields": {
+            "name": "Bengal Commercial Bank",
+            "created_at": "2023-06-21T05:35:39.344Z",
+            "updated_at": "2023-06-21T05:35:39.344Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 11,
+        "fields": {
+            "name": "BRAC Bank",
+            "created_at": "2023-06-21T05:35:52.894Z",
+            "updated_at": "2023-06-21T05:35:52.894Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 13,
+        "fields": {
+            "name": "City Bank",
+            "created_at": "2023-06-21T05:36:30.844Z",
+            "updated_at": "2023-06-21T05:36:30.844Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 14,
+        "fields": {
+            "name": "Commercial Bank of Ceylon",
+            "created_at": "2023-06-21T05:36:43.435Z",
+            "updated_at": "2023-06-21T05:36:43.435Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 15,
+        "fields": {
+            "name": "Community Bank",
+            "created_at": "2023-06-21T05:36:56.992Z",
+            "updated_at": "2023-06-21T05:36:56.992Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 16,
+        "fields": {
+            "name": "Dhaka Bank Limited",
+            "created_at": "2023-06-21T05:37:18.739Z",
+            "updated_at": "2023-06-21T05:37:18.739Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 17,
+        "fields": {
+            "name": "Dutch-Bangla Bank Limited",
+            "created_at": "2023-06-21T05:37:40.100Z",
+            "updated_at": "2023-06-21T05:37:40.100Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 18,
+        "fields": {
+            "name": "Eastern Bank Ltd.",
+            "created_at": "2023-06-21T05:38:04.611Z",
+            "updated_at": "2023-06-21T05:38:04.611Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 19,
+        "fields": {
+            "name": "EXIM Bank",
+            "created_at": "2023-06-21T05:38:26.424Z",
+            "updated_at": "2023-06-21T05:38:26.424Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 20,
+        "fields": {
+            "name": "First Security Islami Bank Limited",
+            "created_at": "2023-06-21T05:38:38.791Z",
+            "updated_at": "2023-06-21T05:38:58.772Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 21,
+        "fields": {
+            "name": "Global Islami Bank",
+            "created_at": "2023-06-21T05:39:04.797Z",
+            "updated_at": "2023-06-21T05:39:04.797Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 22,
+        "fields": {
+            "name": "Habib Bank",
+            "created_at": "2023-06-21T05:39:24.275Z",
+            "updated_at": "2023-06-21T05:39:24.276Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 23,
+        "fields": {
+            "name": "HSBC Bank",
+            "created_at": "2023-06-21T05:39:34.293Z",
+            "updated_at": "2023-06-21T05:39:34.293Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 24,
+        "fields": {
+            "name": "ICB Islamic Bank",
+            "created_at": "2023-06-21T05:39:48.030Z",
+            "updated_at": "2023-06-21T05:39:48.030Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 25,
+        "fields": {
+            "name": "IFIC Bank",
+            "created_at": "2023-06-21T05:40:01.616Z",
+            "updated_at": "2023-06-21T05:40:01.616Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 26,
+        "fields": {
+            "name": "Islami Bank Bangladesh Limited",
+            "created_at": "2023-06-21T05:40:19.558Z",
+            "updated_at": "2023-08-28T05:13:36.299Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 27,
+        "fields": {
+            "name": "Jamuna Bank",
+            "created_at": "2023-06-21T05:40:40.334Z",
+            "updated_at": "2023-06-21T05:41:02.078Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 28,
+        "fields": {
+            "name": "Janata Bank Limited",
+            "created_at": "2023-06-21T05:41:13.731Z",
+            "updated_at": "2023-06-21T05:41:13.731Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 30,
+        "fields": {
+            "name": "Mercantile Bank Limited",
+            "created_at": "2023-06-21T05:41:57.196Z",
+            "updated_at": "2023-06-21T05:41:57.196Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 31,
+        "fields": {
+            "name": "Midland Bank Ltd.",
+            "created_at": "2023-06-21T05:42:17.396Z",
+            "updated_at": "2023-06-21T05:42:17.396Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 32,
+        "fields": {
+            "name": "Modhumoti Bank Ltd.",
+            "created_at": "2023-06-21T05:42:36.727Z",
+            "updated_at": "2023-06-21T05:42:36.727Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 34,
+        "fields": {
+            "name": "National Bank Ltd.",
+            "created_at": "2023-06-21T05:43:10.554Z",
+            "updated_at": "2023-06-21T05:43:10.554Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 35,
+        "fields": {
+            "name": "NCC Bank",
+            "created_at": "2023-06-21T05:43:30.538Z",
+            "updated_at": "2023-06-21T05:43:30.538Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 36,
+        "fields": {
+            "name": "NRB Commercial Bank",
+            "created_at": "2023-06-21T05:43:49.576Z",
+            "updated_at": "2023-06-21T05:43:49.576Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 40,
+        "fields": {
+            "name": "Prime Bank Limited",
+            "created_at": "2023-06-21T05:45:04.450Z",
+            "updated_at": "2023-06-21T05:45:04.450Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 41,
+        "fields": {
+            "name": "Probashi Kallyan Bank",
+            "created_at": "2023-06-21T05:45:23.358Z",
+            "updated_at": "2023-06-21T05:45:23.358Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 42,
+        "fields": {
+            "name": "Pubali Bank Limited",
+            "created_at": "2023-06-21T05:45:39.822Z",
+            "updated_at": "2023-06-21T05:45:39.822Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 43,
+        "fields": {
+            "name": "Rupali Bank Limited",
+            "created_at": "2023-06-21T05:46:09.675Z",
+            "updated_at": "2023-06-21T05:46:09.675Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 44,
+        "fields": {
+            "name": "SBAC Bank",
+            "created_at": "2023-06-21T05:47:08.524Z",
+            "updated_at": "2023-06-21T05:47:08.524Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 45,
+        "fields": {
+            "name": "Shahjalal Islami Bank Limited",
+            "created_at": "2023-06-21T05:47:16.518Z",
+            "updated_at": "2023-08-28T05:14:05.616Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 46,
+        "fields": {
+            "name": "Shimanto Bank Limited",
+            "created_at": "2023-06-21T05:47:36.878Z",
+            "updated_at": "2023-08-28T05:08:05.971Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 47,
+        "fields": {
+            "name": "Social Islami Bank Limited",
+            "created_at": "2023-06-21T05:47:53.498Z",
+            "updated_at": "2023-06-21T05:47:53.498Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 48,
+        "fields": {
+            "name": "Sonali Bank Limited",
+            "created_at": "2023-06-21T05:48:09.281Z",
+            "updated_at": "2023-06-21T05:48:09.281Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 49,
+        "fields": {
+            "name": "Southeast Bank Limited",
+            "created_at": "2023-06-21T05:48:25.754Z",
+            "updated_at": "2023-06-21T05:48:25.754Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 50,
+        "fields": {
+            "name": "Standard Bank Limited",
+            "created_at": "2023-06-21T05:48:39.465Z",
+            "updated_at": "2023-06-21T05:48:39.465Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 51,
+        "fields": {
+            "name": "Standard Chartered Bank",
+            "created_at": "2023-06-21T05:48:51.844Z",
+            "updated_at": "2023-06-21T05:48:51.844Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 52,
+        "fields": {
+            "name": "Trust Bank Ltd",
+            "created_at": "2023-06-21T05:49:05.547Z",
+            "updated_at": "2025-01-29T11:07:50.230Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 53,
+        "fields": {
+            "name": "Union Bank Limited",
+            "created_at": "2023-06-21T05:49:16.554Z",
+            "updated_at": "2023-08-28T05:14:52.107Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 54,
+        "fields": {
+            "name": "United Commercial Bank",
+            "created_at": "2023-06-21T05:49:30.565Z",
+            "updated_at": "2023-06-21T05:49:30.565Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 55,
+        "fields": {
+            "name": "Uttara Bank Limited",
+            "created_at": "2023-06-21T05:49:45.036Z",
+            "updated_at": "2023-06-21T05:49:45.036Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 56,
+        "fields": {
+            "name": "Woori Bank",
+            "created_at": "2023-06-21T05:49:59.021Z",
+            "updated_at": "2023-06-21T05:49:59.021Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 57,
+        "fields": {
+            "name": "Rajshahi Krishi Unnayan Bank",
+            "created_at": "2023-08-28T04:43:45.938Z",
+            "updated_at": "2023-08-28T04:43:45.938Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 58,
+        "fields": {
+            "name": "Bangladesh Commerce Bank Limited",
+            "created_at": "2023-08-28T04:45:08.251Z",
+            "updated_at": "2023-08-28T04:45:08.251Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 59,
+        "fields": {
+            "name": "Bank Asia Limited",
+            "created_at": "2023-08-28T04:45:57.346Z",
+            "updated_at": "2023-08-28T04:45:57.346Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 60,
+        "fields": {
+            "name": "Bengal Commercial Bank Limited",
+            "created_at": "2023-08-28T04:46:41.411Z",
+            "updated_at": "2023-08-28T04:46:41.411Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 61,
+        "fields": {
+            "name": "BRAC Bank Limited",
+            "created_at": "2023-08-28T04:47:16.046Z",
+            "updated_at": "2023-08-28T04:47:16.046Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 62,
+        "fields": {
+            "name": "City Bank Limited",
+            "created_at": "2023-08-28T04:47:59.718Z",
+            "updated_at": "2023-08-28T04:47:59.718Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 63,
+        "fields": {
+            "name": "Community Bank Bangladesh Limited",
+            "created_at": "2023-08-28T04:48:26.618Z",
+            "updated_at": "2023-08-28T04:48:26.618Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 64,
+        "fields": {
+            "name": "Dhaka Mercantile Co-Operative Bank Limited",
+            "created_at": "2023-08-28T04:50:16.589Z",
+            "updated_at": "2023-08-28T04:50:16.589Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 65,
+        "fields": {
+            "name": "Eastern Bank Limited",
+            "created_at": "2023-08-28T04:51:08.282Z",
+            "updated_at": "2023-08-28T04:51:08.282Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 66,
+        "fields": {
+            "name": "Jamuna Bank Limited",
+            "created_at": "2023-08-28T04:52:51.867Z",
+            "updated_at": "2023-08-28T04:52:51.867Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 67,
+        "fields": {
+            "name": "Meghna Bank Limited",
+            "created_at": "2023-08-28T04:53:44.135Z",
+            "updated_at": "2023-08-28T04:53:44.135Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 68,
+        "fields": {
+            "name": "Midland Bank Limited",
+            "created_at": "2023-08-28T04:55:20.488Z",
+            "updated_at": "2023-08-28T04:55:20.488Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 69,
+        "fields": {
+            "name": "Modhumoti Bank Limited",
+            "created_at": "2023-08-28T04:55:50.316Z",
+            "updated_at": "2023-08-28T04:55:50.316Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 70,
+        "fields": {
+            "name": "Mutual Trust Bank Limited",
+            "created_at": "2023-08-28T04:56:14.078Z",
+            "updated_at": "2023-08-28T04:56:14.078Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 71,
+        "fields": {
+            "name": "National Bank Limited",
+            "created_at": "2023-08-28T04:56:37.710Z",
+            "updated_at": "2023-08-28T04:56:37.710Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 72,
+        "fields": {
+            "name": "National Credit & Commerce Bank Limited",
+            "created_at": "2023-08-28T04:57:02.010Z",
+            "updated_at": "2023-08-28T04:57:02.010Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 73,
+        "fields": {
+            "name": "NRB Bank Limited",
+            "created_at": "2023-08-28T04:57:23.479Z",
+            "updated_at": "2023-08-28T04:57:23.479Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 74,
+        "fields": {
+            "name": "One Bank Limited",
+            "created_at": "2023-08-28T04:58:26.024Z",
+            "updated_at": "2023-08-28T04:58:26.024Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 75,
+        "fields": {
+            "name": "Padma Bank Limited",
+            "created_at": "2023-08-28T04:59:13.743Z",
+            "updated_at": "2023-08-28T04:59:13.743Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 76,
+        "fields": {
+            "name": "Premier Bank Limited",
+            "created_at": "2023-08-28T04:59:36.174Z",
+            "updated_at": "2023-08-28T04:59:36.174Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 77,
+        "fields": {
+            "name": "South Bangla Agriculture and Commerce Bank Limited",
+            "created_at": "2023-08-28T05:09:01.055Z",
+            "updated_at": "2023-08-28T05:09:01.055Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 78,
+        "fields": {
+            "name": "EXIM Bank Limited",
+            "created_at": "2023-08-28T05:11:12.288Z",
+            "updated_at": "2023-08-28T05:11:12.288Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "accounts.bank",
+        "pk": 80,
+        "fields": {
+            "name": "ICB Islamic Bank Limited",
+            "created_at": "2023-08-28T05:12:47.483Z",
+            "updated_at": "2023-08-28T05:12:47.483Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    }
+]
