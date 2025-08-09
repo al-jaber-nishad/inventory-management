@@ -119,29 +119,11 @@ class User(AbstractUser):
         LOCAL = 'local', _('Local')
         INTERNATIONAL = 'international', _('International')
 
-    company_name = models.CharField(max_length=255, null=True, blank=True)
-    
-    local_masking_balance = models.DecimalField(default=0, max_digits=20, decimal_places=2, null=True, blank=True)
-    local_non_masking_balance = models.DecimalField(default=0, max_digits=20, decimal_places=2, null=True, blank=True)
-    local_masking_message_amount = models.IntegerField(default=0)
-    local_non_masking_message_amount = models.IntegerField(default=0)
-    
-    internation_masking_balance = models.DecimalField(default=0, max_digits=20, decimal_places=2, null=True, blank=True)
-    internation_non_masking_balance = models.DecimalField(default=0, max_digits=20, decimal_places=2, null=True, blank=True)
-    internation_masking_message_amount = models.IntegerField(default=0)
-    internation_non_masking_message_amount = models.IntegerField(default=0)
-
-    package = models.ForeignKey('sms.Package', on_delete=models.SET_NULL, null=True, blank=True)
-    region_type = models.CharField(max_length=20, choices=Region.choices, null=True, blank=True)
-
     primary_phone = PhoneNumberField(verbose_name='phone_number', null=True, blank=True)
     secondary_phone = PhoneNumberField(null=True, blank=True)
 
-    sender_show_number = models.CharField(max_length=500, null=True, blank=True)
-    balance_valid_till = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     
-    owner_user = models.ForeignKey('self', on_delete=models.RESTRICT, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.RESTRICT, null=True, blank=True)
     user_group = models.ForeignKey(UserGroup, on_delete=models.RESTRICT, null=True, blank=True)
 
@@ -154,9 +136,7 @@ class User(AbstractUser):
     profile_picture = models.ImageField(upload_to="users/profile_picture/", null=True, blank=True)
     nid_image = models.ImageField(upload_to="users/nid/", null=True, blank=True)
     nid_no = models.CharField(max_length=32, null=True, blank=True)
-    trade_licence_image = models.ImageField(upload_to="users/nid/", null=True, blank=True)
-    trade_licence_no = models.CharField(max_length=32, null=True, blank=True)
-
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

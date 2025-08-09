@@ -81,7 +81,7 @@ urlpatterns = [
 
     path('users/<int:pk>/change-password/', views.user_change_password, name='user_change_password'),
 
-    path('user/user_change_balance/<int:pk>', views.user_change_balance, name='user_change_balance'),
+    # path('user/user_change_balance/<int:pk>', views.user_change_balance, name='user_change_balance'),
 
     path('user_list/get_user_balance/<int:pk>', views.get_user_balance, name='get_user_balance'),
 

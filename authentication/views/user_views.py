@@ -19,7 +19,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth import get_user_model
 from django.db.models import Q, Sum
 
-from sms.models import Package, SingleSms
+# from sms.models import Package, SingleSms
 from sms.utils.report_utils import export_to_pdf, export_transaction_report_to_excel
 # from commons.utils import is_ajax
 
@@ -35,17 +35,6 @@ def home(request):
     if not request.user.role.name == "ADMIN":
         user_list = user_list.filter(owner_user=request.user)
         balance_valid_till = request.user.balance_valid_till
-
-    # Message Counting for client
-    today_sms_summary_data = {}
-    if request.user.role.name == "CLIENT":
-        all_sms_list = SingleSms.objects.filter(sender=request.user, created_at__date=date.today()).exclude(Q(sms_api__isnull=False) & Q(status='failed'))
-        today_sms_summary_data = {
-            'number_of_message': all_sms_list.count(),
-            'message_count': all_sms_list.filter(is_sent=True).aggregate(total=Sum('msg_part_count'))['total'] or 0,
-            'number_of_sent_message': all_sms_list.filter(is_sent=True).count(),
-            'number_of_failed_message': all_sms_list.filter(is_sent=False).count()
-        }
 
     is_prefix_based = False
     if user.package:
@@ -64,7 +53,6 @@ def home(request):
         'reseller_count': reseller_count,
         'client_count': client_count,
         'balance_valid_till': balance_valid_till,
-        'today_sms_summary_data': today_sms_summary_data
     }
     
     return render(request, 'dashboard.html', context)
@@ -106,7 +94,7 @@ def profile(request):
     else:
         form = UserProfileForm(instance=user)
     
-    return render(request, 'authentication/users/profile.html', {'form': form})
+    return render(request, 'users/profile.html', {'form': form})
 
 
 # @login_required
@@ -200,7 +188,7 @@ def user_list(request):
         'reseller_count': reseller_count,
         'client_count': client_count
     }
-    return render(request, 'authentication/users/list.html', context)
+    return render(request, 'users/list.html', context)
 
 
 
@@ -213,7 +201,7 @@ def reseller_list(request):
     context = {
         'user_list': user_list,
     }
-    return render(request, 'authentication/users/list.html', context)
+    return render(request, 'users/list.html', context)
 
 
 
@@ -227,7 +215,7 @@ def client_list(request):
     context = {
         'user_list': user_list,
     }
-    return render(request, 'authentication/users/list.html', context)
+    return render(request, 'users/list.html', context)
 
 
 
@@ -239,13 +227,12 @@ def user_detail(request, pk):
         return redirect('user_group_list')
     
     context = {'user': user}
-    return render(request, 'authentication/users/detail.html', context)
+    return render(request, 'users/detail.html', context)
 
 
 @login_required
 @transaction.atomic
 def user_create(request):
-    packages = Package.objects.all()
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, request.FILES, request=request)
         try:
@@ -253,73 +240,6 @@ def user_create(request):
                 user = form.save(commit=False)
                 user.owner_user = request.user
                 user.save()
-
-                balance_amount = Decimal(request.POST.get('balance_amount', 0))
-                balance_type = request.POST.get('balance_type', None)
-                region_type = form.cleaned_data.get('region_type', None)
-                respective_package_price = 0
-
-                if not balance_type or not region_type:
-                    raise ValueError("Select balance type and region type")
-
-                print("balance_type", balance_type)
-                print("balance_amount", balance_amount)
-
-                try:
-                    if balance_type == 'masking':
-                        if user.region_type == 'local':
-                            respective_package_price = user.package.masking_national_msg_charge
-                            message_amount = int(balance_amount/respective_package_price)
-                            if user.package.prefix_based:
-                                user.local_masking_balance += balance_amount
-                            else:
-                                user.local_masking_message_amount += message_amount
-
-                        elif user.region_type == 'international':
-                            respective_package_price = user.package.masking_internation_msg_charge
-                            message_amount = int(balance_amount/respective_package_price)
-                            if user.package.prefix_based:
-                                user.internation_masking_balance += balance_amount
-                            else:
-                                user.internation_masking_message_amount += message_amount
-
-                    elif balance_type == 'non_masking':
-                        if user.region_type == 'local':
-                            respective_package_price = user.package.non_masking_national_msg_charge
-                            message_amount = int(balance_amount/respective_package_price)
-                            if user.package.prefix_based:
-                                user.local_non_masking_balance += balance_amount
-                            else:
-                                user.local_non_masking_message_amount += message_amount
-
-                        elif user.region_type == 'international':
-                            respective_package_price = user.package.non_masking_internation_msg_charge
-                            message_amount = int(balance_amount/respective_package_price)
-                            if user.package.prefix_based:
-                                user.internation_non_masking_balance += balance_amount
-                            else:
-                                user.internation_non_masking_message_amount += message_amount
-                        
-                    print("user", user)
-                    user.save()
-
-                except Exception as e:
-                    print("error in the try exception bloclk", str(e))
-
-                transaction_id = generate_transaction_id()
-                Transaction.objects.create(
-                    recharged_to=user,
-                    recharged_by=request.user,
-                    transaction_id=transaction_id,
-                    balance=balance_amount,
-                    message_amount=message_amount,
-                    transaction_type=Transaction.TransactionType.CREDIT,
-                    balance_type=balance_type,
-                    region_type=region_type,
-                    balance_valid_till=user.balance_valid_till,
-                    remakrs="Inital Credit",
-                    respective_package_price=respective_package_price
-                )
 
                 messages.success(request, 'User created successfully.')
                 return redirect('user_list')
@@ -331,35 +251,27 @@ def user_create(request):
                 # Combine all errors into a single list
                 errors = list(non_field_errors) + [error for field, error_list in field_errors.items() for error in error_list]
 
-                return render(request, 'authentication/users/create.html', {
+                return render(request, 'users/create.html', {
                     'form': form,
                     'errors': errors,
-                    'packages': packages,
                 })
         except Exception as e:
             transaction.set_rollback(True)
-            return render(request, 'authentication/users/create.html', {
+            return render(request, 'users/create.html', {
                 'form': form,
                 'errors': [str(e)],
-                'packages': packages,
             })
     else:
         form = CustomUserCreationForm(request=request)
 
-    return render(request, 'authentication/users/create.html', {'form': form, 'packages': packages})
+    return render(request, 'users/create.html', {'form': form})
 
 
 
 @login_required
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
-    local_masking_balance = user.local_masking_balance
-    local_non_masking_balance = user.local_non_masking_balance
-    internation_masking_balance = user.internation_masking_balance
-    internation_non_masking_balance = user.internation_non_masking_balance
-
-    packages = Package.objects.all()
-
+    
     if request.user.role.name != "ADMIN" and user.owner_user != request.user:
         messages.error(request, 'You do not have permission to update this user group.')
         return redirect('user_group_list')
@@ -368,10 +280,7 @@ def user_update(request, pk):
         form = CustomUserUpdateForm(request.POST, request.FILES, request=request, instance=user)
         if form.is_valid():
             user = form.save(commit=False) 
-            user.owner_user = request.user
-            # primary_phone = form.cleaned_data.get('primary_phone')
-            # primary_phone = '+880' + primary_phone[:10]
-            # user.primary_phone = primary_phone
+            
             user.save()
             messages.success(request, 'User updated successfully.')
             return redirect('user_list')
@@ -385,37 +294,15 @@ def user_update(request, pk):
                     else:
                         errors.append(error)
 
-            return render(request, 'authentication/users/detail.html', {
+            return render(request, 'users/detail.html', {
                 'form': form,
                 'errors': errors,
-                'local_masking_balance': local_masking_balance,
-                'local_non_masking_balance': local_non_masking_balance,
-                'internation_masking_balance': internation_masking_balance,
-                'internation_non_masking_balance': internation_non_masking_balance,
-                'local_masking_message_amount': user.local_masking_message_amount,
-                'local_non_masking_message_amount': user.local_non_masking_message_amount,
-                'internation_masking_message_amount': user.internation_masking_message_amount,
-                'internation_non_masking_message_amount': user.internation_non_masking_message_amount,
-                'balance_valid_till': user.balance_valid_till,
-                'packages': packages,
-                'region_type': user.region_type
             })
     else:
         form = CustomUserUpdateForm(request=request, instance=user)
 
-    return render(request, 'authentication/users/detail.html', {
-        'form': form, 
-        'local_masking_balance': local_masking_balance, 
-        'local_non_masking_balance': local_non_masking_balance,
-        'internation_masking_balance': internation_masking_balance,
-        'internation_non_masking_balance': internation_non_masking_balance,
-        'local_masking_message_amount': user.local_masking_message_amount,
-        'local_non_masking_message_amount': user.local_non_masking_message_amount,
-        'internation_masking_message_amount': user.internation_masking_message_amount,
-        'internation_non_masking_message_amount': user.internation_non_masking_message_amount,
-        'balance_valid_till': user.balance_valid_till,
-        'packages': packages,
-        'region_type': user.region_type
+    return render(request, 'users/detail.html', {
+        'form': form,
     })
 
 
@@ -471,172 +358,6 @@ def get_user_balance(request, pk):
     else:
         data = {}
     return JsonResponse(data)
-
-
-@login_required
-@transaction.atomic
-def user_change_balance(request, pk):
-    if request.method == 'POST':
-        client_user = get_object_or_404(User, pk=pk)
-        reseller_user = request.user
-        balance_amount = request.POST.get('balance_amount')
-        balance_type = request.POST.get('balance_type')
-        transaction_type = request.POST.get('transaction_type')
-        balance_valid_till = request.POST.get('balance_valid_till')
-        remakrs = request.POST.get('remakrs')
-        print(balance_amount, balance_type, transaction_type, balance_valid_till)
-
-        if not balance_amount or not balance_type or not transaction_type or not balance_valid_till:
-            return JsonResponse({'success': False, 'message': 'Please fill up all the fields properly.'}, status=400)
-
-        if balance_valid_till:
-            balance_valid_till = date.fromisoformat(balance_valid_till)
-
-        # Update balance_valid_till if it's greater than the current one
-        if balance_valid_till and (not client_user.balance_valid_till or client_user.balance_valid_till < balance_valid_till):
-            client_user.balance_valid_till = balance_valid_till
-
-        # if client_user.balance_valid_till < balance_valid_till:
-        #     client_user.balance_valid_till = balance_valid_till
-
-        message_amount=None
-        respective_package_price=None
-        try:
-            balance_amount = Decimal(balance_amount)
-        except InvalidOperation:
-            return JsonResponse({'success': False, 'message': 'Invalid balance amount. Please enter a valid number.'})
-        
-
-        print("transaction_type", transaction_type)
-
-        
-
-        try:
-            # if balance_type == 'masking':
-            #     if transaction_type == 'Credit':
-            #         if region_type == 'local':
-            #             user.local_masking_balance += balance_amount
-            #             respective_package_price = user.package.masking_national_msg_charge
-            #         elif region_type == 'international':
-            #             user.internation_masking_balance += balance_amount
-            #             respective_package_price = user.package.masking_internation_msg_charge
-            #     elif transaction_type == 'Debit':
-            #         if region_type == 'local':
-            #             user.local_masking_balance -= balance_amount
-            #             respective_package_price = user.package.masking_national_msg_charge
-            #         elif region_type == 'international':
-            #             user.internation_masking_balance -= balance_amount
-            #             respective_package_price = user.package.masking_internation_msg_charge
-            # elif balance_type == 'non_masking':
-            #     if transaction_type == 'Credit':
-            #         if region_type == 'local':
-            #             user.local_non_masking_balance += balance_amount
-            #             respective_package_price = user.package.non_masking_national_msg_charge
-            #         elif region_type == 'international':
-            #             user.internation_non_masking_balance += balance_amount
-            #             respective_package_price = user.package.non_masking_internation_msg_charge
-            #     elif transaction_type == 'Debit':
-            #         if region_type == 'local':
-            #             respective_package_price = user.package.non_masking_national_msg_charge
-            #             respective_package_price = balance_amount
-            #         elif region_type == 'international':
-            #             user.internation_non_masking_balance -= balance_amount
-            #             respective_package_price = user.package.non_masking_internation_msg_charge
-            print("client_user.region_type", client_user.region_type)
-
-
-            if balance_type == 'masking':
-                if transaction_type == 'Credit':
-                    if client_user.region_type == 'local':
-                        respective_package_price = client_user.package.masking_national_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.local_masking_balance += balance_amount
-                        else:
-                            client_user.local_masking_message_amount += message_amount
-
-                    elif client_user.region_type == 'international':
-                        respective_package_price = client_user.package.masking_internation_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.internation_masking_balance += balance_amount
-                        else:
-                            client_user.internation_masking_message_amount += message_amount
-                elif transaction_type == 'Debit':
-                    if client_user.region_type == 'local':
-                        respective_package_price = client_user.package.masking_national_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.local_masking_balance -= balance_amount
-                        else:
-                            client_user.local_masking_message_amount -= message_amount
-
-                    elif client_user.region_type == 'international':
-                        respective_package_price = client_user.package.masking_internation_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.internation_masking_balance -= balance_amount
-                        else:
-                            client_user.internation_masking_message_amount -= message_amount
-
-            elif balance_type == 'non_masking':
-                if transaction_type == 'Credit':
-                    if client_user.region_type == 'local':
-                        respective_package_price = client_user.package.non_masking_national_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.local_non_masking_balance += balance_amount
-                        else:
-                            client_user.local_non_masking_message_amount += message_amount
-
-                    elif client_user.region_type == 'international':
-                        respective_package_price = client_user.package.non_masking_internation_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.internation_non_masking_balance += balance_amount
-                        else:
-                            client_user.internation_non_masking_message_amount += message_amount
-
-                elif transaction_type == 'Debit':
-                    if client_user.region_type == 'local':
-                        respective_package_price = client_user.package.non_masking_national_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.local_non_masking_balance -= balance_amount
-                        else:
-                            client_user.local_non_masking_message_amount -= message_amount
-
-                    elif client_user.region_type == 'international':
-                        respective_package_price = client_user.package.non_masking_internation_msg_charge
-                        message_amount = int(balance_amount/respective_package_price)
-                        if client_user.package.prefix_based:
-                            client_user.internation_non_masking_balance -= balance_amount
-                        else:
-                            client_user.internation_non_masking_message_amount -= message_amount
-                            
-
-            client_user.save()
-
-            transaction_id = generate_transaction_id()
-            Transaction.objects.create(
-                recharged_to=client_user,
-                recharged_by=reseller_user,
-                transaction_id=transaction_id,
-                balance=balance_amount,
-                message_amount=message_amount,
-                transaction_type=transaction_type,
-                balance_type=balance_type,
-                region_type=client_user.region_type,
-                balance_valid_till=balance_valid_till,
-                remakrs=remakrs,
-                respective_package_price=respective_package_price
-            )
-        except Exception as e:
-            transaction.set_rollback(True)
-            return JsonResponse({'success': False, 'message': f'{str(e)}'}, status=400)
-
-        return JsonResponse({'success': True, 'message': 'Balance updated successfully.'})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 
 def generate_transaction_id(length=10):
@@ -739,7 +460,7 @@ def transaction_report(request):
 #         'has_api': has_api,
 #         'developer_api_instance': developer_api_instance
 #     }
-#     return render(request, 'authentication/users/developer_api.html', context)
+#     return render(request, 'users/developer_api.html', context)
 
 
 
@@ -774,7 +495,7 @@ def transaction_report(request):
 #         'has_api': has_api,
 #         'developer_api_instance': DeveloperApi.objects.filter(user=request.user).first()
 #     }
-#     return render(request, 'authentication/users/developer_api.html', context)
+#     return render(request, 'users/developer_api.html', context)
 
 @login_required
 def generate_api_key(request):
@@ -820,4 +541,4 @@ def developer_api(request):
         'has_api': has_api,
         'developer_api_instance': developer_api_instance
     }
-    return render(request, 'authentication/users/developer_api.html', context)
+    return render(request, 'users/developer_api.html', context)

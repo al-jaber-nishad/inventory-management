@@ -15,11 +15,11 @@ urlpatterns = [
 	path('', include('authentication.urls.contact_group_urls')),
 
 
-	path('', include('sms.urls.assigned_package_urls')),
-	path('', include('sms.urls.assigned_sms_api_urls')),
-	path('', include('sms.urls.package_urls')),
-	path('', include('sms.urls.sms_api_urls')),
-	path('', include('sms.urls.sms_urls')),
+	# path('', include('sms.urls.assigned_package_urls')),
+	# path('', include('sms.urls.assigned_sms_api_urls')),
+	# path('', include('sms.urls.package_urls')),
+	# path('', include('sms.urls.sms_api_urls')),
+	# path('', include('sms.urls.sms_urls')),
 
 	path('inventory/', include('product.urls')),
 	path('accounts/', include('accounts.urls')),

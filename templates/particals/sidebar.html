@@ -96,7 +96,7 @@
                     </ul>
                 </li>
 
-                <li class="submenu">
+                {% comment %} <li class="submenu">
                     <a href="#" class="{% if 'sms' in request.path %}active{% endif %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
                         <span>SMS</span>
@@ -115,9 +115,9 @@
                             <li><a href="{% url 'failed_and_pending_sms_list' %}" class="{% if request.resolver_match.url_name == 'failed_and_pending_sms_list' %}active{% endif %}">Failed and Pending SMS</a></li>
                         {% endif %}
                     </ul>
-                </li>
+                </li> {% endcomment %}
 
-                {% if request.user.role.name == "ADMIN" or request.user.role.name == "RESELLER" %}
+                {% if request.user.role.name == "ADMIN" %}
                     <li class="submenu">
                         <a href="#" class="{% if 'user' in request.path %}active{% endif %}">
                             <img src="{% static 'img/icons/users1.svg' %}" alt="img" />
@@ -145,60 +145,6 @@
                     </li>
                 {% endif %}
 
-                {% if request.user.role.name == 'ADMIN' %}
-                    <li class="submenu">
-                        <a href="#" class="{% if 'sms_api' in request.path %}active{% endif %}">
-                            <img src="{% static 'img/icons/places.svg' %}" alt="img" />
-                            <span>Assign SMS API</span>
-                            <span class="menu-arrow"></span>
-                        </a>
-                        <ul class="{% if 'sms_api' in request.path %}show{% endif %}">
-                            <li><a href="{% url 'sms_api_list' %}" class="{% if request.resolver_match.url_name == 'sms_api_list' %}active{% endif %}">SMS API List</a></li>
-                            <li><a href="{% url 'assigned_sms_api_list' %}" class="{% if request.resolver_match.url_name == 'assigned_sms_api_list' %}active{% endif %}">Assigned SMS API List</a></li>
-                        </ul>
-                    </li>
-                {% endif %}
-
-                <li class="submenu">
-                    <a href="#" class="{% if 'contact' in request.path %}active{% endif %}">
-                        <img src="{% static 'img/icons/users1.svg' %}" alt="img" />
-                        <span>Phone Book</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="{% if 'contact' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'contact_group_list' %}" class="{% if request.resolver_match.url_name == 'contact_group_list' %}active{% endif %}">Contact Group</a></li>
-                        <li><a href="{% url 'contact_list' %}" class="{% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}">Contact List</a></li>
-                    </ul>
-                </li>
-
-                {% if request.user.role.name == 'CLIENT' %}
-                    <li class="{% if request.resolver_match.url_name == 'developer_api' %}active{% endif %}">
-                        <a href="{% url 'developer_api' %}">
-                            <img src="{% static 'img/icons/scanners.svg' %}" alt="img" />
-                            <span>Developers</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-                <li class="submenu">
-                    <a href="#" class="{% if 'report' in request.path %}active{% endif %}">
-                        <img src="{% static 'img/icons/settings.svg' %}" alt="img" />
-                        <span>Reports</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="{% if 'report' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'sms_report_summary' %}" class="{% if request.resolver_match.url_name == 'sms_report_summary' %}active{% endif %}">Summary Report</a></li>
-                        <li><a href="{% url 'sms_history_report' %}" class="{% if request.resolver_match.url_name == 'sms_history_report' %}active{% endif %}">SMS History Report</a></li>
-                        <li><a href="{% url 'sms_group_report' %}" class="{% if request.resolver_match.url_name == 'sms_group_report' %}active{% endif %}">SMS Group Report</a></li>
-                        
-                        {% if request.user.role.name == 'ADMIN' %}
-                            <li><a href="{% url 'api_history_report' %}" class="{% if request.resolver_match.url_name == 'api_history_report' %}active{% endif %}">API History Report</a></li>
-                            <li><a href="{% url 'sms_api_summary_report' %}" class="{% if request.resolver_match.url_name == 'sms_api_summary_report' %}active{% endif %}">SMS API Summary Report</a></li>
-                            <li><a href="{% url 'balance_log_report' %}" class="{% if request.resolver_match.url_name == 'balance_log_report' %}active{% endif %}">Balance Log Report</a></li>
-                        {% endif %}
-                        <li><a href="{% url 'transaction_report' %}" class="{% if request.resolver_match.url_name == 'transaction_report' %}active{% endif %}">Transaction Report</a></li>
-                    </ul>
-                </li>
             </ul>
         </div>
     </div>

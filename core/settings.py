@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     # Local
     'authentication',
     'accounts',
-    'sms',
+    # 'sms',
     'product',
     'sales',
     'sales_return',

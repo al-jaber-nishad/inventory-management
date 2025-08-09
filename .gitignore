@@ -1,8 +1,8 @@
 venv
 env
 media
-# migrations
-baira-data/
+migrations
+# !migrations/__init__.py
 
 *.pyc
 __pycache__/
