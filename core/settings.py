@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'purchase',
     'purchase_return',
     'inventory',
+    'commons',
 ]
 
 INSTALLED_APPS += ['sequences.apps.SequencesConfig']

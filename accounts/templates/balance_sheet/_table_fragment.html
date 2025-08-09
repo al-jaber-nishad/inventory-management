@@ -1,0 +1,118 @@
+{% load static %}
+{% load balance_sheet_filters %}
+<div id="balance-sheet-report">
+    <div class="table-responsive">
+        <div class="row">
+            <!-- Assets Section -->
+            <div class="col-md-6">
+                <h5 class="mb-3">ASSETS</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group_name, items in grouped_assets.items %}
+                            <tr class="bg-light">
+                                <td><strong>{{ group_name }}</strong></td>
+                                <td class="text-end"><strong>{{ assets_group_totals|get_item:group_name|floatformat:2 }}</strong></td>
+                            </tr>
+                            {% for item in items %}
+                                <tr>
+                                    <td class="ps-4">{{ item.ledger_name }}</td>
+                                    <td class="text-end">{{ item.balance|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center">No asset accounts found for the selected period.</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-success text-white">
+                            <td><strong>TOTAL ASSETS</strong></td>
+                            <td class="text-end"><strong>{{ total_assets|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Liabilities Section -->
+            <div class="col-md-6">
+                <h5 class="mb-3">LIABILITIES & EQUITY</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group_name, items in grouped_liabilities.items %}
+                            <tr class="bg-light">
+                                <td><strong>{{ group_name }}</strong></td>
+                                <td class="text-end"><strong>{{ liabilities_group_totals|get_item:group_name|floatformat:2 }}</strong></td>
+                            </tr>
+                            {% for item in items %}
+                                <tr>
+                                    <td class="ps-4">{{ item.ledger_name }}</td>
+                                    <td class="text-end">{{ item.balance|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center">No liability accounts found for the selected period.</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="bg-danger text-white">
+                            <td><strong>TOTAL LIABILITIES & EQUITY</strong></td>
+                            <td class="text-end"><strong>{{ total_liabilities|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Balance Sheet Summary</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h6>Period</h6>
+                                    <p>{{ filter_date_from }} to {{ filter_date_to }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h6>Total Assets</h6>
+                                    <p class="text-success"><strong>{{ total_assets|floatformat:2 }}</strong></p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h6>Total Liabilities & Equity</h6>
+                                    <p class="text-danger"><strong>{{ total_liabilities|floatformat:2 }}</strong></p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h6>Difference</h6>
+                                    {% with difference=total_assets|sub:total_liabilities %}
+                                        <p class="{% if difference >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            <strong>{{ difference|floatformat:2 }}</strong>
+                                        </p>
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

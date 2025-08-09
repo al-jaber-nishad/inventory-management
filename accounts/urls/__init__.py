@@ -5,6 +5,7 @@ from .ledgeraccount import urlpatterns as ledgeraccount_patterns
 from .subledgeraccount import urlpatterns as subledgeraccount_patterns
 from .paymentvoucher import urlpatterns as paymentvoucher_patterns
 from .receiptvoucher import urlpatterns as receiptvoucher_patterns
+from .balance_sheet import urlpatterns as balance_sheet_patterns
 
 urlpatterns = [
     *bank_patterns,
@@ -14,4 +15,5 @@ urlpatterns = [
     *subledgeraccount_patterns,
     *paymentvoucher_patterns,
     *receiptvoucher_patterns,
+    *balance_sheet_patterns,
 ]

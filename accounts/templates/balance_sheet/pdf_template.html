@@ -1,0 +1,190 @@
+{% load balance_sheet_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Balance Sheet Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .period {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .balance-sheet {
+            display: flex;
+            gap: 20px;
+        }
+        .section {
+            flex: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .group-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        .subaccount {
+            padding-left: 20px;
+        }
+        .total-row {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        .liabilities-total {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .summary {
+            margin-top: 30px;
+            border-top: 2px solid #333;
+            padding-top: 20px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Balance Sheet Report</h1>
+    </div>
+    
+    <div class="period">
+        Period: {{ filter_date_from }} to {{ filter_date_to }}
+    </div>
+
+    <div class="balance-sheet">
+        <!-- Assets Section -->
+        <div class="section">
+            <h3>ASSETS</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group_name, items in grouped_assets.items %}
+                        <tr class="group-header">
+                            <td>{{ group_name }}</td>
+                            <td class="text-right">{{ assets_group_totals|get_item:group_name|floatformat:2 }}</td>
+                        </tr>
+                        {% for item in items %}
+                            <tr>
+                                <td class="subaccount">{{ item.ledger_name }}</td>
+                                <td class="text-right">{{ item.balance|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" style="text-align: center;">No asset accounts found.</td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td>TOTAL ASSETS</td>
+                        <td class="text-right">{{ total_assets|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Liabilities Section -->
+        <div class="section">
+            <h3>LIABILITIES & EQUITY</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group_name, items in grouped_liabilities.items %}
+                        <tr class="group-header">
+                            <td>{{ group_name }}</td>
+                            <td class="text-right">{{ liabilities_group_totals|get_item:group_name|floatformat:2 }}</td>
+                        </tr>
+                        {% for item in items %}
+                            <tr>
+                                <td class="subaccount">{{ item.ledger_name }}</td>
+                                <td class="text-right">{{ item.balance|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" style="text-align: center;">No liability accounts found.</td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="liabilities-total">
+                        <td>TOTAL LIABILITIES & EQUITY</td>
+                        <td class="text-right">{{ total_liabilities|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="summary">
+        <h3>Summary</h3>
+        <div class="summary-row">
+            <span>Total Assets:</span>
+            <span>{{ total_assets|floatformat:2 }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Total Liabilities & Equity:</span>
+            <span>{{ total_liabilities|floatformat:2 }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Difference:</span>
+            <span>{{ total_assets|sub:total_liabilities|floatformat:2 }}</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        Generated on {% now "F d, Y \a\\t H:i" %}
+    </div>
+</body>
+</html>

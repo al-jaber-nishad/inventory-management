@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load balance_sheet_filters %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Balance Sheet Report</h4>
+                <h6>View your financial position</h6>
+            </div>
+            <div class="page-btn">
+                <a href="?export_format=pdf&date_from={{ filter_date_from }}&date_to={{ filter_date_to }}" class="btn btn-added" target="_blank">
+                    <img src="{% static 'img/icons/pdf.svg' %}" alt="img"> Export PDF
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: "{% if message.tags == 'success' %}Success{% else %}Error{% endif %}",
+                            text: '{{ message }}',
+                            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get">
+                    <div class="table-top">
+                        <div class="search-set">
+                            <div class="search-path">
+                                <a class="btn btn-filter" id="filter_search">
+                                    <img src="{% static 'img/icons/filter.svg' %}" alt="img">
+                                    <span>
+                                        <img src="{% static 'img/icons/closes.svg' %}" alt="img">
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="wordset">
+                            <ul>
+                                <li>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel" href="?export_format=excel&date_from={{ filter_date_from }}&date_to={{ filter_date_to }}"><img src="{% static 'img/icons/excel.svg' %}" alt="img"></a>
+                                </li>
+                                <li>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" href="?export_format=pdf&date_from={{ filter_date_from }}&date_to={{ filter_date_to }}" target="_blank"><img src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="card" id="filter_inputs" style="display: none;">
+                        <div class="card-body pb-0">
+                            <div class="row">
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>From Date</label>
+                                        <div class="input-groupicon">
+                                            <input type="text" class="form-control datetimepicker" name="date_from" placeholder="DD-MM-YYYY" value="{{ filter_date_from }}">
+                                            <div class="addonset">
+                                                <img src="{% static 'img/icons/datepicker.svg' %}" alt="img">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>To Date</label>
+                                        <div class="input-groupicon">
+                                            <input type="text" class="form-control datetimepicker" name="date_to" placeholder="DD-MM-YYYY" value="{{ filter_date_to }}">
+                                            <div class="addonset">
+                                                <img src="{% static 'img/icons/datepicker.svg' %}" alt="img">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="input-group">
+                                            <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% include 'balance_sheet/_table_fragment.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Date picker initialization
+    $('.datetimepicker').datetimepicker({
+        format: 'DD-MM-YYYY',
+        pickTime: false
+    });
+
+    // Filter toggle
+    $('#filter_search').click(function() {
+        $('#filter_inputs').toggle();
+    });
+
+    // AJAX form submission for filters
+    $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        
+        $.ajax({
+            url: '{% url 'balance_sheet_list' %}',
+            type: 'GET',
+            data: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                $('#balance-sheet-report').html(response);
+            },
+            error: function() {
+                alert('Error loading data. Please try again.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
