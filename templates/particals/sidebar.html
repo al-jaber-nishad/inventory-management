@@ -96,28 +96,8 @@
                     </ul>
                 </li>
 
-                {% comment %} <li class="submenu">
-                    <a href="#" class="{% if 'sms' in request.path %}active{% endif %}">
-                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>SMS</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="{% if 'sms' in request.path %}show{% endif %}">
-                        {% if request.user.role.name == "CLIENT" %}
-                            <li><a href="{% url 'send_sms' %}" class="{% if request.resolver_match.url_name == 'send_sms' %}active{% endif %}">New SMS</a></li>
-                        {% endif %}
-                        <li><a href="{% url 'all_sms_list' %}" class="{% if request.resolver_match.url_name == 'all_sms_list' %}active{% endif %}">All SMS</a></li>
-                        <li><a href="{% url 'sent_sms_list' %}" class="{% if request.resolver_match.url_name == 'sent_sms_list' %}active{% endif %}">Sent SMS</a></li>
-                        {% comment %} <li><a href="{% url 'inbox_sms_list' %}" class="{% if request.resolver_match.url_name == 'inbox_sms_list' %}active{% endif %}">Inbox</a></li> {% endcomment %}
-                        <li><a href="{% url 'failed_sms_list' %}" class="{% if request.resolver_match.url_name == 'failed_sms_list' %}active{% endif %}">Failed SMS</a></li>
-                        <li><a href="{% url 'queued_sms_list' %}" class="{% if request.resolver_match.url_name == 'queued_sms_list' %}active{% endif %}">Queued SMS</a></li>
-                        {% if request.user.role.name == "ADMIN" %}
-                            <li><a href="{% url 'failed_and_pending_sms_list' %}" class="{% if request.resolver_match.url_name == 'failed_and_pending_sms_list' %}active{% endif %}">Failed and Pending SMS</a></li>
-                        {% endif %}
-                    </ul>
-                </li> {% endcomment %}
 
-                {% if request.user.role.name == "ADMIN" %}
+                {% if request.user.role.name == "ADMIN" or request.user.role.name == "RESELLER" %}
                     <li class="submenu">
                         <a href="#" class="{% if 'user' in request.path %}active{% endif %}">
                             <img src="{% static 'img/icons/users1.svg' %}" alt="img" />
@@ -131,16 +111,6 @@
                             {% endif %}
                             <li><a href="{% url 'client_list' %}" class="{% if request.resolver_match.url_name == 'client_list' %}active{% endif %}">Client List</a></li>
                             <li><a href="{% url 'user_group_list' %}" class="{% if request.resolver_match.url_name == 'user_group_list' %}active{% endif %}">User Group List</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#" class="{% if 'package' in request.path %}active{% endif %}">
-                            <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                            <span>Packages</span>
-                            <span class="menu-arrow"></span>
-                        </a>
-                        <ul class="{% if 'package' in request.path %}show{% endif %}">
-                            <li><a href="{% url 'package_list' %}" class="{% if request.resolver_match.url_name == 'package_list' %}active{% endif %}">Package List</a></li>
                         </ul>
                     </li>
                 {% endif %}
