@@ -1,3 +1,7 @@
+import os
+import base64
+import weasyprint
+
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -9,9 +13,8 @@ from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required
-import weasyprint
 from django.conf import settings
-import os
+from django.utils.safestring import mark_safe
 
 from sales.models import Sale, SaleItem
 from sales.forms.sales import SaleForm, SaleItemForm
@@ -252,6 +255,13 @@ class SaleDeleteView(LoginRequiredMixin, DeleteView):
         return redirect(self.success_url)
 
 
+def img_base64(img_path):
+    image_path = os.path.join(settings.BASE_DIR, 'static', img_path)
+    with open(image_path, 'rb') as image_file:
+        base64_string = base64.b64encode(image_file.read()).decode('utf-8')
+        return mark_safe(f'data:image/png;base64,{base64_string}')
+    
+
 @login_required
 def sale_invoice_pdf(request, pk):
     """Generate and download PDF invoice for a sale"""
@@ -265,8 +275,11 @@ def sale_invoice_pdf(request, pk):
             return redirect('sale_list')
     
     # Render the template to HTML
+    logo_image = img_base64('img/full-logo.png')
+    
     html_string = render_to_string('sales/invoice_pdf.html', {
         'sale': sale,
+        'logo_image': logo_image
     }, request=request)
     
     # Generate PDF
