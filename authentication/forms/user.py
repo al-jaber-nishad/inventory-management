@@ -8,10 +8,10 @@ from django.forms.widgets import ClearableFileInput
 
 class CustomLoginForm(forms.Form):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Your userName'}))
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email or Username'}))
 
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'please enter password'}))
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     # username = forms.CharField(label="Username or email or primary phone.", max_length=100)
     # password = forms.PasswordInput()
 
