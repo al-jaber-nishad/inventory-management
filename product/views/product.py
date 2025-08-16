@@ -16,9 +16,6 @@ from commons.utils import is_ajax  # assuming same utility exists
 class OwnerFilterMixin:
     def get_queryset(self):
         qs = super().get_queryset()
-        user = self.request.user
-        if not getattr(user, 'role', None) or getattr(user.role, 'name', '').upper() != 'ADMIN':
-            qs = qs.filter(owner_user=user)
         return qs
 
 

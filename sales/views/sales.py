@@ -273,9 +273,20 @@ def sale_invoice_pdf(request, pk):
         if sale.created_by != user:
             messages.error(request, "You don't have permission to access this sale.")
             return redirect('sale_list')
+
+    
     
     # Render the template to HTML
     logo_image = img_base64('img/full-logo.png')
+
+    # # Logo image (base64 or static path)
+    # logo_image = img_base64('img/full-logo.png')
+
+    # # Render invoice HTML directly
+    # return render(request, 'sales/invoice_pdf.html', {
+    #     'sale': sale,
+    #     'logo_image': logo_image
+    # })
     
     html_string = render_to_string('sales/invoice_pdf.html', {
         'sale': sale,

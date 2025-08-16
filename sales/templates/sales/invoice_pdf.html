@@ -1,9 +1,7 @@
 {% extends 'particals/pdf_template_base.html' %}
 {% load static %}
 
-{% block report_header %}
     Sale Invoice
-{% endblock report_header %}
 
 {% block base %}
 <style>
@@ -11,30 +9,6 @@
         font-family: Arial, sans-serif;
         font-size: 10px;
         color: #000;
-    }
-
-    .section {
-        margin-bottom: 15px;
-    }
-
-    .two-col {
-        width: 100%;
-        display: table;
-    }
-    .two-col .col {
-        display: table-cell;
-        width: 50%;
-        vertical-align: top;
-    }
-    .section-title {
-        font-weight: bold;
-        font-size: 11px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
-    .info-box {
-        border: 1px solid #000;
-        padding: 5px;
     }
 
     /* Order details table */
@@ -51,6 +25,19 @@
         background-color: #ffffffff;
         text-align: left;
     }
+
+    /* Contact Details */
+
+    .contact-details {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+    }
+    .contact-details td, .contact-details th {
+        padding: 4px;
+        border: 1px solid #7e7e7e4d;
+    }
+    
 
     /* Product table */
     .product-table {
@@ -104,7 +91,6 @@
     }
 </style>
 
-
 <!-- Order Details -->
 <table class="order-details">
     <tr>
@@ -117,27 +103,25 @@
 
 
 <!-- Bill From & Bill To -->
-<div class="two-col section">
-    <div class="col">
-        <div class="section-title">Bill From</div>
-        <div class="info-box">
+<table class="contact-details">
+    <tr>
+        <td>
+            <b>Billed From</b>
             {{ company_name }}<br>
             {{ company_address }}<br>
             Phone: {{ company_phone }}<br>
             Email: {{ company_email }}
-        </div>
-    </div>
-    <div class="col">
-        <div class="section-title">Bill To</div>
-        <div class="info-box">
+        </td>
+        <td>
+            <b>Billed To</b>
             <strong>{{ sale.customer.name|default:"N/A" }}</strong><br>
             {% if sale.customer.brand %}Company: {{ sale.customer.brand }}<br>{% endif %}
             {% if sale.customer.phone %}Phone: {{ sale.customer.phone }}<br>{% endif %}
             {% if sale.customer.email %}Email: {{ sale.customer.email }}<br>{% endif %}
             {% if sale.customer.address %}Address: {{ sale.customer.address }}{% endif %}
-        </div>
-    </div>
-</div>
+        </td>
+    </tr>
+</table>
 
 
 <!-- Product Table -->
@@ -206,6 +190,6 @@
 
 <!-- Cashback -->
 <div class="cashback">
-    Cashback Offer: {{ sale.cashback_note|default:"No cashback available" }}
+    Note: {{ sale.note|default:"No Notes" }}
 </div>
 {% endblock base %}
