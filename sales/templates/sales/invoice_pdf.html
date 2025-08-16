@@ -142,9 +142,9 @@
             <td>{{ forloop.counter }}</td>
             <td class="text-left">{{ item.product.name }}</td>
             <td>{{ item.quantity }}</td>
-            <td>৳{{ item.unit_price|floatformat:2 }}</td>
-            <td>৳{{ item.discount|floatformat:2 }}</td>
-            <td>৳{{ item.total_price|floatformat:2 }}</td>
+            <td>&#2547;{{ item.unit_price|floatformat:2 }}</td>
+            <td>&#2547;{{ item.discount|floatformat:2 }}</td>
+            <td>&#2547;{{ item.total_price|floatformat:2 }}</td>
         </tr>
         {% empty %}
         <tr>
@@ -158,32 +158,32 @@
 <table class="totals">
     <tr>
         <td class="label">Subtotal</td>
-        <td class="value">৳{{ sale.subtotal|floatformat:2 }}</td>
+        <td class="value">&#2547;{{ sale.subtotal|floatformat:2 }}</td>
     </tr>
     {% if sale.discount > 0 %}
     <tr>
         <td class="label">Discount</td>
-        <td class="value">-৳{{ sale.discount|floatformat:2 }}</td>
+        <td class="value">-&#2547;{{ sale.discount|floatformat:2 }}</td>
     </tr>
     {% endif %}
     {% if sale.tax > 0 %}
     <tr>
         <td class="label">Tax</td>
-        <td class="value">৳{{ sale.tax|floatformat:2 }}</td>
+        <td class="value">&#2547;{{ sale.tax|floatformat:2 }}</td>
     </tr>
     {% endif %}
     <tr class="grand">
         <td class="label">Total Amount</td>
-        <td class="value">৳{{ sale.total|floatformat:2 }}</td>
+        <td class="value">&#2547;{{ sale.total|floatformat:2 }}</td>
     </tr>
     {% if sale.paid > 0 %}
     <tr>
         <td class="label">Paid Amount</td>
-        <td class="value">৳{{ sale.paid|floatformat:2 }}</td>
+        <td class="value">&#2547;{{ sale.paid|floatformat:2 }}</td>
     </tr>
     <tr class="grand">
         <td class="label">Due Amount</td>
-        <td class="value">৳{{ sale.due|floatformat:2 }}</td>
+        <td class="value">&#2547;{{ sale.due|floatformat:2 }}</td>
     </tr>
     {% endif %}
 </table>
