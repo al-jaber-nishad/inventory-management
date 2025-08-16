@@ -10,8 +10,8 @@ from django.core.paginator import Paginator
 from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required
 import weasyprint
-from django.conf import settings
-import os
+from utils.pillow_image import img_base64
+
 
 from purchase.models import Purchase, PurchaseItem
 from purchase.forms.purchase import PurchaseForm, PurchaseItemForm
@@ -263,10 +263,14 @@ def purchase_invoice_pdf(request, pk):
         if purchase.created_by != user:
             messages.error(request, "You don't have permission to access this purchase.")
             return redirect('purchase_list')
+
+    # Render the template to HTML
+    logo_image = img_base64('img/full-logo.png')
     
     # Render the template to HTML
     html_string = render_to_string('purchase/invoice_pdf.html', {
         'purchase': purchase,
+        'logo_image': logo_image
     }, request=request)
     
     # Generate PDF
