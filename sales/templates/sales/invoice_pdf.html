@@ -142,8 +142,8 @@
             <td>{{ forloop.counter }}</td>
             <td class="text-left">{{ item.product.name }}</td>
             <td>{{ item.quantity }}</td>
-            <td>&#2547;{{ item.unit_price|floatformat:2 }}</td>
-            <td>&#2547;{{ item.discount|floatformat:2 }}</td>
+            <td>৳{{ item.unit_price|floatformat:2 }}</td>
+            <td>৳{{ item.discount|floatformat:2 }}</td>
             <td>&#2547;{{ item.total_price|floatformat:2 }}</td>
         </tr>
         {% empty %}
