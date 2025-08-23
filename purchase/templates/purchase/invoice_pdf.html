@@ -58,20 +58,15 @@
         }
         
         .items-table th {
-            background-color: #34495e;
-            color: white;
             padding: 12px 8px;
+            background-color: #fff;
             text-align: left;
             font-weight: bold;
         }
         
         .items-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #ecf0f1;
-        }
-        
-        .items-table tr:nth-child(even) {
-            background-color: #f8f9fa;
+            padding: 5px 8px;
+            border-bottom: 1px solid #000000ff;
         }
         
         .text-right {
@@ -100,8 +95,6 @@
         
         .totals-table .total-row {
             font-weight: bold;
-            background-color: #ecf0f1;
-            font-size: 14px;
         }
         
         .status-badge {
@@ -112,12 +105,7 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-        
-        .status-draft { background-color: #95a5a6; color: white; }
-        .status-confirmed { background-color: #3498db; color: white; }
-        .status-received { background-color: #27ae60; color: white; }
-        .status-cancelled { background-color: #e74c3c; color: white; }
-        
+
         .footer-notes {
             margin-top: 40px;
             font-size: 11px;
@@ -146,21 +134,13 @@
                     {% endif %}
                 </div>
             </div>
-            
-            {% if purchase.note %}
-            <div class="info-section">
-                <div class="info-title">Notes</div>
-                <div class="info-content">
-                    {{ purchase.note }}
-                </div>
-            </div>
-            {% endif %}
         </div>
         
         <div class="invoice-info-right">
             <div class="info-section">
                 <div class="info-title">Invoice Details</div>
                 <div class="info-content">
+                    <strong>Invoice No:</strong> {{ purchase.invoice_number }} <br>
                     <strong>Purchase Date:</strong> {{ purchase.purchase_date|date:"M d, Y" }}<br>
                     {% if purchase.due_date %}
                         <strong>Due Date:</strong> {{ purchase.due_date|date:"M d, Y" }}<br>
@@ -176,7 +156,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Product</th>
+                <th>Item</th>
                 <th>Quantity</th>
                 <th>Unit Price</th>
                 <th>Total</th>
@@ -233,5 +213,14 @@
             {% endif %}
         </table>
     </div>
+
+    {% if purchase.note %}
+    <div class="info-section">
+        <div class="info-title">Notes</div>
+        <div class="info-content">
+            {{ purchase.note }}
+        </div>
+    </div>
+    {% endif %}
 
 {% endblock base%}
