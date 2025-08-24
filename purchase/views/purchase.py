@@ -269,7 +269,7 @@ def purchase_invoice_pdf(request, pk):
     
     # Render the template to HTML
     html_string = render_to_string('purchase/invoice_pdf.html', {
-        'purchase': purchase,
+        'invoice': purchase,
         'logo_image': logo_image
     }, request=request)
     

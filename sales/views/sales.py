@@ -278,7 +278,7 @@ def sale_invoice_pdf(request, pk):
     # })
     
     html_string = render_to_string('sales/invoice_pdf.html', {
-        'sale': sale,
+        'invoice': sale,
         'logo_image': logo_image
     }, request=request)
     

@@ -2,196 +2,225 @@
 {% load static %}
 
 {% block report_header %}
-    Sale Invoice
+	Purchase Order
 {% endblock report_header %}
-
+	
 {% block base %}
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        font-size: 10px;
-        color: #000;
-    }
 
-    /* Order details table */
-    .order-details {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-    }
-    .order-details td, .order-details th {
-        padding: 4px;
-        border: 1px solid #7e7e7e4d;
-    }
-    .order-details th {
-        background-color: #ffffffff;
-        text-align: left;
-    }
+    <style>
+        @page {
+            margin: 1cm;
+            size: A4;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .invoice-info {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-info-left, .invoice-info-right {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+        
+        .info-section {
+            margin-bottom: 20px;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        
+        .info-content {
+            margin-left: 10px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .items-table th {
+            padding: 12px 8px;
+            background-color: #fff;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .items-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #000000ff;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            width: 300px;
+            margin-left: auto;
+            margin-bottom: 30px;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .totals-table .total-row {
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
 
-    /* Contact Details */
-
-    .contact-details {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-    }
-    .contact-details td, .contact-details th {
-        padding: 4px;
-        border: 1px solid #7e7e7e4d;
-    }
+        .footer-notes {
+            margin-top: 40px;
+            font-size: 11px;
+            color: #7f8c8d;
+            text-align: center;
+        }
+    </style>
     
+    <div class="invoice-info">
+        <div class="invoice-info-left">
+            <div class="info-section">
+                <div class="info-title">Supplier Information</div>
+                <div class="info-content">
+                    <strong>{{ invoice.supplier.name|default:"N/A" }}</strong><br>
+                    {% if invoice.supplier.brand %}
+                        Company: {{ invoice.supplier.brand }}<br>
+                    {% endif %}
+                    {% if invoice.supplier.phone %}
+                        Phone: {{ invoice.supplier.phone }}<br>
+                    {% endif %}
+                    {% if invoice.supplier.email %}
+                        Email: {{ invoice.supplier.email }}<br>
+                    {% endif %}
+                    {% if invoice.supplier.address %}
+                        Address: {{ invoice.supplier.address }}<br>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="invoice-info-right">
+            <div class="info-section">
+                <div class="info-title">Invoice Details</div>
+                <div class="info-content">
+                    <strong>Invoice No:</strong> {{ invoice.invoice_number }} <br>
+                    <strong>invoice Date:</strong> {{ invoice.invoice_date|date:"M d, Y" }}<br>
+                    {% if invoice.due_date %}
+                        <strong>Due Date:</strong> {{ invoice.due_date|date:"M d, Y" }}<br>
+                    {% endif %}
+                    <strong>Status:</strong> {{ invoice.get_status_display }} <br>
+                    {% comment %} <span class="status-badge status-{{ invoice.status }}">{{ invoice.get_status_display }}</span><br> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>৳{{ item.unit_price|floatformat:2 }}</td>
+                <td>৳{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No items found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals-section">
+        <table class="totals-table">
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">৳{{ invoice.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% if invoice.discount > 0 %}
+            <tr>
+                <td>Discount:</td>
+                <td class="text-right">-৳{{ invoice.discount|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            {% if invoice.tax > 0 %}
+            <tr>
+                <td>Tax:</td>
+                <td class="text-right">৳{{ invoice.tax|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-row">
+                <td>Total Amount:</td>
+                <td class="text-right">৳{{ invoice.total|floatformat:2 }}</td>
+            </tr>
+            {% if invoice.paid > 0 %}
+            <tr>
+                <td>Paid Amount:</td>
+                <td class="text-right">৳{{ invoice.paid|floatformat:2 }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Due Amount:</td>
+                <td class="text-right">৳{{ invoice.due|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
 
-    /* Product table */
-    .product-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-    .product-table th, .product-table td {
-        border: 1px solid #7e7e7e4d;
-        padding: 5px;
-        font-size: 10px;
-    }
-    .product-table th {
-        background-color: #f2f2f2;
-        text-align: center;
-    }
-    .product-table td {
-        text-align: center;
-    }
-    .text-left {
-        text-align: left !important;
-    }
-
-    /* Totals section */
-    .totals {
-        width: 250px;
-        margin-left: auto;
-        border-collapse: collapse;
-    }
-    .totals td {
-        border: 1px solid #7e7e7e4d;
-        padding: 5px;
-        font-size: 10px;
-    }
-    .totals .label {
-        text-align: left;
-    }
-    .totals .value {
-        text-align: right;
-    }
-    .totals .grand {
-        font-weight: bold;
-    }
-
-    /* Cashback */
-    .cashback {
-        border: 1px dashed #000;
-        padding: 5px;
-        margin-top: 10px;
-        font-size: 10px;
-    }
-</style>
-
-<!-- Order Details -->
-<table class="order-details">
-    <tr>
-        <th>Order ID: {{ sale.id }}</th>
-        <th>Invoice No: {{ sale.invoice_no }}</th>
-        <th>Order Date: {{ sale.sale_date|date:"d/m/Y" }}</th>
-        <th>Due Date: {% if sale.due_date %}{{ sale.due_date|date:"d/m/Y" }}{% else %}-{% endif %}</th>
-    </tr>
-</table>
-
-
-<!-- Bill From & Bill To -->
-<table class="contact-details">
-    <tr>
-        <td>
-            <b>Billed From</b>
-            {{ company_name }}<br>
-            {{ company_address }}<br>
-            Phone: {{ company_phone }}<br>
-            Email: {{ company_email }}
-        </td>
-        <td>
-            <b>Billed To</b>
-            <strong>{{ sale.customer.name|default:"N/A" }}</strong><br>
-            {% if sale.customer.brand %}Company: {{ sale.customer.brand }}<br>{% endif %}
-            {% if sale.customer.phone %}Phone: {{ sale.customer.phone }}<br>{% endif %}
-            {% if sale.customer.email %}Email: {{ sale.customer.email }}<br>{% endif %}
-            {% if sale.customer.address %}Address: {{ sale.customer.address }}{% endif %}
-        </td>
-    </tr>
-</table>
-
-
-<!-- Product Table -->
-<table class="product-table">
-    <thead>
-        <tr>
-            <th>SL No.</th>
-            <th class="text-left">Product</th>
-            <th>Qty</th>
-            <th>MRP</th>
-            <th>Discount</th>
-            <th>Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in sale.items.all %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td class="text-left">{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>৳{{ item.unit_price|floatformat:2 }}</td>
-            <td>৳{{ item.discount|floatformat:2 }}</td>
-            <td>&#2547;{{ item.total_price|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No items found</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<!-- Totals -->
-<table class="totals">
-    <tr>
-        <td class="label">Subtotal</td>
-        <td class="value">&#2547;{{ sale.subtotal|floatformat:2 }}</td>
-    </tr>
-    {% if sale.discount > 0 %}
-    <tr>
-        <td class="label">Discount</td>
-        <td class="value">-&#2547;{{ sale.discount|floatformat:2 }}</td>
-    </tr>
+    {% if invoice.note %}
+    <div class="info-section">
+        <div class="info-title">Notes</div>
+        <div class="info-content">
+            {{ invoice.note }}
+        </div>
+    </div>
     {% endif %}
-    {% if sale.tax > 0 %}
-    <tr>
-        <td class="label">Tax</td>
-        <td class="value">&#2547;{{ sale.tax|floatformat:2 }}</td>
-    </tr>
-    {% endif %}
-    <tr class="grand">
-        <td class="label">Total Amount</td>
-        <td class="value">&#2547;{{ sale.total|floatformat:2 }}</td>
-    </tr>
-    {% if sale.paid > 0 %}
-    <tr>
-        <td class="label">Paid Amount</td>
-        <td class="value">&#2547;{{ sale.paid|floatformat:2 }}</td>
-    </tr>
-    <tr class="grand">
-        <td class="label">Due Amount</td>
-        <td class="value">&#2547;{{ sale.due|floatformat:2 }}</td>
-    </tr>
-    {% endif %}
-</table>
 
-<!-- Cashback -->
-<div class="cashback">
-    Note: {{ sale.note|default:"No Notes" }}
-</div>
-{% endblock base %}
+{% endblock base%}

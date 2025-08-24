@@ -41,7 +41,6 @@
         .info-title {
             font-weight: bold;
             font-size: 14px;
-            color: #2c3e50;
             margin-bottom: 8px;
             border-bottom: 1px solid #bdc3c7;
             padding-bottom: 5px;
@@ -119,18 +118,18 @@
             <div class="info-section">
                 <div class="info-title">Supplier Information</div>
                 <div class="info-content">
-                    <strong>{{ purchase.supplier.name|default:"N/A" }}</strong><br>
-                    {% if purchase.supplier.brand %}
-                        Company: {{ purchase.supplier.brand }}<br>
+                    <strong>{{ invoice.supplier.name|default:"N/A" }}</strong><br>
+                    {% if invoice.supplier.brand %}
+                        Company: {{ invoice.supplier.brand }}<br>
                     {% endif %}
-                    {% if purchase.supplier.phone %}
-                        Phone: {{ purchase.supplier.phone }}<br>
+                    {% if invoice.supplier.phone %}
+                        Phone: {{ invoice.supplier.phone }}<br>
                     {% endif %}
-                    {% if purchase.supplier.email %}
-                        Email: {{ purchase.supplier.email }}<br>
+                    {% if invoice.supplier.email %}
+                        Email: {{ invoice.supplier.email }}<br>
                     {% endif %}
-                    {% if purchase.supplier.address %}
-                        Address: {{ purchase.supplier.address }}<br>
+                    {% if invoice.supplier.address %}
+                        Address: {{ invoice.supplier.address }}<br>
                     {% endif %}
                 </div>
             </div>
@@ -140,13 +139,13 @@
             <div class="info-section">
                 <div class="info-title">Invoice Details</div>
                 <div class="info-content">
-                    <strong>Invoice No:</strong> {{ purchase.invoice_number }} <br>
-                    <strong>Purchase Date:</strong> {{ purchase.purchase_date|date:"M d, Y" }}<br>
-                    {% if purchase.due_date %}
-                        <strong>Due Date:</strong> {{ purchase.due_date|date:"M d, Y" }}<br>
+                    <strong>Invoice No:</strong> {{ invoice.invoice_number }} <br>
+                    <strong>Purchase Date:</strong> {{ invoice.invoice_date|date:"M d, Y" }}<br>
+                    {% if invoice.due_date %}
+                        <strong>Due Date:</strong> {{ invoice.due_date|date:"M d, Y" }}<br>
                     {% endif %}
-                    <strong>Status:</strong> {{ purchase.get_status_display }} <br>
-                    {% comment %} <span class="status-badge status-{{ purchase.status }}">{{ purchase.get_status_display }}</span><br> {% endcomment %}
+                    <strong>Status:</strong> {{ invoice.get_status_display }} <br>
+                    {% comment %} <span class="status-badge status-{{ invoice.status }}">{{ invoice.get_status_display }}</span><br> {% endcomment %}
                 </div>
             </div>
         </div>
@@ -163,7 +162,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in purchase.items.all %}
+            {% for item in invoice.items.all %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ item.product.name }}</td>
@@ -183,42 +182,42 @@
         <table class="totals-table">
             <tr>
                 <td>Subtotal:</td>
-                <td class="text-right">৳{{ purchase.subtotal|floatformat:2 }}</td>
+                <td class="text-right">৳{{ invoice.subtotal|floatformat:2 }}</td>
             </tr>
-            {% if purchase.discount > 0 %}
+            {% if invoice.discount > 0 %}
             <tr>
                 <td>Discount:</td>
-                <td class="text-right">-৳{{ purchase.discount|floatformat:2 }}</td>
+                <td class="text-right">-৳{{ invoice.discount|floatformat:2 }}</td>
             </tr>
             {% endif %}
-            {% if purchase.tax > 0 %}
+            {% if invoice.tax > 0 %}
             <tr>
                 <td>Tax:</td>
-                <td class="text-right">৳{{ purchase.tax|floatformat:2 }}</td>
+                <td class="text-right">৳{{ invoice.tax|floatformat:2 }}</td>
             </tr>
             {% endif %}
             <tr class="total-row">
                 <td>Total Amount:</td>
-                <td class="text-right">৳{{ purchase.total|floatformat:2 }}</td>
+                <td class="text-right">৳{{ invoice.total|floatformat:2 }}</td>
             </tr>
-            {% if purchase.paid > 0 %}
+            {% if invoice.paid > 0 %}
             <tr>
                 <td>Paid Amount:</td>
-                <td class="text-right">৳{{ purchase.paid|floatformat:2 }}</td>
+                <td class="text-right">৳{{ invoice.paid|floatformat:2 }}</td>
             </tr>
             <tr class="total-row">
                 <td>Due Amount:</td>
-                <td class="text-right">৳{{ purchase.due|floatformat:2 }}</td>
+                <td class="text-right">৳{{ invoice.due|floatformat:2 }}</td>
             </tr>
             {% endif %}
         </table>
     </div>
 
-    {% if purchase.note %}
+    {% if invoice.note %}
     <div class="info-section">
         <div class="info-title">Notes</div>
         <div class="info-content">
-            {{ purchase.note }}
+            {{ invoice.note }}
         </div>
     </div>
     {% endif %}

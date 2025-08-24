@@ -72,4 +72,4 @@ class Product(BaseModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} ({self.sku})"
+        return f"{self.name}-{self.brand.name}-{self.sku}"
