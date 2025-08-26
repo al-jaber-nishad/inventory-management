@@ -14,6 +14,7 @@ class InventoryTransaction(BaseModel):
         ADJUSTMENT = 'adjustment', 'Stock Adjustment'
         TRANSFER_IN = 'transfer_in', 'Transfer In'
         TRANSFER_OUT = 'transfer_out', 'Transfer Out'
+        INITIAL_STOCK = 'initial_stock', 'Initial Stock'
 
     date = models.DateTimeField(default=timezone.now)
     product = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name="transactions")

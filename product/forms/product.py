@@ -1,8 +1,17 @@
 from django import forms
-from product.models import Product, ProductCategory
+from product.models import Product
 from django.core.exceptions import ValidationError
 
 class ProductForm(forms.ModelForm):
+    initial_stock = forms.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        initial=0,
+        required=False,
+        help_text="Initial stock quantity for this product (only for products without variants)",
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+    )
+    
     class Meta:
         model = Product
         fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand', 'unit']

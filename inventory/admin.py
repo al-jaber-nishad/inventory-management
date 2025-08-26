@@ -8,3 +8,8 @@ from .models import *
 class InventoryTransactionAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in InventoryTransaction._meta.fields]
 
+
+@admin.register(InventoryAdjustment)
+class InventoryAdjustmentAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in InventoryAdjustment._meta.fields]
+

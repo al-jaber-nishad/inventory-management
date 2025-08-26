@@ -9,7 +9,8 @@ def get_current_stock(product_id):
     additions = transactions.filter(transaction_type__in=[
         InventoryTransaction.TransactionType.PURCHASE,
         InventoryTransaction.TransactionType.SALE_RETURN,
-        InventoryTransaction.TransactionType.TRANSFER_IN
+        InventoryTransaction.TransactionType.TRANSFER_IN,
+        InventoryTransaction.TransactionType.INITIAL_STOCK
     ]).aggregate(total=Sum('quantity'))['total'] or 0
 
     subtractions = transactions.filter(transaction_type__in=[
@@ -18,4 +19,9 @@ def get_current_stock(product_id):
         InventoryTransaction.TransactionType.TRANSFER_OUT
     ]).aggregate(total=Sum('quantity'))['total'] or 0
 
-    return additions - subtractions
+    # Adjustments can be positive or negative, so we sum them separately
+    adjustments = transactions.filter(
+        transaction_type=InventoryTransaction.TransactionType.ADJUSTMENT
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    return additions - subtractions + adjustments

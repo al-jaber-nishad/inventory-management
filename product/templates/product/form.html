@@ -71,19 +71,29 @@
                         </div>
                     </div>
 
+                    {% if not object %}
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="{{ form.is_active.id_for_label }}">Active</label>
-                            <div>
-                                {{ form.is_active }}
-                            </div>
+                            <label for="{{ form.initial_stock.id_for_label }}">Initial Stock</label>
+                            {{ form.initial_stock }}
+                            <small class="form-text text-muted">{{ form.initial_stock.help_text }}</small>
                         </div>
                     </div>
+                    {% endif %}
 
                     <div class="col-12">
                         <div class="form-group">
                             <label for="{{ form.description.id_for_label }}">Description</label>
                             {{ form.description }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-checkbox">
+                            <label for="{{ form.is_active.id_for_label }}">Active</label>
+                            <div>
+                                {{ form.is_active }}
+                            </div>
                         </div>
                     </div>
 
