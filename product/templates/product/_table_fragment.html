@@ -8,6 +8,7 @@
                     <th>Name</th>
                     <th>SKU</th>
                     <th>Category</th>
+                    <th>Color</th>
                     <th>Stock</th>
                     <th class="text-end">Action</th>
                 </tr>
@@ -19,6 +20,12 @@
                         <td>{{ product.name }}</td>
                         <td>{{ product.sku }}</td>
                         <td>{{ product.category.name }}</td>
+                        <td>
+                            {{ product.color.name }}
+                            {% if product.color.hex_code %}
+                                <span style="display:inline-block; width:15px; height:15px; background-color: {{ product.color.hex_code }}; border-radius:3px; margin-left:5px;"></span>
+                            {% endif %}
+                        </td>
                         <td>{{ product.stock }}</td>
                         <td class="text-end">
                             <a class="me-3" href="{% url 'product_update' product.id %}">

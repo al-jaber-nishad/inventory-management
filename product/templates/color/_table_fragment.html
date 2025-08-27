@@ -1,0 +1,42 @@
+{% load static %}
+<div id="color-list">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Name</th>
+                    <th>Color Preview</th>
+                    <th>Hex Code</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for color in color_list %}
+                    <tr>
+                        <td>{{ color_list.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ color.name }}</td>
+                        <td>
+                            {% if color.hex_code %}
+                                <div style="width: 40px; height: 20px; background-color: {{ color.hex_code }}; border: 1px solid #ddd; border-radius: 3px;"></div>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ color.hex_code|default:"N/A" }}</td>
+                        <td class="text-end">
+                            <a class="me-3" href="{% url 'color_update' color.id %}">
+                                <img src="{% static 'img/icons/edit.svg' %}" alt="img">
+                            </a>
+                            <a class="me-3 confirm-text delete-btn" href="#" data-url="{% url 'color_delete' color.id %}">
+                                <img src="{% static 'img/icons/delete.svg' %}" alt="img">
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">No colors found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

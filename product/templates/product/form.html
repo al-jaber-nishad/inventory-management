@@ -59,17 +59,25 @@
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="{{ form.price.id_for_label }}">Price</label>
-                            {{ form.price }}
+                            <label for="{{ form.unit.id_for_label }}">Unit</label>
+                            {{ form.unit }}
                         </div>
                     </div>
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="{{ form.unit.id_for_label }}">Unit</label>
-                            {{ form.unit }}
+                            <label for="{{ form.color.id_for_label }}">Color</label>
+                            {{ form.color }}
                         </div>
                     </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.price.id_for_label }}">Price</label>
+                            {{ form.price }}
+                        </div>
+                    </div>
+
 
                     {% if not object %}
                     <div class="col-lg-6 col-sm-6 col-12">

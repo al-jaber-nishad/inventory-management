@@ -20,6 +20,13 @@ class Brand(BaseModel):
 	def __str__(self):
 		return self.name
 
+class Color(BaseModel):
+	name = models.CharField(max_length=255)
+	hex_code = models.CharField(max_length=7, blank=True, null=True, help_text="Hex color code (e.g., #FF0000)")
+
+	def __str__(self):
+		return self.name
+
 class ProductCategory(BaseModel):
 	name = models.CharField(max_length=255)
 	description = models.TextField(blank=True, null=True)
@@ -41,6 +48,7 @@ class Product(BaseModel):
     category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
+    color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     is_active = models.BooleanField(default=True)
