@@ -9,11 +9,6 @@
                 <h4>Stock Report</h4>
                 <h6>View current stock levels and inventory status</h6>
             </div>
-            <div class="page-btn">
-                <a href="?export_format=pdf{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" class="btn btn-added" target="_blank">
-                    <img src="{% static 'img/icons/pdf.svg' %}" alt="img"> Export PDF
-                </a>
-            </div>
         </div>
 
         {% if messages %}
@@ -32,7 +27,7 @@
         {% endif %}
 
         <!-- Summary Cards -->
-        <div class="row mb-4">
+        {% comment %} <div class="row mb-4">
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="dash-widget">
                     <div class="dash-widgetimg">
@@ -77,44 +72,25 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
 
         <div class="card">
             <div class="card-body">
                 <form id="filterForm" method="get">
-                    <div class="table-top">
-                        <div class="search-set">
-                            <div class="form-group mb-0">
-                                <input type="text" name="search_input" placeholder="Search by product name or SKU" value="{{ filter_search }}">
-                            </div>
-                            <div class="col-lg-2 col-sm-6 col-4 pl-0">
-                                <div class="form-group mb-0">
-                                    <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="search-path">
-                            <a class="btn btn-filter" id="filter_search">
-                                <img src="{% static 'img/icons/filter.svg' %}" alt="img">
-                                <span>
-                                    <img src="{% static 'img/icons/closes.svg' %}" alt="img">
-                                </span>
-                            </a>
-                        </div>
-                        {% comment %} <div class="wordset">
-                            <ul>
-                                <li>
-                                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" href="?export_format=pdf{% if filter_search %}&search_input={{ filter_search }}{% endif %}{% if filter_category %}&category={{ filter_category }}{% endif %}{% if filter_brand %}&brand={{ filter_brand }}{% endif %}{% if filter_stock_status %}&stock_status={{ filter_stock_status }}{% endif %}" target="_blank"><img src="{% static 'img/icons/pdf.svg' %}" alt="img"></a>
-                                </li>
-                            </ul>
-                        </div> {% endcomment %}
-                    </div>
-
                     <!-- Filter Section -->
-                    <div class="card" id="filter_inputs">
+                    <div class="card">
                         <div class="card-body pb-0">
                             <div class="row">
-                                <div class="col-lg-3 col-sm-6 col-12">
+
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>Enter SKU</label>
+                                        <input type="text" name="search_input" placeholder="SKU or Name" value="{% if filter_search_input %}{{ filter_search_input }}{% endif%}">
+                                        </div>
+                                </div>
+
+                                
+                                <div class="col-lg-2 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label>Category</label>
                                         <select name="category" class="form-control select2">
@@ -125,7 +101,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="col-lg-2 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label>Brand</label>
                                         <select name="brand" class="form-control select2">
@@ -136,7 +112,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="col-lg-2 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label>Stock Status</label>
                                         <select name="stock_status" class="form-control">
@@ -147,7 +123,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="col-lg-2 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <div class="input-group">
