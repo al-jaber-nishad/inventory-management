@@ -7,6 +7,9 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from authentication.models import Customer
 from authentication.forms.customer import CustomerForm
@@ -126,3 +129,48 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(self.request, "Customer deleted successfully.")
         return redirect(self.success_url)
+
+
+@require_POST
+@login_required
+def create_customer_ajax(request):
+    """
+    AJAX endpoint for creating customers from the sales form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Customer name is required'
+            })
+        
+        # Create customer
+        customer = Customer.objects.create(
+            name=name,
+            phone=phone,
+            address=address,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Customer created successfully',
+            'customer': {
+                'id': customer.id,
+                'name': customer.name,
+                'phone': customer.phone,
+                'address': customer.address
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating customer: {str(e)}'
+        })

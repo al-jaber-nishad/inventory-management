@@ -107,7 +107,12 @@
                     <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.customer.id_for_label }}">Customer *</label>
-                            {{ form.customer }}
+                            <div class="input-group">
+                                {{ form.customer }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-customer-btn" title="Add New Customer">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -335,6 +340,40 @@
     </div>
 </div>
 
+<!-- Customer Creation Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Add New Customer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customerName" class="form-label">Customer Name *</label>
+                            <input type="text" class="form-control" id="customerName" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="customerPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="customerPhone" name="phone">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="customerAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="customerAddress" name="address" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveCustomerBtn">Save Customer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Empty item row template -->
 <template id="empty-item-row">
     <tr class="item-row">
@@ -475,6 +514,75 @@ $(document).ready(function() {
             placeholder: 'Select an option'
         });
     }
+    
+    // Customer Modal Functionality
+    $('#add-customer-btn').click(function() {
+        $('#customerModal').modal('show');
+    });
+    
+    $('#saveCustomerBtn').click(function() {
+        const form = $('#customerForm');
+        const formData = {
+            name: $('#customerName').val(),
+            phone: $('#customerPhone').val(),
+            address: $('#customerAddress').val()
+        };
+        
+        // Validate required fields
+        if (!formData.name.trim()) {
+            alert('Customer name is required');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create customer
+        $.ajax({
+            url: '/people/customers/create-ajax/',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new customer to select2 dropdown
+                    const customerSelect = $('#id_customer');
+                    const newOption = new Option(response.customer.name, response.customer.id, true, true);
+                    customerSelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#customerModal').modal('hide');
+                    form[0].reset();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Customer created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating customer: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating customer:', error);
+                alert('Error creating customer. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveCustomerBtn').prop('disabled', false).text('Save Customer');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#customerModal').on('hidden.bs.modal', function () {
+        $('#customerForm')[0].reset();
+        $('#saveCustomerBtn').prop('disabled', false).text('Save Customer');
+    });
 });
 </script>
 {% endblock base %}
