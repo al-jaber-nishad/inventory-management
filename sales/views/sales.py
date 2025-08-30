@@ -14,6 +14,7 @@ from utils.pillow_image import img_base64
 
 from sales.models import Sale, SaleItem
 from sales.forms.sales import SaleForm, SaleItemForm
+from product.models import Product
 
 
 class OwnerFilterMixin:
@@ -291,3 +292,13 @@ def sale_invoice_pdf(request, pk):
     response['Content-Disposition'] = f'inline; filename="sale_invoice_{sale.invoice_number}.pdf"'
     
     return response
+
+
+@login_required
+def get_product_price(request, product_id):
+    """API endpoint to get product price"""
+    try:
+        product = Product.objects.get(pk=product_id, is_active=True)
+        return JsonResponse({'price': float(product.price)})
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)

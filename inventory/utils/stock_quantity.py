@@ -24,4 +24,4 @@ def get_current_stock(product_id):
         transaction_type=InventoryTransaction.TransactionType.ADJUSTMENT
     ).aggregate(total=Sum('quantity'))['total'] or 0
 
-    return additions - subtractions + adjustments
+    return additions + subtractions + adjustments

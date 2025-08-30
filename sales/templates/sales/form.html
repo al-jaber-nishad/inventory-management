@@ -339,7 +339,7 @@
 <template id="empty-item-row">
     <tr class="item-row">
         <td>
-            <select name="items-__prefix__-product" class="form-control select2_search" id="id_items-__prefix__-product">
+            <select name="items-__prefix__-product" class="form-control product-select select2_search" id="id_items-__prefix__-product">
                 <option value="">Select product...</option>
                 {% for product in item_formset.0.product.field.queryset %}
                     <option value="{{ product.id }}">{{ product.name }}</option>
@@ -399,6 +399,28 @@ $(document).ready(function() {
     $(document).on('click', '.remove-item', function() {
         $(this).closest('tr').remove();
         updateCalculations();
+    });
+    
+    // Handle product selection to populate price
+    $(document).on('change', 'select[name*="product"]', function() {
+        const productId = $(this).val();
+        const row = $(this).closest('tr');
+        const priceInput = row.find('.price-input');
+        
+        if (productId) {
+            // Fetch product price from API
+            $.get(`/sale/api/product/${productId}/price/`)
+                .done(function(data) {
+                    priceInput.val(data.price);
+                    updateCalculations();
+                })
+                .fail(function() {
+                    console.error('Failed to fetch product price');
+                });
+        } else {
+            priceInput.val('');
+            updateCalculations();
+        }
     });
     
     // Calculate totals when inputs change
