@@ -48,3 +48,12 @@ class ContactGroupAdmin(admin.ModelAdmin):
 class ContactAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in Contact._meta.fields]
 
+
+@admin.register(Supplier)
+class SupplierAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in Supplier._meta.fields]
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in Customer._meta.fields]
