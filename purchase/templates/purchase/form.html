@@ -68,6 +68,10 @@
     #items-table {
         table-layout: fixed;
     }
+    
+    .form-group .input-group{
+        padding-right: 35px;
+    }
 </style>
 
 
@@ -118,7 +122,12 @@
                     <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.supplier.id_for_label }}">Supplier *</label>
-                            {{ form.supplier }}
+                            <div class="input-group">
+                                {{ form.supplier }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-supplier-btn" title="Add New Supplier">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -346,6 +355,46 @@
     </div>
 </div>
 
+<!-- Supplier Creation Modal -->
+<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="supplierModalLabel">Add New Supplier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="supplierForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="supplierName" class="form-label">Supplier Name *</label>
+                            <input type="text" class="form-control" id="supplierName" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="supplierPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="supplierPhone" name="phone">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="supplierBrand" class="form-label">Brand</label>
+                            <select class="form-control select2" id="supplierBrand" name="brand_id">
+                                <option value="">Select Brand...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="supplierAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="supplierAddress" name="address" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSupplierBtn">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Empty item row template -->
 <template id="empty-item-row">
     <tr class="item-row">
@@ -464,6 +513,101 @@ $(document).ready(function() {
             placeholder: 'Select an option'
         });
     }
+    
+    // Supplier Modal Functionality
+    $('#add-supplier-btn').click(function() {
+        // Load brands before showing modal
+        loadBrands();
+        $('#supplierModal').modal('show');
+    });
+    
+    function loadBrands() {
+        // Clear existing options except the first one
+        $('#supplierBrand').find('option:not(:first)').remove();
+        
+        // Fetch brands from API
+        $.get('/inventory/api/brands/')
+            .done(function(data) {
+                console.log('Brands loaded:', data);
+                const brandSelect = $('#supplierBrand');
+                data.forEach(function(brand) {
+                    brandSelect.append(new Option(brand.name, brand.id));
+                });
+                console.log('Brand options added to dropdown');
+            })
+            .fail(function(xhr, status, error) {
+                console.error('Failed to load brands:', {
+                    status: status,
+                    error: error,
+                    responseText: xhr.responseText
+                });
+            });
+    }
+    
+    $('#saveSupplierBtn').click(function() {
+        const form = $('#supplierForm');
+        const formData = {
+            name: $('#supplierName').val(),
+            phone: $('#supplierPhone').val(),
+            address: $('#supplierAddress').val(),
+            brand_id: $('#supplierBrand').val()
+        };
+        
+        // Validate required fields
+        if (!formData.name.trim()) {
+            alert('Supplier name is required');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create supplier
+        $.ajax({
+            url: '/people/suppliers/create-ajax/',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new supplier to select2 dropdown
+                    const supplierSelect = $('#id_supplier');
+                    const newOption = new Option(response.supplier.name, response.supplier.id, true, true);
+                    supplierSelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#supplierModal').modal('hide');
+                    form[0].reset();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Supplier created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating supplier: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating supplier:', error);
+                alert('Error creating supplier. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveSupplierBtn').prop('disabled', false).text('Save Supplier');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#supplierModal').on('hidden.bs.modal', function () {
+        $('#supplierForm')[0].reset();
+        $('#saveSupplierBtn').prop('disabled', false).text('Save Supplier');
+    });
 });
 </script>
 {% endblock base %}

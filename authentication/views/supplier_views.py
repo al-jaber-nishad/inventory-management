@@ -7,6 +7,9 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from authentication.models import Supplier
 from authentication.forms.supplier import SupplierForm
@@ -126,3 +129,60 @@ class SupplierDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(self.request, "Supplier deleted successfully.")
         return redirect(self.success_url)
+
+
+@require_POST
+@login_required
+def create_supplier_ajax(request):
+    """
+    AJAX endpoint for creating suppliers from the purchase form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        brand_id = request.POST.get('brand_id', '').strip()
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Supplier name is required'
+            })
+        
+        # Handle brand relationship
+        brand = None
+        if brand_id:
+            try:
+                from product.models import Brand
+                brand = Brand.objects.get(id=brand_id)
+            except Brand.DoesNotExist:
+                pass
+        
+        # Create supplier
+        supplier = Supplier.objects.create(
+            name=name,
+            phone=phone,
+            address=address,
+            brand=brand,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Supplier created successfully',
+            'supplier': {
+                'id': supplier.id,
+                'name': supplier.name,
+                'phone': supplier.phone,
+                'address': supplier.address,
+                'brand': supplier.brand.name if supplier.brand else None
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating supplier: {str(e)}'
+        })

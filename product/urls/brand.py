@@ -7,4 +7,5 @@ urlpatterns = [
     path('brands/<int:pk>/', views.BrandDetailView.as_view(), name='brand_detail'),
     path('brands/<int:pk>/update/', views.BrandUpdateView.as_view(), name='brand_update'),
     path('brands/<int:pk>/delete/', views.BrandDeleteView.as_view(), name='brand_delete'),
+    path('api/brands/', views.get_brands_api, name='brands_api'),
 ]

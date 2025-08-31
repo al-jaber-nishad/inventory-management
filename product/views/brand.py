@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 from product.models import Brand
 from product.forms.brand import BrandForm
@@ -92,3 +93,15 @@ class BrandDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(request, "Brand deleted successfully.")
         return redirect(self.success_url)
+
+
+@login_required
+def get_brands_api(request):
+    """
+    API endpoint to get all active brands for dropdowns
+    """
+    try:
+        brands = Brand.objects.all().values('id', 'name').order_by('name')
+        return JsonResponse(list(brands), safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
