@@ -72,8 +72,35 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        product: Product = form.save(commit=False)
-        product.save()
+        from inventory.models import InventoryTransaction
+        from django.db import transaction as db_transaction
+        
+        with db_transaction.atomic():
+            product: Product = form.save(commit=False)
+            product.save()
+            
+            # Handle initial stock if provided
+            initial_stock = form.cleaned_data.get('initial_stock', 0)
+            if initial_stock and initial_stock > 0:
+                # Update the existing INITIAL_STOCK transaction created by signal
+                try:
+                    initial_transaction = InventoryTransaction.objects.get(
+                        product=product,
+                        transaction_type=InventoryTransaction.TransactionType.INITIAL_STOCK
+                    )
+                    initial_transaction.quantity = int(initial_stock)
+                    initial_transaction.note = f"Initial stock for product {product.name}: {initial_stock} units"
+                    initial_transaction.save()
+                except InventoryTransaction.DoesNotExist:
+                    # Create if signal didn't create it for some reason
+                    InventoryTransaction.objects.create(
+                        product=product,
+                        transaction_type=InventoryTransaction.TransactionType.INITIAL_STOCK,
+                        quantity=int(initial_stock),
+                        note=f"Initial stock for product {product.name}: {initial_stock} units",
+                        reference_code=f"INIT-{product.sku}"
+                    )
+        
         messages.success(self.request, "Product created successfully.")
         return redirect('product_list')
 
