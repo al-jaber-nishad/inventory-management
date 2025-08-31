@@ -1,295 +1,458 @@
 {% extends "base.html" %}
 {% load static %}
 {% block base %}
+
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .stat-title {
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .stat-icon {
+        font-size: 20px;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: #f3f4f6;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .stat-update {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+
+    .chart-header {
+        margin-bottom: 20px;
+    }
+
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .chart-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .chart-container {
+        height: 150px;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .bar-chart {
+        display: flex;
+        align-items: end;
+        gap: 8px;
+        height: 120px;
+    }
+
+    .bar {
+        width: 20px;
+        background: linear-gradient(to top, #8b5cf6, #a78bfa);
+        border-radius: 2px 2px 0 0;
+        min-height: 10px;
+    }
+
+    .line-chart svg {
+        width: 100%;
+        height: 120px;
+    }
+
+    .chart-days {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .bottom-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .section-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .alert-icon, .trending-icon {
+        font-size: 18px;
+    }
+
+    .table-header, .table-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 15px;
+        padding: 10px 0;
+        font-size: 14px;
+    }
+
+    .most-sold-header, .most-sold-row {
+        grid-template-columns: 2fr 1fr 1fr;
+    }
+
+    .table-header {
+        font-weight: 600;
+        color: #6b7280;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table-row {
+        color: #111827;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+</style>
+
 <div class="page-wrapper">
-  <div class="content">
-    <!-- Statistics Cards Row -->
-    <div class="row">
-      <div class="col-lg-3 col-sm-6 col-12">
-        <div class="dash-widget">
-          <div class="dash-widgetimg">
-            <span><img src="{% static 'img/icons/dash1.svg' %}" alt="img" /></span>
-          </div>
-          <div class="dash-widgetcontent">
-            <h5>
-              ৳<span class="counters" data-count="{{ purchase_due_total|floatformat:2 }}">{{ purchase_due_total|floatformat:2 }}</span>
-            </h5>
-            <h6>Total Purchase Due</h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12">
-        <div class="dash-widget dash1">
-          <div class="dash-widgetimg">
-            <span><img src="{% static 'img/icons/dash2.svg' %}" alt="img" /></span>
-          </div>
-          <div class="dash-widgetcontent">
-            <h5>
-              ৳<span class="counters" data-count="{{ sales_due_total|floatformat:2 }}">{{ sales_due_total|floatformat:2 }}</span>
-            </h5>
-            <h6>Total Sales Due</h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12">
-        <div class="dash-widget dash2">
-          <div class="dash-widgetimg">
-            <span><img src="{% static 'img/icons/dash3.svg' %}" alt="img" /></span>
-          </div>
-          <div class="dash-widgetcontent">
-            <h5>
-              ৳<span class="counters" data-count="{{ total_sales_amount|floatformat:2 }}">{{ total_sales_amount|floatformat:2 }}</span>
-            </h5>
-            <h6>Total Sale Amount</h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12">
-        <div class="dash-widget dash3">
-          <div class="dash-widgetimg">
-            <span><img src="{% static 'img/icons/dash4.svg' %}" alt="img" /></span>
-          </div>
-          <div class="dash-widgetcontent">
-            <h5>
-              <span class="counters" data-count="{{ low_stock_products|length }}">{{ low_stock_products|length }}</span>
-            </h5>
-            <h6>Low Stock Items</h6>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Counter Cards Row -->
-    <div class="row">
-      <div class="col-lg-3 col-sm-6 col-12 d-flex">
-        <div class="dash-count">
-          <div class="dash-counts">
-            <h4>{{ total_customers }}</h4>
-            <h5>Customers</h5>
-          </div>
-          <div class="dash-imgs">
-            <i data-feather="user"></i>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12 d-flex">
-        <div class="dash-count das1">
-          <div class="dash-counts">
-            <h4>{{ total_suppliers }}</h4>
-            <h5>Suppliers</h5>
-          </div>
-          <div class="dash-imgs">
-            <i data-feather="user-check"></i>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12 d-flex">
-        <div class="dash-count das2">
-          <div class="dash-counts">
-            <h4>{{ total_purchase_invoices }}</h4>
-            <h5>Purchase Invoice</h5>
-          </div>
-          <div class="dash-imgs">
-            <i data-feather="file-text"></i>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-sm-6 col-12 d-flex">
-        <div class="dash-count das3">
-          <div class="dash-counts">
-            <h4>{{ total_sales_invoices }}</h4>
-            <h5>Sales Invoice</h5>
-          </div>
-          <div class="dash-imgs">
-            <i data-feather="file"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts and Recent Products Row -->
-    <div class="row">
-      <div class="col-lg-7 col-sm-12 col-12 d-flex">
-        <div class="card flex-fill">
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Purchase & Sales</h5>
-            <div class="graph-sets">
-              <ul>
-                <li><span>Sales</span></li>
-                <li><span>Purchase</span></li>
-              </ul>
-              <div class="dropdown">
-                <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ current_year }}
-                  <img src="{% static 'img/icons/dropdown.svg' %}" alt="img" class="ms-2" />
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <li><a href="javascript:void(0);" class="dropdown-item">{{ current_year }}</a></li>
-                  <li><a href="javascript:void(0);" class="dropdown-item">{{ current_year|add:-1 }}</a></li>
-                  <li><a href="javascript:void(0);" class="dropdown-item">{{ current_year|add:-2 }}</a></li>
-                </ul>
-              </div>
+    <div class="content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Purchase Due</div>
+                    <div class="stat-icon icon-pending">📋</div>
+                </div>
+                <div class="stat-value">৳{{ purchase_due_total|floatformat:2 }}</div>
+                <div class="stat-update">Updated just now</div>
             </div>
-          </div>
-          <div class="card-body">
-            <div id="sales_charts"></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-5 col-sm-12 col-12 d-flex">
-        <div class="card flex-fill">
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h4 class="card-title mb-0">Recently Added Products</h4>
-            <div class="dropdown">
-              <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false" class="dropset">
-                <i class="fa fa-ellipsis-v"></i>
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a href="#" class="dropdown-item">Product List</a></li>
-                <li><a href="#" class="dropdown-item">Add Product</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive dataview">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>SNo</th>
-                    <th>Products</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for product in recent_products %}
-                  <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td class="productimgname">
-                      <a href="#" class="product-img">
-                        {% if product.image %}
-                          <img src="{{ product.image.url }}" alt="product" />
-                        {% else %}
-                          <img src="{% static 'img/product/default-product.jpg' %}" alt="product" />
-                        {% endif %}
-                      </a>
-                      <a href="#">{{ product.name }}</a>
-                    </td>
-                    <td>৳{{ product.price|floatformat:2 }}</td>
-                    <td>{{ product.stock }}</td>
-                  </tr>
-                  {% empty %}
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Low Stock Products Table -->
-    <div class="card mb-0">
-      <div class="card-body">
-        <h4 class="card-title">Low Stock Products</h4>
-        <div class="table-responsive dataview">
-          <table class="table datatable">
-            <thead>
-              <tr>
-                <th>SNo</th>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Brand Name</th>
-                <th>Category Name</th>
-                <th>Current Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in low_stock_products %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td><a href="javascript:void(0);">{{ item.product.sku }}</a></td>
-                <td class="productimgname">
-                  <a class="product-img" href="#">
-                    {% if item.product.image %}
-                      <img src="{{ item.product.image.url }}" alt="product" />
-                    {% else %}
-                      <img src="{% static 'img/product/default-product.jpg' %}" alt="product" />
-                    {% endif %}
-                  </a>
-                  <a href="#">{{ item.product.name }}</a>
-                </td>
-                <td>{{ item.product.brand.name|default:"N/A" }}</td>
-                <td>{{ item.product.category.name|default:"N/A" }}</td>
-                <td>
-                  <span class="badge badge-danger">{{ item.stock }}</span>
-                </td>
-              </tr>
-              {% empty %}
-              {% endfor %}
-            </tbody>
-          </table>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Sales Due</div>
+                    <div class="stat-icon icon-ship">📦</div>
+                </div>
+                <div class="stat-value">৳{{ sales_due_total|floatformat:2 }}</div>
+                <div class="stat-update">Updated just now</div>
+            </div>
+
+            {% comment %} <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Sales Amount</div>
+                    <div class="stat-icon icon-products">📊</div>
+                </div>
+                <div class="stat-value">৳{{ total_sales_amount|floatformat:2 }}</div>
+                <div class="stat-update">Updated just now</div>
+            </div> {% endcomment %}
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Low Stock Items</div>
+                    <div class="stat-icon icon-abandoned">🛒</div>
+                </div>
+                <div class="stat-value">{{ low_stock_products|length }}</div>
+                <div class="stat-update">Updated just now</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Customers</div>
+                    <div class="stat-icon icon-customers">👥</div>
+                </div>
+                <div class="stat-value">{{ total_customers }}</div>
+                <div class="stat-update">Updated just now</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Suppliers</div>
+                    <div class="stat-icon icon-loss">📉</div>
+                </div>
+                <div class="stat-value">{{ total_suppliers }}</div>
+                <div class="stat-update">Updated just now</div>
+            </div>
         </div>
-      </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Monthly Sales Performance</div>
+                    <div class="chart-subtitle">Sales figures for {{ current_year }}</div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-chart" id="sales-chart">
+                        {% for data in monthly_data %}
+                        <div class="bar" 
+                             style="height: {% widthratio data.sales 100000 100 %}%;" 
+                             title="{{ data.month }}: ৳{{ data.sales|floatformat:2 }}"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="chart-days">
+                    {% for data in monthly_data %}
+                    <span>{{ data.month }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Monthly Purchase Performance</div>
+                    <div class="chart-subtitle">Purchase figures for {{ current_year }}</div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-chart" id="purchase-chart">
+                        {% for data in monthly_data %}
+                        <div class="bar" 
+                             style="height: {% widthratio data.purchases 100000 100 %}%;" 
+                             title="{{ data.month }}: ৳{{ data.purchases|floatformat:2 }}"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="chart-days">
+                    {% for data in monthly_data %}
+                    <span>{{ data.month }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Sales vs Purchase Trend</div>
+                    <div class="chart-subtitle">Comparison trend for {{ current_year }}</div>
+                </div>
+                <div class="chart-container">
+                    <div class="line-chart">
+                        <canvas id="trendChart" width="300" height="120"></canvas>
+                    </div>
+                </div>
+                <div class="chart-days">
+                    {% for data in monthly_data %}
+                    <span>{{ data.month }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="bottom-section">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="section-title">Stock Alerts</div>
+                </div>
+                <div class="section-subtitle">Products requiring immediate attention</div>
+                
+                <div class="table-header">
+                    <div>Product</div>
+                    <div>Stock</div>
+                    <div>Status</div>
+                    <div>Action</div>
+                </div>
+                
+                {% for item in low_stock_products|slice:":5" %}
+                <div class="table-row">
+                    <div>{{ item.product.name }}</div>
+                    <div>{{ item.stock }}</div>
+                    <div style="color: #ef4444;">Low Stock</div>
+                    <div>Reorder</div>
+                </div>
+                {% empty %}
+                <div class="table-row">
+                    <div colspan="4" style="text-align: center; color: #6b7280;">No low stock items</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="trending-icon">📈</div>
+                    <div class="section-title">Recent Products</div>
+                </div>
+                <div class="section-subtitle">Recently added products</div>
+                
+                <div class="table-header most-sold-header">
+                    <div>Product</div>
+                    <div>Price</div>
+                    <div>Stock</div>
+                </div>
+                
+                {% for product in recent_products|slice:":5" %}
+                <div class="table-row most-sold-row">
+                    <div>{{ product.name }}</div>
+                    <div>৳{{ product.price|floatformat:2 }}</div>
+                    <div>{{ product.stock }}</div>
+                </div>
+                {% empty %}
+                <div class="table-row most-sold-row">
+                    <div colspan="3" style="text-align: center; color: #6b7280;">No recent products</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-    <script src="{% static 'plugins/apexchart/apexcharts.min.js' %}"></script>
-
 <script>
-  // Chart data from Django context
-  var salesChartData = {
-    series: [{
-      name: "Sales",
-      type: "area",
-      data: [{% for data in monthly_data %}{{ data.sales }}{% if not forloop.last %},{% endif %}{% endfor %}]
-    }, {
-      name: "Purchase",
-      type: "line",
-      data: [{% for data in monthly_data %}{{ data.purchases }}{% if not forloop.last %},{% endif %}{% endfor %}]
-    }],
-    chart: {
-      height: 300,
-      type: "line",
-      zoom: {
-        enabled: false
-      }
-    },
-    stroke: {
-      curve: "straight"
-    },
-    fill: {
-      type: "solid",
-      opacity: [0.35, 1]
-    },
-    labels: [{% for data in monthly_data %}"{{ data.month }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-    markers: {
-      size: 0
-    },
-    yaxis: [{
-      title: {
-        text: "Amount (৳)"
-      }
-    }],
-    tooltip: {
-      shared: true,
-      intersect: false,
-      y: {
-        formatter: function (y) {
-          if (typeof y !== "undefined") {
-            return "৳" + y.toFixed(2);
-          }
-          return y;
-        }
-      }
+// Real data from Django context
+var monthlyData = [
+    {% for data in monthly_data %}
+    {
+        month: '{{ data.month }}',
+        sales: {{ data.sales }},
+        purchases: {{ data.purchases }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// Find max values for scaling
+var maxSales = Math.max(...monthlyData.map(d => d.sales));
+var maxPurchases = Math.max(...monthlyData.map(d => d.purchases));
+var maxValue = Math.max(maxSales, maxPurchases);
+
+// Update bar chart heights with real data scaling
+document.addEventListener('DOMContentLoaded', function() {
+    // Update sales chart
+    var salesBars = document.querySelectorAll('#sales-chart .bar');
+    salesBars.forEach((bar, index) => {
+        var height = maxValue > 0 ? (monthlyData[index].sales / maxValue * 90) + 10 : 10;
+        bar.style.height = height + '%';
+    });
+
+    // Update purchase chart
+    var purchaseBars = document.querySelectorAll('#purchase-chart .bar');
+    purchaseBars.forEach((bar, index) => {
+        var height = maxValue > 0 ? (monthlyData[index].purchases / maxValue * 90) + 10 : 10;
+        bar.style.height = height + '%';
+    });
+
+    // Draw trend line chart
+    var canvas = document.getElementById('trendChart');
+    if (canvas && canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width;
+        var height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Calculate points
+        var salesPoints = [];
+        var purchasePoints = [];
+        
+        monthlyData.forEach((data, index) => {
+            var x = (index / (monthlyData.length - 1)) * (width - 20) + 10;
+            var salesY = maxValue > 0 ? height - ((data.sales / maxValue) * (height - 20)) - 10 : height / 2;
+            var purchaseY = maxValue > 0 ? height - ((data.purchases / maxValue) * (height - 20)) - 10 : height / 2;
+            
+            salesPoints.push({x: x, y: salesY});
+            purchasePoints.push({x: x, y: purchaseY});
+        });
+        
+        // Draw sales line
+        ctx.beginPath();
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 2;
+        ctx.moveTo(salesPoints[0].x, salesPoints[0].y);
+        salesPoints.forEach(point => {
+            ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+        
+        // Draw purchase line
+        ctx.beginPath();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.moveTo(purchasePoints[0].x, purchasePoints[0].y);
+        purchasePoints.forEach(point => {
+            ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+        
+        // Draw points
+        salesPoints.forEach(point => {
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#8b5cf6';
+            ctx.fill();
+        });
+        
+        purchasePoints.forEach(point => {
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fill();
+        });
     }
-  };
-  
-  // Render chart
-  if (document.getElementById("sales_charts")) {
-    var salesChart = new ApexCharts(document.querySelector("#sales_charts"),);
-    salesChart.render();
-  }
+});
 </script>
+
 {% endblock %}
