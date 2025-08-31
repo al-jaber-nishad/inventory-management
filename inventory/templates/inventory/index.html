@@ -105,6 +105,44 @@
         background: linear-gradient(to top, #8b5cf6, #a78bfa);
         border-radius: 2px 2px 0 0;
         min-height: 10px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .bar:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+    }
+
+    .bar-value {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    .bar:hover .bar-value {
+        opacity: 1;
+    }
+
+    .bar-label {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        color: #6b7280;
+        font-weight: 500;
     }
 
     .line-chart svg {
@@ -251,8 +289,12 @@
                     <div class="bar-chart" id="sales-chart">
                         {% for data in monthly_data %}
                         <div class="bar" 
-                             style="height: {% widthratio data.sales 100000 100 %}%;" 
-                             title="{{ data.month }}: ৳{{ data.sales|floatformat:2 }}"></div>
+                             style="height: {% widthratio data.sales 100000 100 %}%;"
+                             data-value="{{ data.sales|floatformat:2 }}"
+                             data-month="{{ data.month }}">
+                            <div class="bar-value">৳{{ data.sales|floatformat:2 }}</div>
+                            <div class="bar-label">{{ data.sales|floatformat:0 }}</div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -272,8 +314,12 @@
                     <div class="bar-chart" id="purchase-chart">
                         {% for data in monthly_data %}
                         <div class="bar" 
-                             style="height: {% widthratio data.purchases 100000 100 %}%;" 
-                             title="{{ data.month }}: ৳{{ data.purchases|floatformat:2 }}"></div>
+                             style="height: {% widthratio data.purchases 100000 100 %}%;"
+                             data-value="{{ data.purchases|floatformat:2 }}"
+                             data-month="{{ data.month }}">
+                            <div class="bar-value">৳{{ data.purchases|floatformat:2 }}</div>
+                            <div class="bar-label">{{ data.purchases|floatformat:0 }}</div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -320,7 +366,7 @@
                 
                 {% for item in low_stock_products|slice:":5" %}
                 <div class="table-row">
-                    <div>{{ item.product.name }}</div>
+                    <div>{{ item.product.name }}-{{ item.product.brand.name }}</div>
                     <div>{{ item.stock }}</div>
                     <div style="color: #ef4444;">Low Stock</div>
                     <div>Reorder</div>
@@ -347,7 +393,7 @@
                 
                 {% for product in recent_products|slice:":5" %}
                 <div class="table-row most-sold-row">
-                    <div>{{ product.name }}</div>
+                    <div>{{ product.name }}-{{ product.brand.name }}</div>
                     <div>৳{{ product.price|floatformat:2 }}</div>
                     <div>{{ product.stock }}</div>
                 </div>
@@ -385,6 +431,18 @@ document.addEventListener('DOMContentLoaded', function() {
     salesBars.forEach((bar, index) => {
         var height = maxValue > 0 ? (monthlyData[index].sales / maxValue * 90) + 10 : 10;
         bar.style.height = height + '%';
+        
+        // Update the tooltip value
+        var tooltip = bar.querySelector('.bar-value');
+        if (tooltip) {
+            tooltip.textContent = '৳' + monthlyData[index].sales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        
+        // Update the bar label
+        var label = bar.querySelector('.bar-label');
+        if (label) {
+            label.textContent = formatNumber(monthlyData[index].sales);
+        }
     });
 
     // Update purchase chart
@@ -392,6 +450,18 @@ document.addEventListener('DOMContentLoaded', function() {
     purchaseBars.forEach((bar, index) => {
         var height = maxValue > 0 ? (monthlyData[index].purchases / maxValue * 90) + 10 : 10;
         bar.style.height = height + '%';
+        
+        // Update the tooltip value
+        var tooltip = bar.querySelector('.bar-value');
+        if (tooltip) {
+            tooltip.textContent = '৳' + monthlyData[index].purchases.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        
+        // Update the bar label
+        var label = bar.querySelector('.bar-label');
+        if (label) {
+            label.textContent = formatNumber(monthlyData[index].purchases);
+        }
     });
 
     // Draw trend line chart
@@ -451,8 +521,109 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.fillStyle = '#f59e0b';
             ctx.fill();
         });
+        
+        // Add canvas hover tooltips for trend chart
+        var canvas = document.getElementById('trendChart');
+        if (canvas) {
+            var tooltip = createCanvasTooltip();
+            
+            canvas.addEventListener('mousemove', function(e) {
+                var rect = canvas.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                
+                // Find closest data point
+                var closestPoint = findClosestPoint(x, y, canvas.width, canvas.height);
+                
+                if (closestPoint) {
+                    showTooltip(tooltip, e.pageX, e.pageY, closestPoint);
+                } else {
+                    hideTooltip(tooltip);
+                }
+            });
+            
+            canvas.addEventListener('mouseleave', function() {
+                hideTooltip(tooltip);
+            });
+        }
     }
 });
+
+// Helper function to format numbers
+function formatNumber(num) {
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
+}
+
+// Helper function to create canvas tooltip
+function createCanvasTooltip() {
+    var tooltip = document.createElement('div');
+    tooltip.style.position = 'absolute';
+    tooltip.style.background = 'rgba(0, 0, 0, 0.8)';
+    tooltip.style.color = 'white';
+    tooltip.style.padding = '8px 12px';
+    tooltip.style.borderRadius = '4px';
+    tooltip.style.fontSize = '12px';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.zIndex = '1000';
+    tooltip.style.display = 'none';
+    document.body.appendChild(tooltip);
+    return tooltip;
+}
+
+// Helper function to find closest point on canvas
+function findClosestPoint(mouseX, mouseY, canvasWidth, canvasHeight) {
+    var threshold = 15; // pixels
+    var closest = null;
+    var minDistance = threshold;
+    
+    monthlyData.forEach((data, index) => {
+        var x = (index / (monthlyData.length - 1)) * (canvasWidth - 20) + 10;
+        var salesY = maxValue > 0 ? canvasHeight - ((data.sales / maxValue) * (canvasHeight - 20)) - 10 : canvasHeight / 2;
+        var purchaseY = maxValue > 0 ? canvasHeight - ((data.purchases / maxValue) * (canvasHeight - 20)) - 10 : canvasHeight / 2;
+        
+        // Check sales point
+        var salesDistance = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - salesY, 2));
+        if (salesDistance < minDistance) {
+            minDistance = salesDistance;
+            closest = {
+                month: data.month,
+                type: 'Sales',
+                value: data.sales
+            };
+        }
+        
+        // Check purchase point
+        var purchaseDistance = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - purchaseY, 2));
+        if (purchaseDistance < minDistance) {
+            minDistance = purchaseDistance;
+            closest = {
+                month: data.month,
+                type: 'Purchase',
+                value: data.purchases
+            };
+        }
+    });
+    
+    return closest;
+}
+
+// Helper function to show tooltip
+function showTooltip(tooltip, x, y, data) {
+    tooltip.innerHTML = data.month + '<br>' + data.type + ': ৳' + data.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    tooltip.style.left = (x + 10) + 'px';
+    tooltip.style.top = (y - 40) + 'px';
+    tooltip.style.display = 'block';
+}
+
+// Helper function to hide tooltip
+function hideTooltip(tooltip) {
+    tooltip.style.display = 'none';
+}
 </script>
 
 {% endblock %}
