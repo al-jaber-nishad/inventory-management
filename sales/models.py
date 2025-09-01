@@ -31,7 +31,7 @@ class Sale(BaseModel):
 
     note = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
-    is_active = models.BooleanField(default=True)
+    # is_active = models.BooleanField(default=True)
 
     unique_fields = ['invoice_number']
 

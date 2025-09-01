@@ -19,7 +19,7 @@ class PurchaseForm(forms.ModelForm):
         model = Purchase
         fields = [
             'payment_ledger', 'supplier', 'invoice_number', 'purchase_date', 'due_date',
-            'discount', 'paid', 'due', 'tax', 'note', 'status', 'is_active'
+            'discount', 'paid', 'due', 'tax', 'note', 'status'
         ]
         widgets = {
             'payment_ledger': forms.Select(attrs={'class': 'form-control select2_search'}),
@@ -33,7 +33,6 @@ class PurchaseForm(forms.ModelForm):
             'due': forms.NumberInput(attrs={'id': '', 'class':"w-20 px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Additional notes'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
