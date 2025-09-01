@@ -83,6 +83,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 AUTH_USER_MODEL = 'authentication.User'
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://shop.xinotrix.com",
+    "http://shop.xinotrix.com",
+]
+
 # AUTHENTICATION_BACKENDS = [
 #     # 'django.contrib.auth.backends.ModelBackend',
 #     'authentication.backends.EmailorPhoneModelBackend',
