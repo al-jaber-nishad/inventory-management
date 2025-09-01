@@ -3,111 +3,243 @@
     .submenu ul li a.active {
         font-weight: bold !important;
     }
+    .sidebar-section-header {
+        color: #a0a7b4;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 15px 20px 8px 20px;
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+    .sidebar-section-header:first-child {
+        padding-top: 20px;
+    }
+    .sidebar .sidebar-menu > ul > li.section-item {
+        margin: 0;
+    }
+    .sidebar .sidebar-menu > ul > li.section-item > a {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+
+
+    /* Custom Section Headers */
+    .sidebar .sidebar-menu > ul > li.sidebar-section-header {
+    color: #6c757d !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    padding: 15px 20px 8px 20px !important;
+    margin: 0 !important;
+    letter-spacing: 0.8px !important;
+    background: none !important;
+    cursor: default !important;
+    list-style: none !important;
+    border: none !important;
+    }
+
+    .sidebar .sidebar-menu > ul > li.sidebar-section-header:first-child {
+    padding-top: 20px !important;
+    }
+
+    /* Custom Section Items */
+    .sidebar .sidebar-menu > ul > li.section-item {
+    margin: 0 !important;
+    }
+
+    .sidebar .sidebar-menu > ul > li.section-item > a {
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #6c757d !important;
+    border-radius: 0 !important;
+    }
+
+    .sidebar .sidebar-menu > ul > li.section-item > a:hover {
+    border-radius: 5px !important;
+    }
+
+    .sidebar .sidebar-menu > ul > li.section-item.active > a {
+    background-color: #1b2850 !important;
+    color: #fff !important;
+    border-radius: 5px !important;
+    }
+
+    .sidebar .sidebar-menu > ul > li.section-item.active > a img {
+    filter: brightness(0) invert(1) !important;
+    }
+
 </style>
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-inner slimscroll">
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
-                <li class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <!-- Main Section -->
+                {% comment %} <li class="sidebar-section-header">Main</li> {% endcomment %}
+                <li class="section-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                     <a href="{% url 'home' %}">
                         <img src="{% static 'img/icons/dashboard.svg' %}" alt="img" />
                         <span>Dashboard</span>
                     </a>
                 </li>
 
-                <li class="submenu">
-                    <a href="#" class="{% if 'inventory' in request.path %}active{% endif %}">
+                <!-- Inventory Section -->
+                <li class="sidebar-section-header">Inventory</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+                    <a href="{% url 'product_list' %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>Product</span>
-                        <span class="menu-arrow"></span>
+                        <span>Products</span>
                     </a>
-                    <ul class="{% if 'product' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">Products</a></li>
-                        <li><a href="{% url 'unit_list' %}" class="{% if request.resolver_match.url_name == 'unit_list' %}active{% endif %}">Units</a></li>
-                        <li><a href="{% url 'brand_list' %}" class="{% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}">Brands</a></li>
-                        <li><a href="{% url 'color_list' %}" class="{% if request.resolver_match.url_name == 'color_list' %}active{% endif %}">Color</a></li>
-                        <li><a href="{% url 'productcategory_list' %}" class="{% if request.resolver_match.url_name == 'productcategory_list' %}active{% endif %}">Categories</a></li>
-                        <li><a href="{% url 'adjustment_list' %}" class="{% if request.resolver_match.url_name == 'adjustment_list' %}active{% endif %}">Inventory Adjustments</a></li>
-                    </ul>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'productcategory_list' %}active{% endif %}">
+                    <a href="{% url 'productcategory_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Category</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}">
+                    <a href="{% url 'brand_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Brands</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'unit_list' %}active{% endif %}">
+                    <a href="{% url 'unit_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Units</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'color_list' %}active{% endif %}">
+                    <a href="{% url 'color_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Color</span>
+                    </a>
                 </li>
 
-                <li class="submenu">
-                    <a href="#" class="{% if 'accounts' in request.path %}active{% endif %}">
+                <!-- Stock Section -->
+                <li class="sidebar-section-header">Stock</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'adjustment_list' %}active{% endif %}">
+                    <a href="{% url 'adjustment_list' %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>Accounts</span>
-                        <span class="menu-arrow"></span>
+                        <span>Stock Adjustment</span>
                     </a>
-                    <ul class="{% if 'accounts' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'bank_list' %}" class="{% if request.resolver_match.url_name == 'bank_list' %}active{% endif %}">Banks</a></li>
-                        <li><a href="{% url 'primarygroup_list' %}" class="{% if request.resolver_match.url_name == 'primarygroup_list' %}active{% endif %}">Primary Groups</a></li>
-                        <li><a href="{% url 'group_list' %}" class="{% if request.resolver_match.url_name == 'group_list' %}active{% endif %}">Groups</a></li>
-                        <li><a href="{% url 'ledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'ledgeraccount_list' %}active{% endif %}">Ledger Accounts</a></li>
-                        <li><a href="{% url 'subledgeraccount_list' %}" class="{% if request.resolver_match.url_name == 'subledgeraccount_list' %}active{% endif %}">Sub Ledgers</a></li>
-                        <li><a href="{% url 'paymentvoucher_list' %}" class="{% if request.resolver_match.url_name == 'paymentvoucher_list' %}active{% endif %}">Payment Vouchers</a></li>
-                        <li><a href="{% url 'receiptvoucher_list' %}" class="{% if request.resolver_match.url_name == 'receiptvoucher_list' %}active{% endif %}">Receipt Vouchers</a></li>
-                    </ul>
                 </li>
 
-                <li class="submenu">
-                    <a href="#" class="{% if 'people' in request.path %}active{% endif %}">
-                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>People</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="{% if 'people' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'customer_list' %}" class="{% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}">Customers</a></li>
-                        <li><a href="{% url 'supplier_list' %}" class="{% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %}">Suppliers</a></li>
-                    </ul>
-                </li>
-
-                <li class="submenu">
-                    <a href="#" class="{% if 'sale' in request.path %}active{% endif %}">
+                <!-- Sales Section -->
+                <li class="sidebar-section-header">Sales</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'sale_list' %}active{% endif %}">
+                    <a href="{% url 'sale_list' %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
                         <span>Sales</span>
-                        <span class="menu-arrow"></span>
                     </a>
-                    <ul class="{% if 'sale' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'sale_list' %}" class="{% if request.resolver_match.url_name == 'sale_list' %}active{% endif %}">Sales</a></li>
-                        <li><a href="{% url 'sale_return_list' %}" class="{% if request.resolver_match.url_name == 'sale_return_list' %}active{% endif %}">Sales Returns</a></li>
-                    </ul>
                 </li>
-
-                <li class="submenu">
-                    <a href="#" class="{% if 'purchase' in request.path %}active{% endif %}">
+                <li class="section-item {% if request.resolver_match.url_name == 'sale_return_list' %}active{% endif %}">
+                    <a href="{% url 'sale_return_list' %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>Purchase</span>
-                        <span class="menu-arrow"></span>
+                        <span>Sales Returns</span>
                     </a>
-                    <ul class="{% if 'purchase' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'purchase_list' %}" class="{% if request.resolver_match.url_name == 'purchase_list' %}active{% endif %}">Purchases</a></li>
-                        <li><a href="{% url 'purchase_return_list' %}" class="{% if request.resolver_match.url_name == 'purchase_return_list' %}active{% endif %}">Purchase Returns</a></li>
-                    </ul>
                 </li>
 
-                <li class="submenu">
-                    <a href="#" class="{% if 'report' in request.path %}active{% endif %}">
+                <!-- Purchase Section -->
+                <li class="sidebar-section-header">Purchase</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'purchase_list' %}active{% endif %}">
+                    <a href="{% url 'purchase_list' %}">
                         <img src="{% static 'img/icons/product.svg' %}" alt="img" />
-                        <span>Report</span>
-                        <span class="menu-arrow"></span>
+                        <span>Purchases</span>
                     </a>
-                    <ul class="{% if 'report' in request.path %}show{% endif %}">
-                        <li><a href="{% url 'balance_sheet_list' %}" class="{% if request.resolver_match.url_name == 'balance_sheet_list' %}active{% endif %}">Balance Sheet Report</a></li>
-                        <li><a href="{% url 'stock_report_list' %}" class="{% if request.resolver_match.url_name == 'stock_report_list' %}active{% endif %}">Stock Report</a></li>
-                    </ul>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'purchase_return_list' %}active{% endif %}">
+                    <a href="{% url 'purchase_return_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Purchase Returns</span>
+                    </a>
                 </li>
 
+                <!-- People Section -->
+                <li class="sidebar-section-header">People</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}">
+                    <a href="{% url 'customer_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %}">
+                    <a href="{% url 'supplier_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Suppliers</span>
+                    </a>
+                </li>
 
+                <!-- Accounts Section -->
+                <li class="sidebar-section-header">Accounts</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'bank_list' %}active{% endif %}">
+                    <a href="{% url 'bank_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Banks</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'primarygroup_list' %}active{% endif %}">
+                    <a href="{% url 'primarygroup_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Primary Groups</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'group_list' %}active{% endif %}">
+                    <a href="{% url 'group_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Groups</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'ledgeraccount_list' %}active{% endif %}">
+                    <a href="{% url 'ledgeraccount_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Ledger Accounts</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'subledgeraccount_list' %}active{% endif %}">
+                    <a href="{% url 'subledgeraccount_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Sub Ledgers</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'paymentvoucher_list' %}active{% endif %}">
+                    <a href="{% url 'paymentvoucher_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Payment Vouchers</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'receiptvoucher_list' %}active{% endif %}">
+                    <a href="{% url 'receiptvoucher_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Receipt Vouchers</span>
+                    </a>
+                </li>
+
+                <!-- Reports Section -->
+                <li class="sidebar-section-header">Reports</li>
+                <li class="section-item {% if request.resolver_match.url_name == 'balance_sheet_list' %}active{% endif %}">
+                    <a href="{% url 'balance_sheet_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Balance Sheet Report</span>
+                    </a>
+                </li>
+                <li class="section-item {% if request.resolver_match.url_name == 'stock_report_list' %}active{% endif %}">
+                    <a href="{% url 'stock_report_list' %}">
+                        <img src="{% static 'img/icons/product.svg' %}" alt="img" />
+                        <span>Stock Report</span>
+                    </a>
+                </li>
+
+                <!-- Users Section -->
                 {% if request.user.role.name == "ADMIN" or request.user.role.name == "RESELLER" %}
-                    <li class="submenu">
-                        <a href="#" class="{% if 'user' in request.path %}active{% endif %}">
+                    <li class="sidebar-section-header">Users</li>
+                    <li class="section-item {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
+                        <a href="{% url 'user_list' %}">
                             <img src="{% static 'img/icons/users1.svg' %}" alt="img" />
-                            <span>Users</span>
-                            <span class="menu-arrow"></span>
+                            <span>User List</span>
                         </a>
-                        <ul class="{% if 'user' in request.path %}show{% endif %}">
-                            <li><a href="{% url 'user_list' %}" class="{% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">User List</a></li>
-                        </ul>
                     </li>
                 {% endif %}
 
@@ -120,27 +252,3 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<!-- Custom JS for sidebar toggle -->
-<script>
-//   $(document).ready(function() {
-//       $('.submenu > a').click(function(e) {
-//           e.preventDefault();
-//           var $li = $(this).parent('li');
-//           var $ul = $(this).next('ul');
-
-//           // Hide all submenus except the one being clicked
-//           // $('.submenu ul').not($ul).slideUp(350).parent().removeClass('open');
-
-//           if ($ul.is(':visible')) {
-//               $li.removeClass('open');
-//             //   $ul.slideUp(350);
-//           } else {
-//               $li.addClass('open');
-//             //   $ul.slideDown(350);
-//           }
-//       });
-
-//       // Ensure that the currently active submenu stays open
-//       $('.submenu > a.active').parent().addClass('open').find('ul').slideDown(350);
-//   });
-</script>
