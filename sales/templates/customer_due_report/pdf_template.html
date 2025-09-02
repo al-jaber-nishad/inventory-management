@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Due Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-item .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .summary-item .label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .filters {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f1f3f4;
+            border-left: 4px solid #007bff;
+        }
+        .filters h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .table tr.overdue {
+            background-color: #ffebee;
+        }
+        .customer-row {
+            font-weight: bold;
+            background-color: #e3f2fd !important;
+        }
+        .sale-row {
+            font-size: 11px;
+            background-color: #fafafa !important;
+        }
+        .sale-row td:first-child {
+            padding-left: 20px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-danger {
+            color: #dc3545;
+        }
+        .text-success {
+            color: #28a745;
+        }
+        .text-warning {
+            color: #ffc107;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .badge-overdue {
+            background-color: #dc3545;
+            color: white;
+        }
+        .badge-active {
+            background-color: #28a745;
+            color: white;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Customer Due Report</h1>
+        <p>Outstanding Customer Payments Report</p>
+        <p>Generated on: {{ request.timestamp|date:"F d, Y \a\t g:i A" }}</p>
+    </div>
+
+    {% if filter_search or filter_date_from or filter_date_to %}
+    <div class="filters">
+        <h4>Applied Filters:</h4>
+        {% if filter_search %}<p><strong>Search:</strong> {{ filter_search }}</p>{% endif %}
+        {% if filter_date_from %}<p><strong>From Date:</strong> {{ filter_date_from|date:"F d, Y" }}</p>{% endif %}
+        {% if filter_date_to %}<p><strong>To Date:</strong> {{ filter_date_to|date:"F d, Y" }}</p>{% endif %}
+    </div>
+    {% endif %}
+
+    <div class="summary">
+        <div class="summary-item">
+            <div class="value">{{ total_customers_with_due }}</div>
+            <div class="label">Customers with Due</div>
+        </div>
+        <div class="summary-item">
+            <div class="value text-danger">${{ total_due_amount|floatformat:2 }}</div>
+            <div class="label">Total Due Amount</div>
+        </div>
+        <div class="summary-item">
+            <div class="value text-warning">{{ customers_overdue }}</div>
+            <div class="label">Customers Overdue</div>
+        </div>
+        <div class="summary-item">
+            <div class="value text-danger">{{ overdue_count }}</div>
+            <div class="label">Overdue Invoices</div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Customer Details</th>
+                <th>Contact</th>
+                <th>Total Due</th>
+                <th>Sales Count</th>
+                <th>Oldest Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer_data in due_data %}
+            <tr class="customer-row {% if customer_data.is_overdue %}overdue{% endif %}">
+                <td>
+                    <strong>
+                        {% if customer_data.customer %}
+                            {{ customer_data.customer.name }}
+                        {% else %}
+                            No Customer
+                        {% endif %}
+                    </strong>
+                    {% if customer_data.customer.address %}
+                        <br><small>{{ customer_data.customer.address }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if customer_data.customer.phone %}
+                        {{ customer_data.customer.phone }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <strong class="text-danger">${{ customer_data.total_due|floatformat:2 }}</strong>
+                </td>
+                <td class="text-center">{{ customer_data.sales_count }}</td>
+                <td class="text-center">
+                    {% if customer_data.oldest_due_date %}
+                        {{ customer_data.oldest_due_date|date:"M d, Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if customer_data.is_overdue %}
+                        <span class="badge badge-overdue">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-active">Active</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% for sale_data in customer_data.sales %}
+            <tr class="sale-row {% if sale_data.is_overdue %}overdue{% endif %}">
+                <td>
+                    → Invoice: {{ sale_data.sale.invoice_number }}
+                    <br><small>Sale Date: {{ sale_data.sale.sale_date|date:"M d, Y" }}</small>
+                </td>
+                <td>
+                    {% if sale_data.sale.due_date %}
+                        Due: {{ sale_data.sale.due_date|date:"M d, Y" }}
+                        {% if sale_data.is_overdue %}
+                            <br><small class="text-danger">(Overdue)</small>
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    Total: ${{ sale_data.sale.total|floatformat:2 }}
+                    <br><small>Paid: ${{ sale_data.sale.paid|floatformat:2 }}</small>
+                </td>
+                <td class="text-right">
+                    <strong class="text-danger">${{ sale_data.sale.due|floatformat:2 }}</strong>
+                </td>
+                <td class="text-center">
+                    {% if sale_data.is_overdue %}
+                        <span class="badge badge-overdue">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-active">Pending</span>
+                    {% endif %}
+                </td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            {% if not forloop.last %}
+                <tr><td colspan="6" style="border: none; height: 10px;"></td></tr>
+            {% endif %}
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    <strong>No customers with outstanding dues found.</strong>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>This report was generated automatically by the Inventory Management System</p>
+        <p>Report generated on {{ request.timestamp|now|date:"F d, Y \a\t g:i A" }}</p>
+    </div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 from django.urls import path
 from sales.views import sales as views
+from sales.views import customer_due_report
 
 urlpatterns = [
     path('sales/', views.SaleListView.as_view(), name='sale_list'),
@@ -9,4 +10,5 @@ urlpatterns = [
     path('sales/<int:pk>/delete/', views.SaleDeleteView.as_view(), name='sale_delete'),
     path('sales/<int:pk>/invoice/', views.sale_invoice_pdf, name='sale_invoice_pdf'),
     path('api/product/<int:product_id>/price/', views.get_product_price, name='get_product_price'),
+    path('reports/customer-due/', customer_due_report.customer_due_report, name='customer_due_report'),
 ]

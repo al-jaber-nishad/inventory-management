@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Customer Due Report</h4>
+                <h6>View outstanding customer dues and overdue payments</h6>
+            </div>
+            <div class="page-btn">
+                <a href="?export_format=pdf" class="btn btn-info">
+                    <img src="{% static 'img/icons/pdf.svg' %}" alt="img"> Export PDF
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            title: "{% if message.tags == 'success' %}Success{% else %}Error{% endif %}",
+                            text: '{{ message }}',
+                            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                            confirmButtonText: 'OK'
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/users1.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ total_customers_with_due }}</h5>
+                        <h6>Customers with Due</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/dollar-square.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ total_due_amount|floatformat:2 }}</h5>
+                        <h6>Total Due Amount</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget dash-widget-danger">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/dash3.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ customers_overdue }}</h5>
+                        <h6>Customers Overdue</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget dash-widget-warning">
+                    <div class="dash-widgetimg">
+                        <span><img src="{% static 'img/icons/expense1.svg' %}" alt="img"></span>
+                    </div>
+                    <div class="dash-widgetcontent">
+                        <h5>{{ overdue_count }}</h5>
+                        <h6>Overdue Invoices</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form id="filterForm" method="get">
+                    <!-- Filter Section -->
+                    <div class="card">
+                        <div class="card-body pb-0">
+                            <div class="row">
+                                <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>Search Customer</label>
+                                        <input type="text" name="search_input" placeholder="Customer name, phone, or invoice" value="{{ filter_search }}">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>From Date</label>
+                                        <input type="date" name="date_from" value="{{ filter_date_from }}" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>To Date</label>
+                                        <input type="date" name="date_to" value="{{ filter_date_to }}" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="input-group">
+                                            <button type="submit" class="btn btn-filters"><img src="{% static 'img/icons/search-whites.svg' %}" alt="img"></button>
+                                            <a href="{% url 'customer_due_report' %}" class="btn btn-secondary ml-2">Clear</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="customer-due-report-table">
+                    {% include 'customer_due_report/_table_fragment.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // AJAX form submission for filters
+    $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        
+        $.ajax({
+            url: '{% url "customer_due_report" %}',
+            type: 'GET',
+            data: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                $('#customer-due-report-table').html(response);
+            },
+            error: function() {
+                alert('Error loading data. Please try again.');
+            }
+        });
+    });
+
+    // Pagination AJAX
+    $(document).on('click', '.pagination a', function(event) {
+        event.preventDefault();
+        var page = $(this).attr('href').split('page=')[1];
+        var formData = $('#filterForm').serialize();
+        
+        $.ajax({
+            url: '{% url "customer_due_report" %}',
+            type: 'GET',
+            data: formData + '&page=' + page,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                $('#customer-due-report-table').html(response);
+            },
+            error: function() {
+                alert('Error loading data. Please try again.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

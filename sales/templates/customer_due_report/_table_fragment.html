@@ -1,0 +1,262 @@
+{% load static %}
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Contact</th>
+                <th>Total Due</th>
+                <th>Sales Count</th>
+                <th>Oldest Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer_data in due_data %}
+            <tr {% if customer_data.is_overdue %}class="table-danger"{% endif %}>
+                <td>
+                    {% if customer_data.customer %}
+                        {{ customer_data.customer.name }}
+                    {% else %}
+                        <span class="text-muted">No Customer</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if customer_data.customer.phone %}
+                        {{ customer_data.customer.phone }}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong class="text-danger">{{ customer_data.total_due|floatformat:2 }}</strong>
+                </td>
+                <td>
+                    <span class="badge bg-info">{{ customer_data.sales_count }}</span>
+                </td>
+                <td>
+                    {% if customer_data.oldest_due_date %}
+                        {{ customer_data.oldest_due_date|date:"d M Y" }}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if customer_data.is_overdue %}
+                        <span class="badges bg-lightred">Overdue</span>
+                    {% else %}
+                        <span class="badges bg-lightgreen">Active</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#customerModal{{ customer_data.customer.id|default:'0' }}">
+                        View Details
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <div class="py-4">
+                        <img src="{% static 'img/icons/empty-box.svg' %}" alt="No data" width="48" class="mb-3">
+                        <p>No customers with outstanding dues found.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if due_data.has_other_pages %}
+<div class="row align-items-center">
+    <div class="col-sm-6">
+        <div class="dataTables_info">
+            Showing {{ due_data.start_index }} to {{ due_data.end_index }} of {{ due_data.paginator.count }} entries
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="dataTables_paginate">
+            <ul class="pagination">
+                {% if due_data.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ due_data.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for page_num in due_data.paginator.page_range %}
+                    {% if page_num == due_data.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                    {% elif page_num > due_data.number|add:'-3' and page_num < due_data.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if due_data.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ due_data.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ due_data.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Customer Details Modals -->
+{% for customer_data in due_data %}
+<div class="modal fade" id="customerModal{{ customer_data.customer.id|default:'0' }}" tabindex="-1" aria-labelledby="customerModalLabel{{ customer_data.customer.id|default:'0' }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel{{ customer_data.customer.id|default:'0' }}">
+                    Customer Details - 
+                    {% if customer_data.customer %}
+                        {{ customer_data.customer.name }}
+                    {% else %}
+                        No Customer
+                    {% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Customer Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Customer Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> 
+                                    {% if customer_data.customer %}
+                                        {{ customer_data.customer.name }}
+                                    {% else %}
+                                        <span class="text-muted">No Customer</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Phone:</strong> 
+                                    {% if customer_data.customer.phone %}
+                                        {{ customer_data.customer.phone }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Address:</strong> 
+                                    {% if customer_data.customer.address %}
+                                        {{ customer_data.customer.address }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Due Summary</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Total Due:</strong> <span class="text-danger">${{ customer_data.total_due|floatformat:2 }}</span></p>
+                                <p><strong>Number of Sales:</strong> <span class="badge bg-info">{{ customer_data.sales_count }}</span></p>
+                                <p><strong>Oldest Due Date:</strong> 
+                                    {% if customer_data.oldest_due_date %}
+                                        {{ customer_data.oldest_due_date|date:"d M Y" }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Status:</strong> 
+                                    {% if customer_data.is_overdue %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Details -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Sales Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Sale Date</th>
+                                        <th>Due Date</th>
+                                        <th>Total Amount</th>
+                                        <th>Paid</th>
+                                        <th>Due</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sale_data in customer_data.sales %}
+                                    <tr {% if sale_data.is_overdue %}class="table-warning"{% endif %}>
+                                        <td>{{ sale_data.sale.invoice_number }}</td>
+                                        <td>{{ sale_data.sale.sale_date|date:"d M Y" }}</td>
+                                        <td>
+                                            {% if sale_data.sale.due_date %}
+                                                {{ sale_data.sale.due_date|date:"d M Y" }}
+                                                {% if sale_data.is_overdue %}
+                                                    <small class="text-danger">(Overdue)</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>${{ sale_data.sale.total|floatformat:2 }}</td>
+                                        <td>${{ sale_data.sale.paid|floatformat:2 }}</td>
+                                        <td><strong class="text-danger">${{ sale_data.sale.due|floatformat:2 }}</strong></td>
+                                        <td>
+                                            {% if sale_data.is_overdue %}
+                                                <span class="badge bg-danger">Overdue</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'sale_detail' sale_data.sale.pk %}" class="btn btn-sm btn-outline-primary" title="View Sale" target="_blank">
+                                                <img src="{% static 'img/icons/eye.svg' %}" alt="view">
+                                            </a>
+                                            <a href="{% url 'sale_invoice_pdf' sale_data.sale.pk %}" class="btn btn-sm btn-outline-info" title="Download Invoice" target="_blank">
+                                                <img src="{% static 'img/icons/download.svg' %}" alt="download">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
