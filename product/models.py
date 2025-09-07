@@ -80,4 +80,4 @@ class Product(BaseModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "-".join(x for x in [self.name, getattr(self.brand, "name", None), self.sku, f"[{self.stock}]" if self.stock is not None else None] if x)
+        return "-".join(x for x in (self.name, getattr(self.brand, "name", None), self.sku, f"[{self.stock}]" if self.stock is not None else None) if x)
