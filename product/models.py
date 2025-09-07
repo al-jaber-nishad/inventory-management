@@ -79,19 +79,20 @@ class Product(BaseModel):
             self.slug = slug_candidate
         super().save(*args, **kwargs)
 
+        
     def __str__(self):
         parts = []
 
         if self.name:
             parts.append(self.name)
 
-        if self.brand and self.brand.name:
+        if self.brand_id and self.brand and self.brand.name:
             parts.append(self.brand.name)
 
         if self.sku:
             parts.append(self.sku)
 
-        if self.stock is not None:  # stock could be 0, so check against None
+        if self.stock is not None:
             parts.append(f"[{self.stock}]")
 
         return "-".join(parts)
