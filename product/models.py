@@ -80,4 +80,18 @@ class Product(BaseModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "-".join(x for x in (self.name, getattr(self.brand, "name", None), self.sku, f"[{self.stock}]" if self.stock is not None else None) if x)
+        parts = []
+
+        if self.name:
+            parts.append(self.name)
+
+        if self.brand and self.brand.name:
+            parts.append(self.brand.name)
+
+        if self.sku:
+            parts.append(self.sku)
+
+        if self.stock is not None:  # stock could be 0, so check against None
+            parts.append(f"[{self.stock}]")
+
+        return "-".join(parts)
