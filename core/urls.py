@@ -21,7 +21,7 @@ urlpatterns = [
 	# path('', include('sms.urls.sms_api_urls')),
 	# path('', include('sms.urls.sms_urls')),
 
-	path('inventory/', include('product.urls')),
+	path('product/', include('product.urls')),
 	path('accounts/', include('accounts.urls')),
 	path('people/', include('authentication.urls')),
 	path('purchase/', include('purchase.urls')),
