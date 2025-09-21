@@ -8,4 +8,5 @@ urlpatterns = [
     path('units/<int:pk>/', views.UnitDetailView.as_view(), name='unit_detail'),
     path('units/<int:pk>/update/', views.UnitUpdateView.as_view(), name='unit_update'),
     path('units/<int:pk>/delete/', views.UnitDeleteView.as_view(), name='unit_delete'),
+    path('api/units/', views.get_units_api, name='units_api'),
 ]

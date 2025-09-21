@@ -154,3 +154,15 @@ def create_color_ajax(request):
             'success': False,
             'message': f'Error creating color: {str(e)}'
         })
+
+
+@login_required
+def get_colors_api(request):
+    """
+    API endpoint to get all active colors for dropdowns
+    """
+    try:
+        colors = Color.objects.all().values('id', 'name', 'hex_code').order_by('name')
+        return JsonResponse(list(colors), safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

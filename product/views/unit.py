@@ -144,3 +144,15 @@ def create_unit_ajax(request):
             'success': False,
             'message': f'Error creating unit: {str(e)}'
         })
+
+
+@login_required
+def get_units_api(request):
+    """
+    API endpoint to get all active units for dropdowns
+    """
+    try:
+        units = Unit.objects.all().values('id', 'name').order_by('name')
+        return JsonResponse(list(units), safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

@@ -8,4 +8,5 @@ urlpatterns = [
     path('colors/<int:pk>/', views.ColorDetailView.as_view(), name='color_detail'),
     path('colors/<int:pk>/update/', views.ColorUpdateView.as_view(), name='color_update'),
     path('colors/<int:pk>/delete/', views.ColorDeleteView.as_view(), name='color_delete'),
+    path('api/colors/', views.get_colors_api, name='colors_api'),
 ]
