@@ -1,0 +1,106 @@
+<!-- Brand Creation Modal -->
+<div class="modal fade" id="brandModal" tabindex="-1" aria-labelledby="brandModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="brandModalLabel">Add New Brand</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="brandForm">
+                    <div class="mb-3">
+                        <label for="brandName" class="form-label">Brand Name *</label>
+                        <input type="text" class="form-control" id="brandName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="brandImage" class="form-label">Brand Image (Optional)</label>
+                        <input type="file" class="form-control" id="brandImage" name="image" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveBrandBtn">Save Brand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Brand Modal Functionality
+    $('#add-brand-btn').click(function() {
+        $('#brandModal').modal('show');
+    });
+    
+    $('#saveBrandBtn').click(function() {
+        const form = $('#brandForm');
+        const formData = new FormData();
+        
+        formData.append('name', $('#brandName').val());
+        
+        // Add image if selected
+        const imageFile = $('#brandImage')[0].files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        
+        // Validate required fields
+        if (!$('#brandName').val().trim()) {
+            alert('Brand name is required');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create brand
+        $.ajax({
+            url: '/product/brands/create-ajax/',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new brand to select dropdown
+                    const brandSelect = $('#id_brand');
+                    const newOption = new Option(response.brand.name, response.brand.id, true, true);
+                    brandSelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#brandModal').modal('hide');
+                    form[0].reset();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Brand created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating brand: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating brand:', error);
+                alert('Error creating brand. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveBrandBtn').prop('disabled', false).text('Save Brand');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#brandModal').on('hidden.bs.modal', function () {
+        $('#brandForm')[0].reset();
+        $('#saveBrandBtn').prop('disabled', false).text('Save Brand');
+    });
+});
+</script>

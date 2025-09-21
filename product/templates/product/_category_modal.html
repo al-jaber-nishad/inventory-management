@@ -1,0 +1,146 @@
+<!-- Category Creation Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryName" class="form-label">Category Name *</label>
+                            <input type="text" class="form-control" id="categoryName" name="name" required placeholder="e.g., Electronics, Clothing">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryParent" class="form-label">Parent Category (Optional)</label>
+                            <select class="form-control" id="categoryParent" name="parent">
+                                <option value="">-- No Parent Category --</option>
+                                <!-- Categories will be loaded via AJAX -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="categoryDescription" name="description" rows="3" placeholder="Brief description of the category"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryImage" class="form-label">Category Image (Optional)</label>
+                        <input type="file" class="form-control" id="categoryImage" name="image" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Category Modal Functionality
+    $('#add-category-btn').click(function() {
+        // Load parent categories when modal is opened
+        loadParentCategories();
+        $('#categoryModal').modal('show');
+    });
+    
+    function loadParentCategories() {
+        $.ajax({
+            url: '/product/api/categories/',
+            type: 'GET',
+            success: function(response) {
+                const parentSelect = $('#categoryParent');
+                parentSelect.empty();
+                parentSelect.append('<option value="">-- No Parent Category --</option>');
+                
+                if (Array.isArray(response)) {
+                    response.forEach(function(category) {
+                        parentSelect.append(
+                            `<option value="${category.id}">${category.name}</option>`
+                        );
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to load parent categories');
+            }
+        });
+    }
+    
+    $('#saveCategoryBtn').click(function() {
+        const form = $('#categoryForm');
+        const formData = new FormData();
+        
+        formData.append('name', $('#categoryName').val());
+        formData.append('description', $('#categoryDescription').val());
+        formData.append('parent', $('#categoryParent').val());
+        
+        // Add image if selected
+        const imageFile = $('#categoryImage')[0].files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        
+        // Validate required fields
+        if (!$('#categoryName').val().trim()) {
+            alert('Category name is required');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create category
+        $.ajax({
+            url: '/product/categories/create-ajax/',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new category to select dropdown
+                    const categorySelect = $('#id_category');
+                    const newOption = new Option(response.category.name, response.category.id, true, true);
+                    categorySelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#categoryModal').modal('hide');
+                    form[0].reset();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Category created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating category: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating category:', error);
+                alert('Error creating category. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveCategoryBtn').prop('disabled', false).text('Save Category');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#categoryModal').on('hidden.bs.modal', function () {
+        $('#categoryForm')[0].reset();
+        $('#saveCategoryBtn').prop('disabled', false).text('Save Category');
+    });
+});
+</script>

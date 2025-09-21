@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block base %}
+
+<style>
+    .form-group .input-group{
+        padding-right: 35px;
+    }
+</style>
 <div class="page-wrapper">
     <div class="content">
         <div class="page-header">
@@ -46,28 +52,48 @@
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.category.id_for_label }}">Category</label>
-                            {{ form.category }}
+                            <div class="input-group">
+                                {{ form.category }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-category-btn" title="Add New Category">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.brand.id_for_label }}">brand</label>
-                            {{ form.brand }}
+                            <div class="input-group">
+                                {{ form.brand }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-brand-btn" title="Add New Brand">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.unit.id_for_label }}">Unit</label>
-                            {{ form.unit }}
+                            <div class="input-group">
+                                {{ form.unit }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-unit-btn" title="Add New Unit">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.color.id_for_label }}">Color</label>
-                            {{ form.color }}
+                            <div class="input-group">
+                                {{ form.color }}
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-color-btn" title="Add New Color">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -116,4 +142,9 @@
         </form>
     </div>
 </div>
+
+{% include 'product/_brand_modal.html' %}
+{% include 'product/_unit_modal.html' %}
+{% include 'product/_color_modal.html' %}
+{% include 'product/_category_modal.html' %}
 {% endblock base %}

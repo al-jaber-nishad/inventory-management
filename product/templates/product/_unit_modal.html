@@ -1,0 +1,94 @@
+<!-- Unit Creation Modal -->
+<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unitModalLabel">Add New Unit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="unitForm">
+                    <div class="mb-3">
+                        <label for="unitName" class="form-label">Unit Name *</label>
+                        <input type="text" class="form-control" id="unitName" name="name" required placeholder="e.g., kg, pcs, liter">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveUnitBtn">Save Unit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Unit Modal Functionality
+    $('#add-unit-btn').click(function() {
+        $('#unitModal').modal('show');
+    });
+    
+    $('#saveUnitBtn').click(function() {
+        const form = $('#unitForm');
+        const formData = {
+            name: $('#unitName').val()
+        };
+        
+        // Validate required fields
+        if (!formData.name.trim()) {
+            alert('Unit name is required');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create unit
+        $.ajax({
+            url: '/product/units/create-ajax/',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new unit to select dropdown
+                    const unitSelect = $('#id_unit');
+                    const newOption = new Option(response.unit.name, response.unit.id, true, true);
+                    unitSelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#unitModal').modal('hide');
+                    form[0].reset();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Unit created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating unit: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating unit:', error);
+                alert('Error creating unit. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveUnitBtn').prop('disabled', false).text('Save Unit');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#unitModal').on('hidden.bs.modal', function () {
+        $('#unitForm')[0].reset();
+        $('#saveUnitBtn').prop('disabled', false).text('Save Unit');
+    });
+});
+</script>

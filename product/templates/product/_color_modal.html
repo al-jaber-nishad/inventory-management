@@ -1,0 +1,126 @@
+<!-- Color Creation Modal -->
+<div class="modal fade" id="colorModal" tabindex="-1" aria-labelledby="colorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="colorModalLabel">Add New Color</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="colorForm">
+                    <div class="mb-3">
+                        <label for="colorName" class="form-label">Color Name *</label>
+                        <input type="text" class="form-control" id="colorName" name="name" required placeholder="e.g., Red, Blue, Green">
+                    </div>
+                    <div class="mb-3">
+                        <label for="colorHexCode" class="form-label">Hex Color Code (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">#</span>
+                            <input type="text" class="form-control" id="colorHexCode" name="hex_code" placeholder="FF0000" maxlength="6" pattern="[0-9A-Fa-f]{6}">
+                            <input type="color" class="form-control form-control-color" id="colorPicker" title="Choose color">
+                        </div>
+                        <small class="form-text text-muted">Enter 6-digit hex code (e.g., FF0000 for red) or use the color picker</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Color Modal Functionality
+    $('#add-color-btn').click(function() {
+        $('#colorModal').modal('show');
+    });
+    
+    // Color picker sync with hex input
+    $('#colorPicker').on('input', function() {
+        const hexValue = $(this).val().replace('#', '');
+        $('#colorHexCode').val(hexValue.toUpperCase());
+    });
+    
+    // Hex input sync with color picker
+    $('#colorHexCode').on('input', function() {
+        let hexValue = $(this).val().replace('#', '');
+        if (hexValue.length === 6 && /^[0-9A-Fa-f]{6}$/.test(hexValue)) {
+            $('#colorPicker').val('#' + hexValue);
+        }
+    });
+    
+    $('#saveColorBtn').click(function() {
+        const form = $('#colorForm');
+        const formData = {
+            name: $('#colorName').val(),
+            hex_code: $('#colorHexCode').val()
+        };
+        
+        // Validate required fields
+        if (!formData.name.trim()) {
+            alert('Color name is required');
+            return;
+        }
+        
+        // Validate hex code if provided
+        if (formData.hex_code && !/^[0-9A-Fa-f]{6}$/.test(formData.hex_code)) {
+            alert('Please enter a valid 6-digit hex color code (e.g., FF0000)');
+            return;
+        }
+        
+        // Disable save button to prevent double submission
+        $(this).prop('disabled', true).text('Saving...');
+        
+        // Make AJAX request to create color
+        $.ajax({
+            url: '/product/colors/create-ajax/',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Add new color to select dropdown
+                    const colorSelect = $('#id_color');
+                    const newOption = new Option(response.color.name, response.color.id, true, true);
+                    colorSelect.append(newOption).trigger('change');
+                    
+                    // Close modal and reset form
+                    $('#colorModal').modal('hide');
+                    form[0].reset();
+                    $('#colorPicker').val('#000000'); // Reset color picker
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Color created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error creating color: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating color:', error);
+                alert('Error creating color. Please try again.');
+            },
+            complete: function() {
+                // Re-enable save button
+                $('#saveColorBtn').prop('disabled', false).text('Save Color');
+            }
+        });
+    });
+    
+    // Reset form when modal is hidden
+    $('#colorModal').on('hidden.bs.modal', function () {
+        $('#colorForm')[0].reset();
+        $('#colorPicker').val('#000000');
+        $('#saveColorBtn').prop('disabled', false).text('Save Color');
+    });
+});
+</script>
