@@ -48,6 +48,8 @@ class SaleItem(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='sale_items')
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Discount percentage (0-100)")
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Calculated discount amount")
     total_price = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):

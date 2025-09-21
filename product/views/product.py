@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from product.models import Product, ProductCategory
 from product.forms.product import ProductForm
@@ -157,3 +159,136 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(self.request, "Product deleted successfully.")
         return redirect(self.success_url)
+
+
+@require_POST
+@login_required
+def create_product_ajax(request):
+    """
+    AJAX endpoint for creating products from the sales form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        sku = request.POST.get('sku', '').strip().upper()
+        category_id = request.POST.get('category', '').strip()
+        brand_id = request.POST.get('brand', '').strip()
+        unit_id = request.POST.get('unit', '').strip()
+        color_id = request.POST.get('color', '').strip()
+        price = request.POST.get('price', '').strip()
+        description = request.POST.get('description', '').strip()
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Product name is required'
+            })
+        
+        
+        if not price:
+            return JsonResponse({
+                'success': False,
+                'message': 'Price is required'
+            })
+        
+        # Check if product with SKU already exists
+        if Product.objects.filter(sku__isnull=False, sku__iexact=sku).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Product with this SKU already exists'
+            })
+        
+        # Validate price
+        try:
+            price = float(price)
+            if price < 0:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Price cannot be negative'
+                })
+        except ValueError:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid price format'
+            })
+        
+        # Get related objects
+        category = None
+        if category_id:
+            try:
+                from product.models import ProductCategory
+                category = ProductCategory.objects.get(id=category_id)
+            except ProductCategory.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Selected category does not exist'
+                })
+        
+        brand = None
+        if brand_id:
+            try:
+                from product.models import Brand
+                brand = Brand.objects.get(id=brand_id)
+            except Brand.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Selected brand does not exist'
+                })
+        
+        unit = None
+        if unit_id:
+            try:
+                from product.models import Unit
+                unit = Unit.objects.get(id=unit_id)
+            except Unit.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Selected unit does not exist'
+                })
+        
+        color = None
+        if color_id:
+            try:
+                from product.models import Color
+                color = Color.objects.get(id=color_id)
+            except Color.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Selected color does not exist'
+                })
+        
+        # Create product
+        product = Product.objects.create(
+            name=name,
+            sku=sku,
+            category=category,
+            brand=brand,
+            unit=unit,
+            color=color,
+            price=price,
+            description=description if description else None,
+            is_active=True,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Product created successfully',
+            'product': {
+                'id': product.id,
+                'name': product.name,
+                'sku': product.sku,
+                'price': str(product.price),
+                'category_name': product.category.name if product.category else None,
+                'brand_name': product.brand.name if product.brand else None,
+                'unit_name': product.unit.name if product.unit else None,
+                'color_name': product.color.name if product.color else None
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating product: {str(e)}'
+        })

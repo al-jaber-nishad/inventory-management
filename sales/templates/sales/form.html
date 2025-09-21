@@ -6,27 +6,37 @@
 <style>
     items-table th:nth-child(1),
     #items-table td:nth-child(1) {
-        width: 40%;
+        width: 35%;
     }
 
     #items-table th:nth-child(2),
     #items-table td:nth-child(2) {
-        width: 15%;
+        width: 10%;
     }
 
     #items-table th:nth-child(3),
     #items-table td:nth-child(3) {
-        width: 15%;
+        width: 10%;
     }
 
     #items-table th:nth-child(4),
     #items-table td:nth-child(4) {
-        width: 15%;
+        width: 10%;
         font-size: 14px;
     }
 
     #items-table th:nth-child(5),
     #items-table td:nth-child(5) {
+        width: 10%;
+    }
+
+    #items-table th:nth-child(6),
+    #items-table td:nth-child(6) {
+        width: 10%;
+    }
+
+    #items-table th:nth-child(7),
+    #items-table td:nth-child(7) {
         width: 15%;
     }
 
@@ -102,12 +112,12 @@
 
                 
                 <div class="row mandatory-fields">
-                    <div class="col-lg-2 col-sm-6 col-12">
+                    {% comment %} <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
                             {{ form.payment_ledger }}
                         </div>
-                    </div>
+                    </div> {% endcomment %}
 
                     <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
@@ -164,7 +174,7 @@
 
             <div class="row">
                 <!-- Items Section -->
-                <div class="col-lg-7">
+                <div class="col-lg-8">
                     <div class="card p-3 mb-3">
 
                         <div class="table-responsive">
@@ -172,9 +182,15 @@
                             <table class="table" id="items-table">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th>Product *</th>
+                                        <th>Product *
+                                                <button type="button" class="btn btn-outline-primary btn-sm ms-1 add-product-btn" title="Add New Product">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                        </th>
                                         <th>Quantity *</th>
                                         <th>Unit Price *</th>
+                                        <th>Discount(%)</th>
+                                        <th>Discount Amnt</th>
                                         <th>Total</th>
                                         <th>Action</th>
                                     </tr>
@@ -201,6 +217,13 @@
                                                     <div class="text-danger small">{{ form.unit_price.errors|first }}</div>
                                                 {% endif %}
                                             </td>
+                                            <td>
+                                                {{ form.discount_percentage }}
+                                                {% if form.discount_percentage.errors %}
+                                                    <div class="text-danger small">{{ form.discount_percentage.errors|first }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="discount-amount">৳0.00</td>
                                             <td class="total-price">৳0.00</td>
                                             <td>
                                                 <button type="button" class="add-item btn btn-added btn-sm">
@@ -261,7 +284,7 @@
                 </div> {% endcomment %}
 
                 <script src="https://cdn.tailwindcss.com"></script>
-                <div class="col-lg-5">
+                <div class="col-lg-4">
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
                         <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
                         
@@ -273,7 +296,7 @@
 
                             <div class="flex justify-between">
                                 <div class="flex items-center">
-                                    <span class="text-gray-600 mr-2">Discount</span>
+                                    <span class="text-gray-600 mr-2">Less</span>
                                 </div>
                                 {{ form.discount }}
                             </div>
@@ -396,6 +419,10 @@
         <td>
             <input type="number" name="items-__prefix__-unit_price" step="0.01" min="0.01" class="form-control price-input" id="id_items-__prefix__-unit_price">
         </td>
+        <td>
+            <input type="number" name="items-__prefix__-discount_percentage" step="0.01" min="0" max="100" class="form-control discount-input" id="id_items-__prefix__-discount_percentage" placeholder="0">
+        </td>
+        <td class="discount-amount">৳0.00</td>
         <td class="total-price">৳0.00</td>
         <td>
             <button type="button" class="add-item btn btn-added btn-sm">
@@ -468,7 +495,7 @@ $(document).ready(function() {
     });
     
     // Calculate totals when inputs change
-    $(document).on('input', '.quantity-input, .price-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
+    $(document).on('input', '.quantity-input, .price-input, .discount-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
         updateCalculations();
     });
     
@@ -489,17 +516,29 @@ $(document).ready(function() {
         $('.item-row').each(function() {
             const quantity = parseFloat($(this).find('.quantity-input').val()) || 0;
             const unitPrice = parseFloat($(this).find('.price-input').val()) || 0;
-            const total = quantity * unitPrice;
+            const discountPercentage = parseFloat($(this).find('.discount-input').val()) || 0;
             
+            // Calculate subtotal for this row (before discount)
+            const rowSubtotal = quantity * unitPrice;
+            
+            // Calculate discount amount
+            const discountAmount = (rowSubtotal * discountPercentage) / 100;
+            
+            // Calculate total after discount
+            const total = rowSubtotal - discountAmount;
+            
+            // Update row displays
+            $(this).find('.discount-amount').text('৳' + discountAmount.toFixed(2));
             $(this).find('.total-price').text('৳' + total.toFixed(2));
+            
+            // Add to overall subtotal (after row-level discounts)
             subtotal += total;
         });
         
-        const discount = parseFloat($('#id_discount').val()) || 0;
+        const globalDiscount = parseFloat($('#id_discount').val()) || 0;
         const tax = parseFloat($('#id_tax').val()) || 0;
         const paid = parseFloat($('#id_paid').val()) || 0;
-        const due = parseFloat($('#id_due').val()) || 0;
-        const grandTotal = subtotal - discount + tax;
+        const grandTotal = subtotal - globalDiscount + tax;
         const due_amount = grandTotal - paid;
 
         
@@ -590,4 +629,6 @@ $(document).ready(function() {
     });
 });
 </script>
+
+{% include 'sales/_product_modal.html' %}
 {% endblock base %}

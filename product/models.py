@@ -44,12 +44,12 @@ class ProductCategory(BaseModel):
 
 class Product(BaseModel):
     name = models.CharField(max_length=255)
-    sku = models.CharField(max_length=64)
+    sku = models.CharField(max_length=64, null=True, blank=True)
     category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(max_length=280, blank=True)
