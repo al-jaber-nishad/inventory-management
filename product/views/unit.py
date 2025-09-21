@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from product.models import Unit
 from product.forms.unit import UnitForm
@@ -96,3 +98,49 @@ class UnitDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(request, "Unit deleted successfully.")
         return redirect(self.success_url)
+
+
+@require_POST
+@login_required
+def create_unit_ajax(request):
+    """
+    AJAX endpoint for creating units from the product form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Unit name is required'
+            })
+        
+        # Check if unit already exists
+        if Unit.objects.filter(name__iexact=name).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Unit with this name already exists'
+            })
+        
+        # Create unit
+        unit = Unit.objects.create(
+            name=name,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Unit created successfully',
+            'unit': {
+                'id': unit.id,
+                'name': unit.name,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating unit: {str(e)}'
+        })

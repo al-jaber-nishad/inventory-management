@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from product.models import Brand
 from product.forms.brand import BrandForm
@@ -105,3 +106,44 @@ def get_brands_api(request):
         return JsonResponse(list(brands), safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_POST
+@login_required
+def create_brand_ajax(request):
+    """
+    AJAX endpoint for creating brands from the product form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        image = request.FILES.get('image', None)
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Brand name is required'
+            })
+        
+        # Create brand
+        brand = Brand.objects.create(
+            name=name,
+            image=image,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Brand created successfully',
+            'brand': {
+                'id': brand.id,
+                'name': brand.name,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating brand: {str(e)}'
+        })

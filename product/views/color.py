@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from product.models import Color
 from product.forms.color import ColorForm
@@ -92,3 +94,63 @@ class ColorDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(request, "Color deleted successfully.")
         return redirect(self.success_url)
+
+
+@require_POST
+@login_required
+def create_color_ajax(request):
+    """
+    AJAX endpoint for creating colors from the product form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        hex_code = request.POST.get('hex_code', '').strip()
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Color name is required'
+            })
+        
+        # Validate hex code if provided
+        if hex_code:
+            # Remove # if present and validate format
+            hex_code = hex_code.replace('#', '')
+            if len(hex_code) != 6 or not all(c in '0123456789ABCDEFabcdef' for c in hex_code):
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Please enter a valid 6-digit hex color code (e.g., FF0000)'
+                })
+            hex_code = '#' + hex_code.upper()
+        
+        # Check if color already exists
+        if Color.objects.filter(name__iexact=name).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Color with this name already exists'
+            })
+        
+        # Create color
+        color = Color.objects.create(
+            name=name,
+            hex_code=hex_code if hex_code else None,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Color created successfully',
+            'color': {
+                'id': color.id,
+                'name': color.name,
+                'hex_code': color.hex_code
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating color: {str(e)}'
+        })

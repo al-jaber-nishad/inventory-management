@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from product.models import ProductCategory
 from product.forms.productcategory import ProductCategoryForm
@@ -88,3 +90,80 @@ class ProductCategoryDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         messages.success(request, "Category deleted successfully.")
         return redirect(self.success_url)
+
+
+@login_required
+def get_categories_api(request):
+    """
+    API endpoint to get all active categories for parent category dropdown
+    """
+    try:
+        categories = ProductCategory.objects.filter(is_active=True).values('id', 'name').order_by('name')
+        return JsonResponse(list(categories), safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_POST
+@login_required
+def create_category_ajax(request):
+    """
+    AJAX endpoint for creating categories from the product form modal
+    """
+    try:
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        parent_id = request.POST.get('parent', '').strip()
+        image = request.FILES.get('image', None)
+        
+        # Validate required fields
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'message': 'Category name is required'
+            })
+        
+        # Check if category already exists
+        if ProductCategory.objects.filter(name__iexact=name).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Category with this name already exists'
+            })
+        
+        # Get parent category if specified
+        parent = None
+        if parent_id:
+            try:
+                parent = ProductCategory.objects.get(id=parent_id)
+            except ProductCategory.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Selected parent category does not exist'
+                })
+        
+        # Create category
+        category = ProductCategory.objects.create(
+            name=name,
+            description=description if description else None,
+            parent=parent,
+            image=image,
+            created_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Category created successfully',
+            'category': {
+                'id': category.id,
+                'name': category.name,
+                'description': category.description,
+                'parent_name': category.parent.name if category.parent else None
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error creating category: {str(e)}'
+        })
