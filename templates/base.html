@@ -35,6 +35,8 @@
     <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.min.css' %}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
     <style>
       #footer {
         padding: 0.5rem 0;
@@ -84,7 +86,29 @@
     </div>
 
 
-  <script>
+  
+
+
+    <script src="{% static 'js/feather.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'plugins/select2/js/select2.min.js' %}"></script>
+    <script src="{% static 'plugins/select2/js/custom-select.js' %}"></script>
+    <script src="{% static 'plugins/apexchart/apexcharts.min.js' %}"></script>
+    <script src="{% static 'plugins/apexchart/chart-data.js' %}"></script>
+    {% comment %} <script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'plugins/sweetalert/sweetalerts.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {% endcomment %}
+    {% comment %} <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script> {% endcomment %}
+    <script src="{% static 'js/script.js' %}"></script>
+
+
+    <script>
   // Add select2 search functionality in the dropdown
   $(document).ready(function() {
       $('.select2_search').select2();
@@ -153,25 +177,6 @@
       });
     
   </script>
-
-    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'js/feather.min.js' %}"></script>
-    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
-    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/moment.min.js' %}"></script>
-    <script src="{% static 'js/select2.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
-    <script src="{% static 'plugins/select2/js/select2.min.js' %}"></script>
-    <script src="{% static 'plugins/select2/js/custom-select.js' %}"></script>
-    <script src="{% static 'plugins/apexchart/apexcharts.min.js' %}"></script>
-    <script src="{% static 'plugins/apexchart/chart-data.js' %}"></script>
-    {% comment %} <script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
-    <script src="{% static 'plugins/sweetalert/sweetalerts.min.js' %}"></script> {% endcomment %}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <script src="{% static 'js/script.js' %}"></script>
 
   </body>
 </html>
