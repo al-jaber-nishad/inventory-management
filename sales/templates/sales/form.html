@@ -6,7 +6,7 @@
 <style>
     items-table th:nth-child(1),
     #items-table td:nth-child(1) {
-        width: 35%;
+        width: 30%;
     }
 
     #items-table th:nth-child(2),
@@ -37,7 +37,12 @@
 
     #items-table th:nth-child(7),
     #items-table td:nth-child(7) {
-        width: 15%;
+        width: 10%;
+    }
+
+    #items-table th:nth-child(8),
+    #items-table td:nth-child(8) {
+        width: 10%;
     }
 
     #items-table {
@@ -70,6 +75,36 @@
 
     .form-group .input-group{
         padding-right: 35px;
+    }
+
+    .select2-selection__rendered {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        display: block !important;
+    }
+
+    .select2-container .select2-selection--single {
+        overflow: hidden !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .product-select {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #items-table .select2-container {
+        max-width: 100% !important;
+        width: 100% !important;
     }
 
 </style>
@@ -223,7 +258,12 @@
                                                     <div class="text-danger small">{{ form.discount_percentage.errors|first }}</div>
                                                 {% endif %}
                                             </td>
-                                            <td class="discount-amount">৳0.00</td>
+                                            <td>
+                                                {{ form.discount_amount }}
+                                                {% if form.discount_amount.errors %}
+                                                    <div class="text-danger small">{{ form.discount_amount.errors|first }}</div>
+                                                {% endif %}
+                                            </td>
                                             <td class="total-price">৳0.00</td>
                                             <td>
                                                 <button type="button" class="add-item btn btn-added btn-sm">
@@ -420,9 +460,11 @@
             <input type="number" name="items-__prefix__-unit_price" step="0.01" min="0.01" class="form-control price-input" id="id_items-__prefix__-unit_price">
         </td>
         <td>
-            <input type="number" name="items-__prefix__-discount_percentage" step="0.01" min="0" max="100" class="form-control discount-input" id="id_items-__prefix__-discount_percentage" placeholder="0">
+            <input type="number" name="items-__prefix__-discount_percentage" step="0.01" min="0" max="100" class="form-control discount-percentage-input" id="id_items-__prefix__-discount_percentage" placeholder="0">
         </td>
-        <td class="discount-amount">৳0.00</td>
+        <td>
+            <input type="number" name="items-__prefix__-discount_amount" step="0.01" min="0" class="form-control discount-amount-input" id="id_items-__prefix__-discount_amount" placeholder="0.00">
+        </td>
         <td class="total-price">৳0.00</td>
         <td>
             <button type="button" class="add-item btn btn-added btn-sm">
@@ -495,7 +537,35 @@ $(document).ready(function() {
     });
     
     // Calculate totals when inputs change
-    $(document).on('input', '.quantity-input, .price-input, .discount-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
+    $(document).on('input', '.quantity-input, .price-input, .discount-percentage-input, .discount-amount-input, #id_discount, #id_tax, #id_paid, #id_due', function() {
+        updateCalculations();
+    });
+
+    // When discount percentage changes, update discount amount
+    $(document).on('input', '.discount-percentage-input', function() {
+        const row = $(this).closest('tr');
+        const quantity = parseFloat(row.find('.quantity-input').val()) || 0;
+        const unitPrice = parseFloat(row.find('.price-input').val()) || 0;
+        const discountPercentage = parseFloat($(this).val()) || 0;
+
+        const subtotal = quantity * unitPrice;
+        const discountAmount = (subtotal * discountPercentage) / 100;
+
+        row.find('.discount-amount-input').val(discountAmount.toFixed(2));
+        updateCalculations();
+    });
+
+    // When discount amount changes, update discount percentage
+    $(document).on('input', '.discount-amount-input', function() {
+        const row = $(this).closest('tr');
+        const quantity = parseFloat(row.find('.quantity-input').val()) || 0;
+        const unitPrice = parseFloat(row.find('.price-input').val()) || 0;
+        const discountAmount = parseFloat($(this).val()) || 0;
+
+        const subtotal = quantity * unitPrice;
+        const discountPercentage = subtotal > 0 ? (discountAmount / subtotal * 100) : 0;
+
+        row.find('.discount-percentage-input').val(discountPercentage.toFixed(2));
         updateCalculations();
     });
     
@@ -511,26 +581,22 @@ $(document).ready(function() {
     
     function updateCalculations() {
         let subtotal = 0;
-        
+
         // Calculate each row total and sum up subtotal
         $('.item-row').each(function() {
             const quantity = parseFloat($(this).find('.quantity-input').val()) || 0;
             const unitPrice = parseFloat($(this).find('.price-input').val()) || 0;
-            const discountPercentage = parseFloat($(this).find('.discount-input').val()) || 0;
-            
+            const discountAmount = parseFloat($(this).find('.discount-amount-input').val()) || 0;
+
             // Calculate subtotal for this row (before discount)
             const rowSubtotal = quantity * unitPrice;
-            
-            // Calculate discount amount
-            const discountAmount = (rowSubtotal * discountPercentage) / 100;
-            
+
             // Calculate total after discount
             const total = rowSubtotal - discountAmount;
-            
+
             // Update row displays
-            $(this).find('.discount-amount').text('৳' + discountAmount.toFixed(2));
             $(this).find('.total-price').text('৳' + total.toFixed(2));
-            
+
             // Add to overall subtotal (after row-level discounts)
             subtotal += total;
         });

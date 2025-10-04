@@ -93,12 +93,13 @@ class SaleForm(forms.ModelForm):
 class SaleItemForm(forms.ModelForm):
     class Meta:
         model = SaleItem
-        fields = ['product', 'quantity', 'unit_price', 'discount_percentage']
+        fields = ['product', 'quantity', 'unit_price', 'discount_percentage', 'discount_amount']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control product-select select2_search'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control quantity-input', 'step': '0.01', 'min': '0.01'}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control price-input', 'step': '0.01', 'min': '0.01'}),
-            'discount_percentage': forms.NumberInput(attrs={'class': 'form-control discount-input', 'step': '0.01', 'min': '0', 'max': '100'}),
+            'discount_percentage': forms.NumberInput(attrs={'class': 'form-control discount-percentage-input', 'step': '0.01', 'min': '0', 'max': '100', 'placeholder': '0'}),
+            'discount_amount': forms.NumberInput(attrs={'class': 'form-control discount-amount-input', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -125,13 +126,21 @@ class SaleItemForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        # Calculate discount amount and total price
+        # Calculate total price based on discount
         if instance.quantity and instance.unit_price:
             subtotal = instance.quantity * instance.unit_price
-            discount_percentage = instance.discount_percentage or 0
-            instance.discount_amount = (subtotal * discount_percentage) / 100
+
+            # Use discount_amount if provided, otherwise calculate from percentage
+            if instance.discount_amount and instance.discount_amount > 0:
+                # Recalculate percentage from amount
+                instance.discount_percentage = (instance.discount_amount / subtotal * 100) if subtotal > 0 else 0
+            else:
+                # Calculate amount from percentage
+                discount_percentage = instance.discount_percentage or 0
+                instance.discount_amount = (subtotal * discount_percentage) / 100
+
             instance.total_price = subtotal - instance.discount_amount
-        
+
         if commit:
             instance.save()
         return instance

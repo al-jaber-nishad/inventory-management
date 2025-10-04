@@ -355,13 +355,11 @@
                     <div class="alert-icon">⚠️</div>
                     <div class="section-title">Stock Alerts</div>
                 </div>
-                <div class="section-subtitle">Products requiring immediate attention</div>
                 
                 <div class="table-header">
                     <div>Product</div>
                     <div>Stock</div>
                     <div>Status</div>
-                    <div>Action</div>
                 </div>
                 
                 {% for item in low_stock_products|slice:":5" %}
@@ -369,7 +367,6 @@
                     <div>{{ item.product.name }}-{{ item.product.brand.name }}</div>
                     <div>{{ item.stock }}</div>
                     <div style="color: #ef4444;">Low Stock</div>
-                    <div>Reorder</div>
                 </div>
                 {% empty %}
                 <div class="table-row">
@@ -383,7 +380,6 @@
                     <div class="trending-icon">📈</div>
                     <div class="section-title">Recent Products</div>
                 </div>
-                <div class="section-subtitle">Recently added products</div>
                 
                 <div class="table-header most-sold-header">
                     <div>Product</div>
