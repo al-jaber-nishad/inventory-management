@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block report_header %}
-	Purchase Order
+	Sales Order
 {% endblock report_header %}
 	
 {% block base %}
@@ -117,20 +117,17 @@
     <div class="invoice-info">
         <div class="invoice-info-left">
             <div class="info-section">
-                <div class="info-title">Supplier Information</div>
+                <div class="info-title">Customer Information</div>
                 <div class="info-content">
-                    <strong>{{ invoice.supplier.name|default:"N/A" }}</strong><br>
-                    {% if invoice.supplier.brand %}
-                        Company: {{ invoice.supplier.brand }}<br>
+                    <strong>{{ invoice.customer.name|default:"N/A" }}</strong><br>
+                    {% if invoice.customer.phone %}
+                        Phone: {{ invoice.customer.phone }}<br>
                     {% endif %}
-                    {% if invoice.supplier.phone %}
-                        Phone: {{ invoice.supplier.phone }}<br>
+                    {% if invoice.customer.email %}
+                        Email: {{ invoice.customer.email }}<br>
                     {% endif %}
-                    {% if invoice.supplier.email %}
-                        Email: {{ invoice.supplier.email }}<br>
-                    {% endif %}
-                    {% if invoice.supplier.address %}
-                        Address: {{ invoice.supplier.address }}<br>
+                    {% if invoice.customer.address %}
+                        Address: {{ invoice.customer.address }}<br>
                     {% endif %}
                 </div>
             </div>
@@ -141,7 +138,7 @@
                 <div class="info-title">Invoice Details</div>
                 <div class="info-content">
                     <strong>Invoice No:</strong> {{ invoice.invoice_number }} <br>
-                    <strong>invoice Date:</strong> {{ invoice.invoice_date|date:"M d, Y" }}<br>
+                    <strong>Sale Date:</strong> {{ invoice.sale_date|date:"M d, Y" }}<br>
                     {% if invoice.due_date %}
                         <strong>Due Date:</strong> {{ invoice.due_date|date:"M d, Y" }}<br>
                     {% endif %}
@@ -159,6 +156,7 @@
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Unit Price</th>
+                <th>Discount</th>
                 <th>Total</th>
             </tr>
         </thead>
@@ -169,11 +167,12 @@
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>৳{{ item.unit_price|floatformat:2 }}</td>
+                <td>{{ item.discount_amount }}</td>
                 <td>৳{{ item.total_price|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="text-center">No items found</td>
+                <td colspan="6" class="text-center">No items found</td>
             </tr>
             {% endfor %}
         </tbody>
