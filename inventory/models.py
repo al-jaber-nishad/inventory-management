@@ -21,6 +21,7 @@ class InventoryTransaction(BaseModel):
     transaction_type = models.CharField(max_length=20, choices=TransactionType.choices)
 
     # TODO tract previous and present stock quantity
+    current_stock = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField()
     note = models.TextField(blank=True, null=True)
     reference_code = models.CharField(max_length=100, blank=True, null=True)

@@ -15,23 +15,18 @@ def create_inventory_transaction(sender, instance, created, **kwargs):
     quantity_change = instance.quantity if instance.adjustment_type == InventoryAdjustment.AdjustmentType.INCREASE else -instance.quantity
 
     # Create or update the transaction
-    transaction, _ = InventoryTransaction.objects.update_or_create(
+    InventoryTransaction.objects.update_or_create(
         reference_code=instance.id,
         transaction_type=InventoryTransaction.TransactionType.ADJUSTMENT,
         product=instance.product,
         defaults={
+            "current_stock": instance.product.stock,
             "quantity": quantity_change,
             "note": f"Stock Adjustment: {instance.reason}",
             "created_by": getattr(instance, "created_by", None),  # optional
             "date": instance.date or now(),
         }
     )
-
-    # Store link back to transaction if you have a FK field (optional)
-    if hasattr(instance, "inventory_transaction") and instance.inventory_transaction != transaction:
-        instance.inventory_transaction = transaction
-        instance.save(update_fields=["inventory_transaction"])
-
     
     # Delete the related inventorytransactions
     if instance.deleted_at:

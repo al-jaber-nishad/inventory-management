@@ -1,7 +1,8 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from accounts.models import AccountLog, LedgerAccount, SubLedgerAccount
-from purchase.models import Purchase
+from inventory.models import InventoryTransaction
+from purchase.models import Purchase, PurchaseItem
 from django.utils.timezone import now
 
 @receiver(post_save, sender=Purchase)
@@ -51,3 +52,32 @@ def delete_account_log_of_purchase(sender, instance, **kwargs):
     AccountLog.objects.filter(reference_id=instance.invoice_number, log_type='purchase_payment').delete()
 
 
+@receiver(post_save, sender=PurchaseItem)
+def create_inventory_transaction(sender, instance, **kwargs):
+    purchase = instance.purchase
+    product = instance.product
+    reference_code = f"{purchase.invoice_number}-{instance.id}"
+    quantity = instance.quantity
+
+    # Handle inventory return (stock going OUT of warehouse)
+    InventoryTransaction.objects.update_or_create(
+        product=product,
+        transaction_type=InventoryTransaction.TransactionType.PURCHASE,
+        reference_code=reference_code,
+        defaults={
+            "current_stock": product.stock,
+            'quantity': abs(quantity),
+            'date': now(),
+            'note': f"Purchase from supplier via purchase #{purchase.invoice_number}",
+        }
+    )
+
+
+@receiver(post_delete, sender=PurchaseItem)
+def delete_inventory_transaction_on_return_delete(sender, instance, **kwargs):
+    reference_code = f"{instance.purchase.invoice_number}-{instance.id}"
+    InventoryTransaction.objects.filter(
+        product=instance.product,
+        transaction_type=InventoryTransaction.TransactionType.PURCHASE,
+        reference_code=reference_code
+    ).delete()

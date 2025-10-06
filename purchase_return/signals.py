@@ -65,6 +65,7 @@ def create_inventory_transaction(sender, instance, **kwargs):
         transaction_type=InventoryTransaction.TransactionType.PURCHASE_RETURN,
         reference_code=reference_code,
         defaults={
+            "current_stock": product.stock,
             'quantity': -abs(quantity),  # Negative quantity = stock out
             'date': now(),
             'details': f"Returned to supplier via purchase return #{reference_code}",
@@ -76,7 +77,6 @@ def create_inventory_transaction(sender, instance, **kwargs):
 def delete_inventory_transaction_on_return_delete(sender, instance, **kwargs):
     InventoryTransaction.objects.filter(
         product=instance.product,
-        warehouse=instance.purchase_return.warehouse,
         transaction_type=InventoryTransaction.TransactionType.PURCHASE_RETURN,
         reference_code=instance.purchase_return.return_number
     ).delete()

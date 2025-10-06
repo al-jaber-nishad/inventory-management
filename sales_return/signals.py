@@ -67,6 +67,7 @@ def create_inventory_transaction(sender, instance, **kwargs):
         transaction_type=InventoryTransaction.TransactionType.SALE_RETURN,
         reference_code=reference_code,
         defaults={
+            'current_stock': product.stock,
             'quantity': abs(quantity),  # Negative quantity = stock out
             'date': now(),
             'note': f"Returned to supplier via sale return #{reference_code}",
