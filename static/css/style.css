@@ -587,7 +587,7 @@ h6 {
 }
 body {
   font-family: nunito, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   color: #212b36;
   line-height: 1.5;
   background-color: #fafbfe;
@@ -3258,7 +3258,7 @@ div.dataTables_wrapper div.dataTables_info {
 .header .user-img img {
   width: 38px;
   border-radius: 50%;
-  margin-top: 25px;
+  /* margin-top: 25px; */
 }
 .header .user-img .status {
   border: 2px solid #fff;
