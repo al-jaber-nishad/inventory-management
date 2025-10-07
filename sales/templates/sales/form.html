@@ -250,74 +250,6 @@
             {% csrf_token %}
             
             <!-- General Information -->
-            <div class="card p-3 mb-3">
-                <div class="row">
-                    <div class="col-3">
-                        <h2 class="text-lg font-semibold mb-4">Sale Order</h2>
-                    </div>
-                </div>
-
-                
-                <div class="row mandatory-fields">
-                    {% comment %} <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
-                            {{ form.payment_ledger }}
-                        </div>
-                    </div> {% endcomment %}
-
-                    <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.customer.id_for_label }}">Customer *</label>
-                            <div class="input-group">
-                                {{ form.customer }}
-                                <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-customer-btn" title="Add New Customer">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.invoice_number.id_for_label }}">Sale Order #</label>
-                            {{ form.invoice_number }}
-                        </div>
-                    </div>
-
-                    <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.invoice_number.id_for_label }}">Sale Date</label>
-                            <div class="input-groupicon">
-                            <input type="text" name="sale_date" placeholder="Choose Date" class="datetimepicker" value="{{ sale_date }}">
-                                <a class="addonset">
-                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% comment %} <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.invoice_number.id_for_label }}">Delivery Date</label>
-                            <div class="input-groupicon">
-                            <input type="text" name="due_date" placeholder="Choose Date" class="datetimepicker" value="{{ due_date }}">
-                                <a class="addonset">
-                                    <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
-                                </a>
-                            </div>
-                        </div>
-                    </div> {% endcomment %}
-
-                    <div class="col-lg-2 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label for="{{ form.status.id_for_label }}">Status</label>
-                            {{ form.status }}
-                        </div>
-                    </div>
-
-                </div>
-            </div>
 
             <div class="row">
                 <!-- Items Section -->
@@ -401,6 +333,13 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="card p-3">
+                        <div class="form-group">
+                            <label for="{{ form.note.id_for_label }}">Notes</label>
+                            {{ form.note }}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Summary Section -->
@@ -437,6 +376,74 @@
 
                 <script src="https://cdn.tailwindcss.com"></script>
                 <div class="col-lg-3">
+                    <div class="card p-3 mb-3">
+                        <div class="row">
+                            <div class="">
+                                <h2 class="text-lg font-semibold mb-4">Sale Order</h2>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mandatory-fields">
+                            {% comment %} <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
+                                    {{ form.payment_ledger }}
+                                </div>
+                            </div> {% endcomment %}
+
+                            <div class="">
+                                <div class="form-group">
+                                    <label for="{{ form.customer.id_for_label }}">Customer *</label>
+                                    <div class="input-group">
+                                        {{ form.customer }}
+                                        <button type="button" class="btn btn-outline-primary btn-sm ms-1" id="add-customer-btn" title="Add New Customer">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% comment %} <div class="">
+                                <div class="form-group">
+                                    <label for="{{ form.invoice_number.id_for_label }}">Sale Order #</label>
+                                    {{ form.invoice_number }}
+                                </div>
+                            </div> {% endcomment %}
+
+                            <div class="">
+                                <div class="form-group">
+                                    <label for="{{ form.invoice_number.id_for_label }}">Sale Date</label>
+                                    <div class="input-groupicon">
+                                    <input type="text" name="sale_date" placeholder="Choose Date" class="datetimepicker" value="{{ sale_date }}">
+                                        <a class="addonset">
+                                            <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% comment %} <div class="col-lg-2 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.invoice_number.id_for_label }}">Delivery Date</label>
+                                    <div class="input-groupicon">
+                                    <input type="text" name="due_date" placeholder="Choose Date" class="datetimepicker" value="{{ due_date }}">
+                                        <a class="addonset">
+                                            <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+
+                            <div class="">
+                                <div class="form-group">
+                                    <label for="{{ form.status.id_for_label }}">Status</label>
+                                    {{ form.status }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
                         <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
                         
@@ -486,14 +493,7 @@
                 </div>
             </div>
 
-            <div class="col-12">
-                <div class="form-group">
-                    <label for="{{ form.note.id_for_label }}">Notes</label>
-                    {{ form.note }}
-                </div>
-            </div>
-
-            <div class="col-12">
+            <div class="col-12 pt-3">
                 <div class="d-flex justify-content-end gap-2">
                     <button type="submit" name="action" value="confirm" class="btn btn-submit me-2">
                         <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save & Confirm{% endif %}
