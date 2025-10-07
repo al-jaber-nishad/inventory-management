@@ -1,6 +1,82 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 {% load static %}
-{% block base %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=0"
+    />
+    <meta name="description" content="Home Decor" />
+    <meta
+      name="keywords"
+      content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive"
+    />
+    <meta name="author" content="Al Jaber Nishad" />
+    <meta name="robots" content="noindex, nofollow" />
+    {% if title %}
+      <title>{{ title }}</title>
+    {% else %}
+      <title>Home Decor POS</title>
+    {% endif %}
+
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="{% static 'img/favicon.png' %}"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}" />
+    {% comment %} <link rel="stylesheet" href="{% static 'css/animate.css' %}" /> {% endcomment %}
+    {% comment %} <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap4.min.css' %}" /> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/fontawesome.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.min.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+    <style>
+      #footer {
+        padding: 0.5rem 0;
+        background-color: #f3f3f3;
+        position: fixed;
+        bottom: 0;
+        width: calc(100% - 260px); 
+        margin-left: 260px;
+        /* margin-top: auto; */
+        transition: all 0.2s ease;
+      }
+
+      @media (max-width: 991px) {
+        .sidebar {
+          margin-left: -575px;
+        }
+        #footer {
+          width: 100%;
+          margin-left: 0;
+        }
+      }
+      .mini-sidebar.expand-menu #footer {
+        width: calc(100% - 260px);
+        margin-left: 260px;
+      }
+      .mini-sidebar #footer {
+        width: calc(100% - 80px);
+        margin-left: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    {% comment %} <div id="global-loader">
+      <div class="whirly-loader"></div>
+    </div> {% endcomment %}
+
+
+    <div class="main-wrapper">
+      {% include 'particals/navbar.html' %}
+      {% comment %} {% include 'particals/sidebar.html' %} {% endcomment %}
 
 
 <style>
@@ -22,7 +98,6 @@
     #items-table th:nth-child(4),
     #items-table td:nth-child(4) {
         width: 10%;
-        font-size: 14px;
     }
 
     #items-table th:nth-child(5),
@@ -107,6 +182,10 @@
         width: 100% !important;
     }
 
+    .page-wrapper{
+        margin: 0;
+    }
+
 </style>
 
 
@@ -122,7 +201,7 @@
         {% if messages %}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    {% for message in messages %}
+                    {% for field, errors in form_errors.items %}
                         Swal.fire({
                             title: '{% if is_error %}Error{% else %}Success{% endif %}',
                             text: '{{ message }}',
@@ -133,6 +212,39 @@
                 });
             </script>
         {% endif %}
+        {% comment %} {% if form_errors %}
+            <div class="alert alert-danger">
+                <ul>
+                {% for field, errors in form_errors.items %}
+                    {% if field != '__all__' %}
+                        <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+
+                    {% else %}
+                        {% for e in errors %}
+                            <li>{{ e }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if formset_errors %}
+            <div class="alert alert-warning mt-2">
+                <strong>Item Errors:</strong>
+                <ul>
+                {% for f in formset_errors %}
+                    <li>Item {{ forloop.counter }}:
+                    <ul>
+                        {% for field, errors in f.errors.items %}
+                        <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %} {% endcomment %}
         
         <form method="post" enctype="multipart/form-data" id="sale-form">
             {% csrf_token %}
@@ -185,9 +297,9 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-2 col-sm-6 col-12">
+                    {% comment %} <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="{{ form.invoice_number.id_for_label }}">Due Date</label>
+                            <label for="{{ form.invoice_number.id_for_label }}">Delivery Date</label>
                             <div class="input-groupicon">
                             <input type="text" name="due_date" placeholder="Choose Date" class="datetimepicker" value="{{ due_date }}">
                                 <a class="addonset">
@@ -195,7 +307,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
 
                     <div class="col-lg-2 col-sm-6 col-12">
                         <div class="form-group">
@@ -209,7 +321,7 @@
 
             <div class="row">
                 <!-- Items Section -->
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                     <div class="card p-3 mb-3">
 
                         <div class="table-responsive">
@@ -324,14 +436,14 @@
                 </div> {% endcomment %}
 
                 <script src="https://cdn.tailwindcss.com"></script>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
                         <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
                         
                         <div class="space-y-3 mb-4">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span id="subtotal">৳0.00</span>
+                                <span id="subtotal" class="font-bold">৳0.00</span>
                             </div>
 
                             <div class="flex justify-between">
@@ -347,16 +459,6 @@
                                 </div>
                                 {{ form.tax }}
                             </div>
-{% comment %}                             
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tax (8%)</span>
-                                <span>৳7.60</span>
-                            </div>
-                            
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Round Off</span>
-                                <span>৳0.02</span>
-                            </div> {% endcomment %}
                         </div>
                         <hr>
                         <div class="border-t border-gray-200">
@@ -377,11 +479,9 @@
                             <div class="flex items-center">
                                 <span class="text-gray-600 mr-2">Due</span>
                             </div>
-                            <span id="id_due_display">৳0.00</span>
+                            <span id="id_due_display" class="font-bold">৳0.00</span>
                             {{ form.due.as_hidden }}
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -696,5 +796,108 @@ $(document).ready(function() {
 });
 </script>
 
-{% include 'sales/_product_modal.html' %}
-{% endblock base %}
+    {% include 'sales/_product_modal.html' %}
+
+
+    <div id="footer">
+        <div class="text-center">
+          © {% now "Y" %} Home Decor, Dhaka. All rights reserved.
+        </div>
+      </div>
+    </div>
+
+
+  
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
+
+
+    <script src="{% static 'js/feather.min.js' %}"></script>
+    {% comment %} <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'js/jquery.dataTables.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'plugins/select2/js/select2.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'plugins/select2/js/custom-select.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'plugins/apexchart/apexcharts.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'plugins/apexchart/chart-data.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'plugins/sweetalert/sweetalerts.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {% endcomment %}
+    {% comment %} <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script> {% endcomment %}
+    <script src="{% static 'js/script.js' %}"></script>
+
+
+    <script>
+  // Add select2 search functionality in the dropdown
+  $(document).ready(function() {
+      $('.select2_search').select2();
+      // Focus search box when dropdown opens
+      $(document).on('select2:open', () => {
+          setTimeout(() => {
+              document.querySelector('.select2-container--open .select2-search__field')?.focus();
+          }, 0);
+      });
+  });
+
+    {% comment %} 
+      document.addEventListener('DOMContentLoaded', function() {      
+        var submitButton = document.getElementById('submitButton');
+        var form = uploadButton.closest('form');
+        submitButton.addEventListener('click', function() {
+          submitButton.disabled = true;
+        });
+      });
+    {% endcomment %}
+
+
+    document.querySelectorAll('.delete-btn').forEach(function(element) {
+      element.addEventListener('click', function(e) {
+          e.preventDefault();
+          const url = this.getAttribute('data-url');
+          Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'X-CSRFToken': '{{ csrf_token }}',
+                          'Content-Type': 'application/json'
+                      }
+                  }).then(response => {
+                      console.log(response)
+                      if (response.ok) {
+                          Swal.fire({
+                              title: 'Deleted!',
+                              icon: 'success'
+                          }).then(() => {
+                              window.location.reload();
+                          });
+                      } 
+                      else {
+                        console.log(response)
+                          Swal.fire({
+                              title: 'Error!',
+                              html: '{{ errors }}',
+                              icon: 'error',
+                              confirmButtonText: 'error'
+                          });
+                      }
+                  });
+              }
+          });
+        });
+      });
+    
+  </script>
+
+  </body>
+</html>
