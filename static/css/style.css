@@ -1190,7 +1190,7 @@ div#global-loader,
   min-width: 120px;
   background: #ff9f43;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   padding: 14px 10px;
   -webkit-transition: all 0.2s ease;
@@ -1211,7 +1211,7 @@ div#global-loader,
   min-width: 120px;
   background: #637381;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   padding: 14px 10px;
   -webkit-transition: all 0.5s ease;

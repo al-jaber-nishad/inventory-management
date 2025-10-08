@@ -76,7 +76,9 @@
 
     <div class="main-wrapper">
       {% include 'particals/navbar.html' %}
-      {% include 'particals/sidebar.html' %}
+      {% block sidebar %}
+        {% include 'particals/sidebar.html' %}
+      {% endblock %}
       {% block base %}{% endblock base %}
       <div id="footer">
         <div class="text-center">
