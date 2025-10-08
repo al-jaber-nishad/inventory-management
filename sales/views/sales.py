@@ -30,6 +30,8 @@ class SaleListView(LoginRequiredMixin, OwnerFilterMixin, ListView):
     model = Sale
     template_name = 'sales/list.html'
     context_object_name = 'sale_list'
+    ordering = ['-id']
+    paginate_by = 50
 
     def get_queryset(self):
         qs = super().get_queryset().select_related('customer')
@@ -79,28 +81,30 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         SaleItemFormSet = inlineformset_factory(
-            Sale, SaleItem, 
+            Sale, SaleItem,
             form=SaleItemForm,
-            extra=1, 
+            extra=1,
             can_delete=True
         )
 
-        instance = self.object
-        if instance and instance.sale_date:
-            context['sale_date'] = instance.sale_date.strftime('%d-%m-%Y')
-        else:
-            context['sale_date'] = ''
+        form = context.get('form')
+        instance = getattr(self, 'object', None)
 
-        if instance and instance.due_date:
-            context['due_date'] = instance.due_date.strftime('%d-%m-%Y')
+        # Sale date
+        if form and form.is_bound:
+            context['sale_date'] = form.data.get('sale_date', '')
         else:
-            context['due_date'] = ''
-        
+            context['sale_date'] = (
+                instance.sale_date.strftime('%d-%m-%Y')
+                if instance and instance.sale_date else ''
+            )
+
+        # Item formset
         if self.request.POST:
             context['item_formset'] = SaleItemFormSet(self.request.POST, instance=self.object)
         else:
             context['item_formset'] = SaleItemFormSet(instance=self.object)
-        
+
         return context
 
     def get_form_kwargs(self):
@@ -111,18 +115,20 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         item_formset = context['item_formset']
-        
+
+        print("form", form)
+
         if form.is_valid() and item_formset.is_valid():
             sale = form.save(commit=False)
             sale.created_by = self.request.user
             sale.save()
-            
+
             item_formset.instance = sale
             item_formset.save()
-            
+
             # Calculate totals
             self.calculate_sale_totals(sale)
-            
+
             messages.success(self.request, "Sale created successfully.")
             return redirect('sale_list')
         else:
@@ -131,18 +137,28 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         errors = []
-        field_errors = {f: e for f, e in form.errors.items() if f != '__all__'}
-        non_field = form.non_field_errors()
-        errors.extend(non_field)
-        for err_list in field_errors.values():
-            errors.extend(err_list)
-        
-        # Add formset errors
+
+        # Add form field errors with field names
+        for field, err_list in form.errors.items():
+            if field == '__all__':
+                errors.extend(err_list)
+            else:
+                field_label = form.fields[field].label or field.replace('_', ' ').title()
+                for err in err_list:
+                    errors.append(f"{field_label}: {err}")
+
+        # Add formset errors with item context
         if 'item_formset' in context:
-            for form_errors in context['item_formset'].errors:
-                for field, field_errors in form_errors.items():
-                    errors.extend(field_errors)
-        
+            for idx, form_errors in enumerate(context['item_formset'].errors):
+                if form_errors:
+                    for field, field_errors in form_errors.items():
+                        if field == '__all__':
+                            for err in field_errors:
+                                errors.append(f"Item {idx + 1}: {err}")
+                        else:
+                            for err in field_errors:
+                                errors.append(f"Item {idx + 1} - {field.replace('_', ' ').title()}: {err}")
+
         context.update({'messages': errors, 'is_error': True})
         return render(self.request, self.template_name, context, status=400)
 
@@ -164,28 +180,30 @@ class SaleUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         SaleItemFormSet = inlineformset_factory(
-            Sale, SaleItem, 
+            Sale, SaleItem,
             form=SaleItemForm,
-            extra=0, 
+            extra=0,
             can_delete=True
         )
 
-        instance = self.object
-        if instance and instance.sale_date:
-            context['sale_date'] = instance.sale_date.strftime('%d-%m-%Y')
-        else:
-            context['sale_date'] = ''
+        form = context.get('form')
+        instance = getattr(self, 'object', None)
 
-        if instance and instance.due_date:
-            context['due_date'] = instance.due_date.strftime('%d-%m-%Y')
+        # Sale date
+        if form and form.is_bound:
+            context['sale_date'] = form.data.get('sale_date', '')
         else:
-            context['due_date'] = ''
-        
+            context['sale_date'] = (
+                instance.sale_date.strftime('%d-%m-%Y')
+                if instance and instance.sale_date else ''
+            )
+
+        # Item formset
         if self.request.POST:
             context['item_formset'] = SaleItemFormSet(self.request.POST, instance=self.object)
         else:
             context['item_formset'] = SaleItemFormSet(instance=self.object)
-        
+
         return context
 
     def get_form_kwargs(self):
@@ -196,18 +214,18 @@ class SaleUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
         item_formset = context['item_formset']
-        
+
         if form.is_valid() and item_formset.is_valid():
             sale = form.save(commit=False)
             sale.updated_by = self.request.user
             sale.save()
-            
+
             item_formset.instance = sale
             item_formset.save()
-            
+
             # Calculate totals
             self.calculate_sale_totals(sale)
-            
+
             messages.success(self.request, "Sale updated successfully.")
             return redirect('sale_list')
         else:
@@ -216,18 +234,28 @@ class SaleUpdateView(LoginRequiredMixin, UpdateView):
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         errors = []
-        field_errors = {f: e for f, e in form.errors.items() if f != '__all__'}
-        non_field = form.non_field_errors()
-        errors.extend(non_field)
-        for err_list in field_errors.values():
-            errors.extend(err_list)
-        
-        # Add formset errors
+
+        # Add form field errors with field names
+        for field, err_list in form.errors.items():
+            if field == '__all__':
+                errors.extend(err_list)
+            else:
+                field_label = form.fields[field].label or field.replace('_', ' ').title()
+                for err in err_list:
+                    errors.append(f"{field_label}: {err}")
+
+        # Add formset errors with item context
         if 'item_formset' in context:
-            for form_errors in context['item_formset'].errors:
-                for field, field_errors in form_errors.items():
-                    errors.extend(field_errors)
-        
+            for idx, form_errors in enumerate(context['item_formset'].errors):
+                if form_errors:
+                    for field, field_errors in form_errors.items():
+                        if field == '__all__':
+                            for err in field_errors:
+                                errors.append(f"Item {idx + 1}: {err}")
+                        else:
+                            for err in field_errors:
+                                errors.append(f"Item {idx + 1} - {field.replace('_', ' ').title()}: {err}")
+
         context.update({'messages': errors, 'is_error': True})
         return render(self.request, self.template_name, context, status=400)
 

@@ -1,9 +1,7 @@
 from django import forms
 from sales.models import Sale, SaleItem
-from authentication.models import Customer
 from product.models import Product
 from django.core.exceptions import ValidationError
-import uuid
 
 
 class SaleForm(forms.ModelForm):
@@ -11,22 +9,17 @@ class SaleForm(forms.ModelForm):
         input_formats=['%d-%m-%Y'],
         widget=forms.DateInput(format='%d-%m-%Y', attrs={'type': 'text'})
     )
-    due_date = forms.DateField(
-        input_formats=['%d-%m-%Y'],
-        widget=forms.DateInput(format='%d-%m-%Y', attrs={'type': 'text'})
-    )
     class Meta:
         model = Sale
         fields = [
-            'payment_ledger', 'customer', 'invoice_number', 'sale_date', 'due_date',
+            'payment_ledger', 'customer', 'invoice_number', 'sale_date',
             'discount', 'paid', 'due', 'tax', 'note', 'status'
         ]
         widgets = {
             'payment_ledger': forms.Select(attrs={'class': 'form-control select2_search'}),
             'customer': forms.Select(attrs={'class': 'form-control select2_search'}),
-            'invoice_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Invoice number', 'readonly': 'readonly',}),
+            'invoice_number': forms.TextInput(attrs={'readonly': 'readonly',}),
             'sale_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'discount': forms.NumberInput(attrs={'class':"w-auto text-right px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
             'tax': forms.NumberInput(attrs={'class':"w-auto text-right px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
             'paid': forms.NumberInput(attrs={'class':"w-auto text-right px-2 py-1 border border-gray-300 rounded-md", 'step': '1', 'min': '0'}),
@@ -78,16 +71,6 @@ class SaleForm(forms.ModelForm):
             raise ValidationError("Invoice number already exists.")
         
         return invoice_number
-
-    def clean(self):
-        cleaned_data = super().clean()
-        sale_date = cleaned_data.get('sale_date')
-        due_date = cleaned_data.get('due_date')
-        
-        if sale_date and due_date and due_date < sale_date:
-            raise ValidationError("Due date cannot be earlier than sale date.")
-        
-        return cleaned_data
 
 
 class SaleItemForm(forms.ModelForm):
