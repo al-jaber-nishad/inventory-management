@@ -201,14 +201,12 @@
         {% if messages %}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    {% for field, errors in form_errors.items %}
-                        Swal.fire({
-                            title: '{% if is_error %}Error{% else %}Success{% endif %}',
-                            text: '{{ message }}',
-                            icon: '{% if is_error %}error{% else %}success{% endif %}',
-                            confirmButtonText: 'OK'
-                        });
-                    {% endfor %}
+                    Swal.fire({
+                        title: '{% if is_error %}Error{% else %}Success{% endif %}',
+                        html: '{% for message in messages %}<p>{{ message }}</p>{% endfor %}',
+                        icon: '{% if is_error %}error{% else %}success{% endif %}',
+                        confirmButtonText: 'OK'
+                    });
                 });
             </script>
         {% endif %}
@@ -379,21 +377,37 @@
                     <div class="card p-3 mb-3">
                         <div class="row">
                             <div class="">
-                                <h2 class="text-lg font-semibold mb-4">Sale Order</h2>
+                                <h2 class="text-lg font-semibold mb-2">Sale Order #{{ form.invoice_number.value }}</h2>
                             </div>
                         </div>
 
                         
                         <div class="mandatory-fields">
                             {% comment %} <div class="col-lg-2 col-sm-6 col-12">
-                                <div class="form-group">
+                                <div class="form-group">a
                                     <label for="{{ form.payment_ledger.id_for_label }}">Payment Ledger *</label>
                                     {{ form.payment_ledger }}
                                 </div>
                             </div> {% endcomment %}
 
                             <div class="">
-                                <div class="form-group">
+                                    {{ form.invoice_number.as_hidden }}
+                            </div>
+
+                            <div class="">
+                                <div class="form-group" style="margin-bottom: 5px;">
+                                    <label for="{{ form.sale_date.id_for_label }}">Sale Date</label>
+                                    <div class="input-groupicon">
+                                    <input type="text" name="sale_date" placeholder="Choose Date" class="datetimepicker" value="{{ sale_date }}">
+                                        <a class="addonset">
+                                            <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="">
+                                <div class="form-group" style="margin-bottom: 5px;">
                                     <label for="{{ form.customer.id_for_label }}">Customer *</label>
                                     <div class="input-group">
                                         {{ form.customer }}
@@ -404,24 +418,6 @@
                                 </div>
                             </div>
 
-                            {% comment %} <div class="">
-                                <div class="form-group">
-                                    <label for="{{ form.invoice_number.id_for_label }}">Sale Order #</label>
-                                    {{ form.invoice_number }}
-                                </div>
-                            </div> {% endcomment %}
-
-                            <div class="">
-                                <div class="form-group">
-                                    <label for="{{ form.invoice_number.id_for_label }}">Sale Date</label>
-                                    <div class="input-groupicon">
-                                    <input type="text" name="sale_date" placeholder="Choose Date" class="datetimepicker" value="{{ sale_date }}">
-                                        <a class="addonset">
-                                            <img src="{% static 'img/icons/calendars.svg' %}" alt="img" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
 
                             {% comment %} <div class="col-lg-2 col-sm-6 col-12">
                                 <div class="form-group">
@@ -436,7 +432,7 @@
                             </div> {% endcomment %}
 
                             <div class="">
-                                <div class="form-group">
+                                <div class="form-group" style="margin-bottom: 5px;">
                                     <label for="{{ form.status.id_for_label }}">Status</label>
                                     {{ form.status }}
                                 </div>
@@ -445,9 +441,9 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">Order Summary</h2>
                         
-                        <div class="space-y-3 mb-4">
+                        <div class="space-y-3 mb-2">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
                                 <span id="subtotal" class="font-bold">৳0.00</span>
@@ -468,7 +464,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="border-t border-gray-200">
+                        <div class="border-t border-gray-200 mt-2">
                             <div class="flex justify-between font-bold">
                                 <span>Grand Total</span>
                                 <span id="grand-total">৳0.00</span>
@@ -486,7 +482,7 @@
                             <div class="flex items-center">
                                 <span class="text-gray-600 mr-2">Due</span>
                             </div>
-                            <span id="id_due_display" class="font-bold">৳0.00</span>
+                            <span id="id_due_display" class="font-bold text-danger">৳0.00</span>
                             {{ form.due.as_hidden }}
                         </div>
                     </div>
@@ -496,7 +492,7 @@
             <div class="col-12 pt-3">
                 <div class="d-flex justify-content-end gap-2">
                     <button type="submit" name="action" value="confirm" class="btn btn-submit me-2">
-                        <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save & Confirm{% endif %}
+                        <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save{% endif %}
                     </button>
                     <button type="submit" name="action" value="draft" class="btn btn-secondary me-2">
                         <i class="fas fa-save me-1"></i>Save as Draft
@@ -593,6 +589,16 @@ $(document).ready(function() {
             document.querySelector('.select2-container--open .select2-search__field')?.focus();
         }, 0);
     });
+
+    // Set current date on form load if field is empty
+    const saleDateInput = $('input[name="sale_date"]');
+    if (!saleDateInput.val()) {
+        const today = new Date();
+        const formattedDate = today.getFullYear() + '-' +
+                            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                            String(today.getDate()).padStart(2, '0');
+        saleDateInput.val(formattedDate);
+    }
 
     let formCount = parseInt($('#id_items-TOTAL_FORMS').val());
     
