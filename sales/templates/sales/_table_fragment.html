@@ -8,8 +8,8 @@
                     <th>Invoice #</th>
                     <th>Customer</th>
                     <th>Sale Date</th>
-                    <th>Due Date</th>
                     <th>Total</th>
+                    <th>Due</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -21,8 +21,8 @@
                         <td>{{ sale.invoice_number }}</td>
                         <td>{{ sale.customer.name|default:"N/A" }}</td>
                         <td>{{ sale.sale_date|date:"M d, Y" }}</td>
-                        <td>{{ sale.due_date|date:"M d, Y"|default:"N/A" }}</td>
                         <td>৳{{ sale.total|floatformat:2 }}</td>
+                        <td>{{ sale.due|floatformat:2 }}</td>
                         <td>{{ sale.status }}</td>
                         {% comment %} <td>
                             {% if sale.status == 'draft' %}
@@ -36,7 +36,7 @@
                             {% endif %}
                         </td> {% endcomment %}
                         <td>
-                            <a class="me-3" href="{% url 'sale_invoice_pdf' sale.id %}" title="Download Invoice PDF" target='__blank'>
+                            <a class="me-3" href="{% url 'sale_invoice_pdf' sale.id %}" title="Download Invoice PDF" target='_blank'>
                                 <img src="{% static 'img/icons/printer.svg' %}" alt="Print Invoice">
                             </a>
                             <a class="me-3" href="{% url 'sale_update' sale.id %}">
