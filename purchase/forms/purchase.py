@@ -96,8 +96,8 @@ class PurchaseItemForm(forms.ModelForm):
         fields = ['product', 'quantity', 'unit_price']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control product-select select2_search'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control quantity-input', 'step': '0.01', 'min': '0.01'}),
-            'unit_price': forms.NumberInput(attrs={'class': 'form-control price-input', 'step': '0.01', 'min': '0.01'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control quantity-input', 'step': '1', 'min': '1'}),
+            'unit_price': forms.NumberInput(attrs={'class': 'form-control price-input', 'step': '1', 'min': '1'}),
         }
 
     def __init__(self, *args, **kwargs):

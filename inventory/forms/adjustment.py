@@ -21,8 +21,8 @@ class InventoryAdjustmentForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Enter quantity',
                 'required': True,
-                'min': '0.01',
-                'step': '0.01'
+                'min': '1',
+                'step': '1'
             }),
             'reason': forms.TextInput(attrs={
                 'class': 'form-control',

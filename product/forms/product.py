@@ -9,7 +9,7 @@ class ProductForm(forms.ModelForm):
         initial=0,
         required=False,
         help_text="Initial stock quantity for this product.",
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1'})
     )
     
     class Meta:

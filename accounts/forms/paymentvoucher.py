@@ -22,7 +22,7 @@ class PaymentVoucherForm(forms.ModelForm):
             'bank_name': forms.Select(attrs={'class': 'form-control'}),
             'bank_or_cash': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'cheque_no': forms.TextInput(attrs={'class': 'form-control'}),
-            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '1'}),
             'bill_no': forms.NumberInput(attrs={'class': 'form-control'}),
             'file': forms.FileInput(attrs={'class': 'form-control'}),
             'details': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
