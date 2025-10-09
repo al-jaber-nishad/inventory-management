@@ -292,3 +292,76 @@ def create_product_ajax(request):
             'success': False,
             'message': f'Error creating product: {str(e)}'
         })
+
+
+@login_required
+def get_products_list(request):
+    """API endpoint to get filtered products list"""
+    products = Product.objects.filter(is_active=True).select_related('brand', 'category')
+
+    # Apply filters
+    search = request.GET.get('search', '').strip()
+    category = request.GET.get('category', '').strip()
+    brand = request.GET.get('brand', '').strip()
+
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(sku__icontains=search) |
+            Q(brand__name__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    if category:
+        products = products.filter(category_id=category)
+
+    if brand:
+        products = products.filter(brand_id=brand)
+
+    # Prepare response data
+    data = []
+    for product in products:
+        data.append({
+            'id': product.id,
+            'name': product.name,
+            'sku': product.sku,
+            'brand': product.brand.name if product.brand else None,
+            'category': product.category.name if product.category else None,
+            'price': float(product.price),
+            'stock': product.stock,
+            'image': product.image.url if product.image else None
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def get_categories_list(request):
+    """API endpoint to get all categories"""
+    from product.models import ProductCategory
+    categories = ProductCategory.objects.filter(is_active=True).values('id', 'name')
+    return JsonResponse(list(categories), safe=False)
+
+
+@login_required
+def get_brands_list(request):
+    """API endpoint to get all brands"""
+    from product.models import Brand
+    brands = Brand.objects.all().values('id', 'name')
+    return JsonResponse(list(brands), safe=False)
+
+
+@login_required
+def get_units_list(request):
+    """API endpoint to get all units"""
+    from product.models import Unit
+    units = Unit.objects.all().values('id', 'name')
+    return JsonResponse(list(units), safe=False)
+
+
+@login_required
+def get_colors_list(request):
+    """API endpoint to get all colors"""
+    from product.models import Color
+    colors = Color.objects.all().values('id', 'name')
+    return JsonResponse(list(colors), safe=False)

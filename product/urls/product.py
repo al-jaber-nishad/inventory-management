@@ -8,4 +8,11 @@ urlpatterns = [
     path('products/create-ajax/', views.create_product_ajax, name='product_create_ajax'),
     path('products/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product_update'),
     path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product_delete'),
+
+    # API endpoints for dropdowns
+    path('api/products/', views.get_products_list, name='get_products_list'),
+    path('api/categories/', views.get_categories_list, name='get_categories_list'),
+    path('api/brands/', views.get_brands_list, name='get_brands_list'),
+    path('api/units/', views.get_units_list, name='get_units_list'),
+    path('api/colors/', views.get_colors_list, name='get_colors_list'),
 ]
