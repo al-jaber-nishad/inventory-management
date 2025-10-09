@@ -53,6 +53,7 @@ class Product(BaseModel):
     price = models.DecimalField(max_digits=12, decimal_places=2)
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(max_length=280, blank=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
 
     unique_fields = ['name', 'slug']
 
