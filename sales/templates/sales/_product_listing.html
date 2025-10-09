@@ -207,7 +207,7 @@ $(document).ready(function() {
     // Load products
     function loadProducts(filters = {}) {
         $.ajax({
-            url: '/sale/api/products/',
+            url: '/product/api/products/',
             type: 'GET',
             data: filters,
             success: function(response) {
