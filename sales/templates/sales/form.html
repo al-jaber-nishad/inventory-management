@@ -545,7 +545,7 @@
             <select name="items-__prefix__-product" class="form-control product-select select2_search" id="id_items-__prefix__-product">
                 <option value="">Select product...</option>
                 {% for product in item_formset.0.product.field.queryset %}
-                    <option value="{{ product.id }}">{{ product.name }}</option>
+                    <option value="{{ product.id }}">{{ product }}</option>
                 {% endfor %}
             </select>
         </td>
