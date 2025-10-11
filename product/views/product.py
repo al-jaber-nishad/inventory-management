@@ -296,7 +296,7 @@ def create_product_ajax(request):
 
 @login_required
 def get_products_list(request):
-    """API endpoint to get filtered products list"""
+    """API endpoint to get filtered products list with pagination"""
     products = Product.objects.filter(is_active=True).select_related('brand', 'category')
 
     # Apply filters
@@ -318,9 +318,27 @@ def get_products_list(request):
     if brand:
         products = products.filter(brand_id=brand)
 
+    # Get pagination parameters
+    page = request.GET.get('page', '1')
+    page_size = request.GET.get('page_size', '50')
+
+    try:
+        page = int(page)
+        page_size = int(page_size)
+    except ValueError:
+        page = 1
+        page_size = 50
+
+    # Limit page_size to prevent excessive queries
+    page_size = min(page_size, 100)
+
+    # Apply pagination
+    paginator = Paginator(products, page_size)
+    page_obj = paginator.get_page(page)
+
     # Prepare response data
     data = []
-    for product in products:
+    for product in page_obj:
         data.append({
             'id': product.id,
             'name': product.name,
@@ -332,7 +350,16 @@ def get_products_list(request):
             'image': product.image.url if product.image else None
         })
 
-    return JsonResponse(data, safe=False)
+    # Return paginated response
+    response = {
+        'count': paginator.count,
+        'page': page,
+        'page_size': page_size,
+        'total_pages': paginator.num_pages,
+        'results': data
+    }
+
+    return JsonResponse(response)
 
 
 @login_required

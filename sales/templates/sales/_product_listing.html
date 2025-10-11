@@ -240,6 +240,7 @@
 <script>
 $(document).ready(function() {
     let productsData = [];
+    let totalProducts = 0;
     let currentPage = 1;
     const productsPerPage = 12;
 
@@ -266,15 +267,40 @@ $(document).ready(function() {
         });
     }
 
-    // Load products
-    function loadProducts(filters = {}) {
+    // Load products with server-side pagination
+    function loadProducts(filters = {}, page = 1) {
+        // Show loading state
+        $('#product-grid').html(`
+            <div class="no-products">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p class="mt-2">Loading products...</p>
+            </div>
+        `);
+
+        // Add pagination parameters
+        const params = {
+            ...filters,
+            page: page,
+            page_size: productsPerPage
+        };
+
         $.ajax({
             url: '/product/api/products/',
             type: 'GET',
-            data: filters,
+            data: params,
             success: function(response) {
-                productsData = response;
-                currentPage = 1;
+                // Handle both paginated and non-paginated responses
+                if (response.results !== undefined) {
+                    // Paginated response
+                    productsData = response.results;
+                    totalProducts = response.count || response.results.length;
+                } else {
+                    // Non-paginated response (fallback)
+                    productsData = response;
+                    totalProducts = response.length;
+                }
+
+                currentPage = page;
                 renderProducts();
                 updatePaginationInfo();
             },
@@ -302,7 +328,7 @@ $(document).ready(function() {
         return selectedIds;
     }
 
-    // Render products
+    // Render products (server-side pagination - products already paginated)
     function renderProducts() {
         const grid = $('#product-grid');
         grid.empty();
@@ -320,12 +346,8 @@ $(document).ready(function() {
         // Get already selected products
         const selectedProductIds = getSelectedProductIds();
 
-        // Calculate pagination
-        const startIndex = (currentPage - 1) * productsPerPage;
-        const endIndex = startIndex + productsPerPage;
-        const paginatedProducts = productsData.slice(startIndex, endIndex);
-
-        paginatedProducts.forEach(function(product) {
+        // Render products (already paginated by server)
+        productsData.forEach(function(product) {
             const stockClass = product.stock > 0 ? 'stock-in' : 'stock-out';
             const stockText = product.stock > 0 ? `Stock: ${product.stock}` : 'Out of Stock';
 
@@ -360,7 +382,6 @@ $(document).ready(function() {
 
     // Update pagination info
     function updatePaginationInfo() {
-        const totalProducts = productsData.length;
         const startIndex = totalProducts === 0 ? 0 : (currentPage - 1) * productsPerPage + 1;
         const endIndex = Math.min(currentPage * productsPerPage, totalProducts);
         const totalPages = Math.ceil(totalProducts / productsPerPage);
@@ -448,18 +469,22 @@ $(document).ready(function() {
         renderProducts();
     };
 
+    // Store current filters
+    let currentFilters = {};
+
     // Filter products
     function filterProducts() {
         const search = $('#product-search').val().toLowerCase();
         const category = $('#category-filter').val();
         const brand = $('#brand-filter').val();
 
-        const filters = {};
-        if (search) filters.search = search;
-        if (category) filters.category = category;
-        if (brand) filters.brand = brand;
+        currentFilters = {};
+        if (search) currentFilters.search = search;
+        if (category) currentFilters.category = category;
+        if (brand) currentFilters.brand = brand;
 
-        loadProducts(filters);
+        // Reset to page 1 when filters change
+        loadProducts(currentFilters, 1);
     }
 
     // Search input with debounce
@@ -477,24 +502,21 @@ $(document).ready(function() {
         $('#product-search').val('');
         $('#category-filter').val('');
         $('#brand-filter').val('');
-        loadProducts();
+        currentFilters = {};
+        loadProducts({}, 1);
     });
 
     // Pagination controls
     $('#prev-page').on('click', function() {
         if (currentPage > 1) {
-            currentPage--;
-            renderProducts();
-            updatePaginationInfo();
+            loadProducts(currentFilters, currentPage - 1);
         }
     });
 
     $('#next-page').on('click', function() {
-        const totalPages = Math.ceil(productsData.length / productsPerPage);
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
         if (currentPage < totalPages) {
-            currentPage++;
-            renderProducts();
-            updatePaginationInfo();
+            loadProducts(currentFilters, currentPage + 1);
         }
     });
 });
