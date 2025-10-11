@@ -123,6 +123,18 @@
                     </div>
 
                     <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label for="{{ form.image.id_for_label }}">Product Image</label>
+                            {{ form.image }}
+                            {% if object and object.image %}
+                                <div class="mt-2">
+                                    <img src="{{ object.image.url }}" alt="{{ object.name }}" style="max-width: 200px; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-checkbox">
                             <label for="{{ form.is_active.id_for_label }}">Active</label>
                             <div>

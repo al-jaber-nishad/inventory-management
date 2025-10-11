@@ -14,7 +14,7 @@ class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ['name', 'sku', 'category', 'description', 'price', 'is_active', 'brand', 'unit', 'color']
+        fields = ['name', 'sku', 'image', 'category', 'description', 'price', 'is_active', 'brand', 'unit', 'color']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control select2_search'}),
             'brand': forms.Select(attrs={'class': 'form-control select2_search'}),
