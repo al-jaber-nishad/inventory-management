@@ -320,14 +320,14 @@ def get_products_list(request):
 
     # Get pagination parameters
     page = request.GET.get('page', '1')
-    page_size = request.GET.get('page_size', '50')
+    page_size = request.GET.get('page_size', '12')
 
     try:
         page = int(page)
         page_size = int(page_size)
     except ValueError:
         page = 1
-        page_size = 50
+        page_size = 12
 
     # Limit page_size to prevent excessive queries
     page_size = min(page_size, 100)
