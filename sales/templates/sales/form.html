@@ -489,20 +489,19 @@
                             {{ form.due.as_hidden }}
                         </div>
                     </div>
+                    <div class="d-flex justify-content-end gap-2 pt-3">
+                        <button type="submit" name="action" value="confirm" class="btn btn-submit me-2">
+                            <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save{% endif %}
+                        </button>
+                        <button type="submit" name="action" value="draft" class="btn btn-secondary me-2">
+                            <i class="fas fa-save me-1"></i>Save as Draft
+                        </button>
+                        <a href="{% url 'sale_list' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-12 pt-3">
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" name="action" value="confirm" class="btn btn-submit me-2">
-                        <i class="fas fa-paper-plane me-1"></i>{% if object %}Update{% else %}Save{% endif %}
-                    </button>
-                    <button type="submit" name="action" value="draft" class="btn btn-secondary me-2">
-                        <i class="fas fa-save me-1"></i>Save as Draft
-                    </button>
-                    <a href="{% url 'sale_list' %}" class="btn btn-cancel">Cancel</a>
-                </div>
-            </div>
+            
         </form>
     </div>
 </div>
@@ -621,6 +620,10 @@ $(document).ready(function() {
     $(document).on('click', '.remove-item', function() {
         $(this).closest('tr').remove();
         updateCalculations();
+        // Refresh product listing to re-enable removed product
+        if (typeof window.refreshProductListing === 'function') {
+            window.refreshProductListing();
+        }
     });
     
     // Handle product selection to populate price
@@ -628,7 +631,7 @@ $(document).ready(function() {
         const productId = $(this).val();
         const row = $(this).closest('tr');
         const priceInput = row.find('.price-input');
-        
+
         if (productId) {
             // Fetch product price from API
             $.get(`/sale/api/product/${productId}/price/`)
@@ -642,6 +645,11 @@ $(document).ready(function() {
         } else {
             priceInput.val('');
             updateCalculations();
+        }
+
+        // Refresh product listing to update disabled state
+        if (typeof window.refreshProductListing === 'function') {
+            window.refreshProductListing();
         }
     });
     
