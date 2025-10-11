@@ -11,7 +11,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 15px;
-        max-height: 400px;
+        max-height: 525px;
         overflow-y: auto;
         padding: 10px;
     }
@@ -143,6 +143,51 @@
     .product-card:hover .add-icon {
         display: flex;
     }
+
+    .product-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+        background: #f5f5f5;
+    }
+
+    .product-card.disabled::after {
+        content: "Already Added";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .pagination-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .pagination-controls button {
+        padding: 5px 12px;
+        font-size: 13px;
+    }
 </style>
 
 <div class="card p-3 mb-3 product-listing-section">
@@ -175,11 +220,28 @@
             <p class="mt-2">Loading products...</p>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <div class="pagination-section">
+        <div class="pagination-info">
+            Showing <span id="page-start">0</span>-<span id="page-end">0</span> of <span id="total-products">0</span> products
+        </div>
+        <div class="pagination-controls">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="prev-page" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="next-page" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
 $(document).ready(function() {
     let productsData = [];
+    let currentPage = 1;
+    const productsPerPage = 12;
 
     // Load initial data
     loadFilters();
@@ -212,7 +274,9 @@ $(document).ready(function() {
             data: filters,
             success: function(response) {
                 productsData = response;
-                renderProducts(response);
+                currentPage = 1;
+                renderProducts();
+                updatePaginationInfo();
             },
             error: function() {
                 $('#product-grid').html(`
@@ -225,12 +289,25 @@ $(document).ready(function() {
         });
     }
 
+    // Get list of already selected product IDs
+    function getSelectedProductIds() {
+        const selectedIds = [];
+        $('.item-row').each(function() {
+            const productSelect = $(this).find('select[name*="product"]');
+            const productId = productSelect.val();
+            if (productId) {
+                selectedIds.push(productId);
+            }
+        });
+        return selectedIds;
+    }
+
     // Render products
-    function renderProducts(products) {
+    function renderProducts() {
         const grid = $('#product-grid');
         grid.empty();
 
-        if (products.length === 0) {
+        if (productsData.length === 0) {
             grid.html(`
                 <div class="no-products">
                     <i class="fas fa-box-open fa-2x"></i>
@@ -240,7 +317,15 @@ $(document).ready(function() {
             return;
         }
 
-        products.forEach(function(product) {
+        // Get already selected products
+        const selectedProductIds = getSelectedProductIds();
+
+        // Calculate pagination
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const paginatedProducts = productsData.slice(startIndex, endIndex);
+
+        paginatedProducts.forEach(function(product) {
             const stockClass = product.stock > 0 ? 'stock-in' : 'stock-out';
             const stockText = product.stock > 0 ? `Stock: ${product.stock}` : 'Out of Stock';
 
@@ -248,8 +333,12 @@ $(document).ready(function() {
                 ? `<img src="${product.image}" alt="${product.name}">`
                 : `<div class="no-image">${product.name.charAt(0).toUpperCase()}</div>`;
 
+            // Check if product is already selected
+            const isDisabled = selectedProductIds.includes(product.id.toString());
+            const disabledClass = isDisabled ? 'disabled' : '';
+
             const card = $(`
-                <div class="product-card" data-product-id="${product.id}" data-product-price="${product.price}">
+                <div class="product-card ${disabledClass}" data-product-id="${product.id}" data-product-price="${product.price}">
                     <div class="add-icon">
                         <i class="fas fa-plus"></i>
                     </div>
@@ -269,13 +358,31 @@ $(document).ready(function() {
         });
     }
 
+    // Update pagination info
+    function updatePaginationInfo() {
+        const totalProducts = productsData.length;
+        const startIndex = totalProducts === 0 ? 0 : (currentPage - 1) * productsPerPage + 1;
+        const endIndex = Math.min(currentPage * productsPerPage, totalProducts);
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+        $('#page-start').text(startIndex);
+        $('#page-end').text(endIndex);
+        $('#total-products').text(totalProducts);
+
+        // Update button states
+        $('#prev-page').prop('disabled', currentPage === 1);
+        $('#next-page').prop('disabled', currentPage >= totalPages || totalProducts === 0);
+    }
+
     // Handle product card click
     $(document).on('click', '.product-card', function() {
+        // Prevent clicking on disabled cards
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+
         const productId = $(this).data('product-id');
         const productPrice = $(this).data('product-price');
-
-        // Toggle selected state
-        $(this).toggleClass('selected');
 
         // Add product to the first empty row or create new row
         addProductToSale(productId, productPrice);
@@ -283,6 +390,12 @@ $(document).ready(function() {
 
     // Add product to sale items
     function addProductToSale(productId, productPrice) {
+        // Check if product is already added
+        const selectedIds = getSelectedProductIds();
+        if (selectedIds.includes(productId.toString())) {
+            return; // Product already added, do nothing
+        }
+
         // Find first empty row
         let emptyRow = null;
         $('.item-row').each(function() {
@@ -325,7 +438,15 @@ $(document).ready(function() {
 
         // Trigger calculation
         updateCalculations();
+
+        // Refresh product listing to disable the added product
+        renderProducts();
     }
+
+    // Expose function globally to be called from form.html
+    window.refreshProductListing = function() {
+        renderProducts();
+    };
 
     // Filter products
     function filterProducts() {
@@ -357,6 +478,24 @@ $(document).ready(function() {
         $('#category-filter').val('');
         $('#brand-filter').val('');
         loadProducts();
+    });
+
+    // Pagination controls
+    $('#prev-page').on('click', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderProducts();
+            updatePaginationInfo();
+        }
+    });
+
+    $('#next-page').on('click', function() {
+        const totalPages = Math.ceil(productsData.length / productsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderProducts();
+            updatePaginationInfo();
+        }
     });
 });
 </script>
