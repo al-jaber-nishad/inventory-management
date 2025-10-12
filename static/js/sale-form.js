@@ -210,6 +210,11 @@
             $('#customerForm')[0].reset();
             $('#saveCustomerBtn').prop('disabled', false).text('Save Customer');
         });
+
+
+
+        // Product listing modal
+        
     });
 
     // Delete button handler
@@ -254,3 +259,288 @@
         });
     });
 })();
+
+
+
+$(document).ready(function() {
+    let productsData = [];
+    let totalProducts = 0;
+    let currentPage = 1;
+    const productsPerPage = 12;
+
+    // Load initial data
+    loadFilters();
+    loadProducts();
+
+    // Load filter options
+    function loadFilters() {
+        // Load categories
+        $.get('/product/api/categories/', function(categories) {
+            const categoryFilter = $('#category-filter');
+            categories.forEach(function(cat) {
+                categoryFilter.append(`<option value="${cat.id}">${cat.name}</option>`);
+            });
+        });
+
+        // Load brands
+        $.get('/product/api/brands/', function(brands) {
+            const brandFilter = $('#brand-filter');
+            brands.forEach(function(brand) {
+                brandFilter.append(`<option value="${brand.id}">${brand.name}</option>`);
+            });
+        });
+    }
+
+    // Load products with server-side pagination
+    function loadProducts(filters = {}, page = 1) {
+        // Show loading state
+        $('#product-grid').html(`
+            <div class="no-products">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p class="mt-2">Loading products...</p>
+            </div>
+        `);
+
+        // Add pagination parameters
+        const params = {
+            ...filters,
+            page: page,
+            page_size: productsPerPage
+        };
+
+        $.ajax({
+            url: '/product/api/products/',
+            type: 'GET',
+            data: params,
+            success: function(response) {
+                // Handle both paginated and non-paginated responses
+                if (response.results !== undefined) {
+                    // Paginated response
+                    productsData = response.results;
+                    totalProducts = response.count || response.results.length;
+                } else {
+                    // Non-paginated response (fallback)
+                    productsData = response;
+                    totalProducts = response.length;
+                }
+
+                currentPage = page;
+                renderProducts();
+                updatePaginationInfo();
+            },
+            error: function() {
+                $('#product-grid').html(`
+                    <div class="no-products">
+                        <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                        <p class="mt-2">Failed to load products</p>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    // Get list of already selected product IDs
+    function getSelectedProductIds() {
+        const selectedIds = [];
+        $('.item-row').each(function() {
+            const productSelect = $(this).find('select[name*="product"]');
+            const productId = productSelect.val();
+            if (productId) {
+                selectedIds.push(productId);
+            }
+        });
+        return selectedIds;
+    }
+
+    // Render products (server-side pagination - products already paginated)
+    function renderProducts() {
+        const grid = $('#product-grid');
+        grid.empty();
+
+        if (productsData.length === 0) {
+            grid.html(`
+                <div class="no-products">
+                    <i class="fas fa-box-open fa-2x"></i>
+                    <p class="mt-2">No products found</p>
+                </div>
+            `);
+            return;
+        }
+
+        // Get already selected products
+        const selectedProductIds = getSelectedProductIds();
+
+        // Render products (already paginated by server)
+        productsData.forEach(function(product) {
+            const stockClass = product.stock > 0 ? 'stock-in' : 'stock-out';
+            const stockText = product.stock > 0 ? `Stock: ${product.stock}` : 'Out of Stock';
+
+            const imageHtml = product.image
+                ? `<img src="${product.image}" alt="${product.name}">`
+                : `<div class="no-image">${product.name.charAt(0).toUpperCase()}</div>`;
+
+            // Check if product is already selected
+            const isDisabled = selectedProductIds.includes(product.id.toString());
+            const disabledClass = isDisabled ? 'disabled' : '';
+
+            const card = $(`
+                <div class="product-card ${disabledClass}" data-product-id="${product.id}" data-product-price="${product.price}">
+                    <div class="add-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="product-image">
+                        ${imageHtml}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name" title="${product.name}">${product.name}</div>
+                        ${product.brand ? `<div class="product-brand">${product.brand}</div>` : ''}
+                        <div class="product-price">৳${parseFloat(product.price).toFixed(2)}</div>
+                        <div class="product-stock ${stockClass}">${stockText}</div>
+                    </div>
+                </div>
+            `);
+
+            grid.append(card);
+        });
+    }
+
+    // Update pagination info
+    function updatePaginationInfo() {
+        const startIndex = totalProducts === 0 ? 0 : (currentPage - 1) * productsPerPage + 1;
+        const endIndex = Math.min(currentPage * productsPerPage, totalProducts);
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+        $('#page-start').text(startIndex);
+        $('#page-end').text(endIndex);
+        $('#total-products').text(totalProducts);
+
+        // Update button states
+        $('#prev-page').prop('disabled', currentPage === 1);
+        $('#next-page').prop('disabled', currentPage >= totalPages || totalProducts === 0);
+    }
+
+    // Handle product card click
+    $(document).on('click', '.product-card', function() {
+        // Prevent clicking on disabled cards
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+
+        const productId = $(this).data('product-id');
+        const productPrice = $(this).data('product-price');
+
+        // Add product to the first empty row or create new row
+        addProductToSale(productId, productPrice);
+    });
+
+    // Add product to sale items
+    function addProductToSale(productId, productPrice) {
+        // Check if product is already added
+        const selectedIds = getSelectedProductIds();
+        if (selectedIds.includes(productId.toString())) {
+            return; // Product already added, do nothing
+        }
+
+        // Find first empty row
+        let emptyRow = null;
+        $('.item-row').each(function() {
+            const productSelect = $(this).find('select[name*="product"]');
+            if (!productSelect.val()) {
+                emptyRow = $(this);
+                return false;
+            }
+        });
+
+        // If no empty row, create new one
+        if (!emptyRow) {
+            $('.add-item').first().click();
+            // Wait for new row to be added
+            setTimeout(function() {
+                emptyRow = $('.item-row').last();
+                fillProductRow(emptyRow, productId, productPrice);
+            }, 100);
+        } else {
+            fillProductRow(emptyRow, productId, productPrice);
+        }
+    }
+
+    // Fill product row with data
+    function fillProductRow(row, productId, productPrice) {
+        const productSelect = row.find('select[name*="product"]');
+        const priceInput = row.find('.price-input');
+        const quantityInput = row.find('.quantity-input');
+
+        // Set product
+        productSelect.val(productId).trigger('change');
+
+        // Set price
+        priceInput.val(productPrice);
+
+        // Set default quantity to 1
+        if (!quantityInput.val() || quantityInput.val() == 0) {
+            quantityInput.val(1);
+        }
+
+        // Trigger calculation
+        updateCalculations();
+
+        // Refresh product listing to disable the added product
+        renderProducts();
+    }
+
+    // Expose function globally to be called from form.html
+    window.refreshProductListing = function() {
+        renderProducts();
+    };
+
+    // Store current filters
+    let currentFilters = {};
+
+    // Filter products
+    function filterProducts() {
+        const search = $('#product-search').val().toLowerCase();
+        const category = $('#category-filter').val();
+        const brand = $('#brand-filter').val();
+
+        currentFilters = {};
+        if (search) currentFilters.search = search;
+        if (category) currentFilters.category = category;
+        if (brand) currentFilters.brand = brand;
+
+        // Reset to page 1 when filters change
+        loadProducts(currentFilters, 1);
+    }
+
+    // Search input with debounce
+    let searchTimeout;
+    $('#product-search').on('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(filterProducts, 300);
+    });
+
+    // Filter dropdowns
+    $('#category-filter, #brand-filter').on('change', filterProducts);
+
+    // Clear filters
+    $('#clear-filters').on('click', function() {
+        $('#product-search').val('');
+        $('#category-filter').val('');
+        $('#brand-filter').val('');
+        currentFilters = {};
+        loadProducts({}, 1);
+    });
+
+    // Pagination controls
+    $('#prev-page').on('click', function() {
+        if (currentPage > 1) {
+            loadProducts(currentFilters, currentPage - 1);
+        }
+    });
+
+    $('#next-page').on('click', function() {
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+        if (currentPage < totalPages) {
+            loadProducts(currentFilters, currentPage + 1);
+        }
+    });
+});
