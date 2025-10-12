@@ -3258,7 +3258,7 @@ div.dataTables_wrapper div.dataTables_info {
 .header .user-img img {
   width: 38px;
   border-radius: 50%;
-  /* margin-top: 25px; */
+  margin-top: 25px;
 }
 .header .user-img .status {
   border: 2px solid #fff;
