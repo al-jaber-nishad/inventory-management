@@ -41,15 +41,22 @@
 
             initSelect2();
             updateCalculations();
+            updateDeleteButtonVisibility();
         });
 
         // Remove item row
         $(document).on('click', '.remove-item', function() {
             $(this).closest('tr').remove();
             updateCalculations();
+            updateDeleteButtonVisibility();
             if (typeof window.refreshProductListing === 'function') {
                 window.refreshProductListing();
             }
+        });
+
+        // Handle DELETE checkbox changes for existing items
+        $(document).on('change', 'input[name*="DELETE"]', function() {
+            updateDeleteButtonVisibility();
         });
 
         // Handle product selection to populate price
@@ -147,8 +154,36 @@
             $('#id_due').val(due_amount.toFixed(2));
         }
 
+        function updateDeleteButtonVisibility() {
+            // Count only rows that are not marked for deletion
+            let activeRowCount = 0;
+            $('.item-row').each(function() {
+                const deleteCheckbox = $(this).find('input[name*="DELETE"]');
+                // If there's no DELETE checkbox or it's not checked, count this row
+                if (deleteCheckbox.length === 0 || !deleteCheckbox.is(':checked')) {
+                    activeRowCount++;
+                }
+            });
+
+            if (activeRowCount === 1) {
+                // Hide delete buttons only for rows that are not marked for deletion
+                $('.item-row').each(function() {
+                    const deleteCheckbox = $(this).find('input[name*="DELETE"]');
+                    if (deleteCheckbox.length === 0 || !deleteCheckbox.is(':checked')) {
+                        $(this).find('.remove-item').hide();
+                        $(this).find('label[for*="DELETE"]').hide();
+                    }
+                });
+            } else {
+                // Show all delete buttons
+                $('.item-row .remove-item').show();
+                $('.item-row label[for*="DELETE"]').show();
+            }
+        }
+
         // Initial calculation
         updateCalculations();
+        updateDeleteButtonVisibility();
 
         // Customer Modal Functionality
         $('#add-customer-btn').click(function() {
